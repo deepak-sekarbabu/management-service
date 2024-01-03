@@ -32,8 +32,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred. Please try again later.");
     }
 
-    @ExceptionHandler(ClinicNotFoundException.class)
-    public ResponseEntity<String> handleClinicNotFoundExceptionException(ClinicNotFoundException ex) {
+    @ExceptionHandler(ClinicNotFound.class)
+    public ResponseEntity<String> handleClinicNotFoundException(ClinicNotFound ex) {
+        LOGGER.error("An error occurred: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found : " + ex.getMessage());
+    }
+
+    @ExceptionHandler(DoctorNotFound.class)
+    public ResponseEntity<String> handleDoctorNotFoundException(DoctorNotFound ex) {
         LOGGER.error("An error occurred: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found : " + ex.getMessage());
     }
