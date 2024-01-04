@@ -79,7 +79,7 @@ public class DoctorController {
                 doctor.get().setPhoneNumbers(doctorInformation.getPhoneNumbers());
                 doctor.get().setDoctorName(doctorInformation.getDoctorName());
                 doctor.get().setDoctorAvailability(doctorInformation.getDoctorAvailability());
-
+                doctor.get().setDoctorSpeciality(doctorInformation.getDoctorSpeciality());
                 return this.doctorInformationRepository.save(doctor.get());
             } else {
                 throw new ClinicNotFound("Clinic with id " + doctorInformation.getClinicId() + " not found");
