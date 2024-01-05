@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.support.WebExchangeBindException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -44,6 +45,13 @@ public class GlobalExceptionHandler {
         LOGGER.error("An error occurred: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found : " + ex.getMessage());
     }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<String> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        LOGGER.error("Input Argument Not in Expected Format: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Input Argument Not in Expected Format : " + ex.getMessage());
+    }
+
 
     @ExceptionHandler(DoctorAbsenceNotFound.class)
     public ResponseEntity<String> handleDoctorAbsenceNotFoundException(DoctorAbsenceNotFound ex) {
