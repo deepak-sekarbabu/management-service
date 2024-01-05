@@ -62,14 +62,15 @@ public class DoctorInformation {
     @Column(name = "phone_numbers")
     @JdbcTypeCode(SqlTypes.JSON)
     @Schema(description = "Phone Numbers", example = """
-                                                     [
-                                                             {
-                                                                 "phoneNumber": "+91 123-456-7890"
-                                                             },
-                                                             {
-                                                                 "phoneNumber": "+91 987-654-3210"
-                                                             }
-                                                         ]""")
+            [
+                    {
+                        "phoneNumber": "+91 123-456-7890"
+                    },
+                    {
+                        "phoneNumber": "+91 987-654-3210"
+                    }
+                ]"""
+    )
     private List<PhoneNumbers> phoneNumbers;
 
     @JdbcTypeCode(SqlTypes.JSON)

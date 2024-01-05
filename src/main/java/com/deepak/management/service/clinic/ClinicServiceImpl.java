@@ -17,8 +17,9 @@ import java.util.Optional;
 @Service
 public class ClinicServiceImpl implements ClinicService {
 
-    private final ClinicInformationRepository clinicInformationRepository;
     private static final Logger LOGGER = LoggerFactory.getLogger(ClinicServiceImpl.class);
+    private final ClinicInformationRepository clinicInformationRepository;
+
     public ClinicServiceImpl(ClinicInformationRepository clinicInformationRepository) {
         this.clinicInformationRepository = clinicInformationRepository;
     }

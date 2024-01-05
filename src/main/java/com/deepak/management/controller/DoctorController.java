@@ -55,8 +55,7 @@ public class DoctorController {
 
     @PutMapping("/{doctorId}")
     @Operation(summary = "Update Doctor information by Id")
-    public DoctorInformation updateDoctor(@PathVariable Long doctorId, @RequestBody DoctorInformation doctorInformation)
-            throws DoctorNotFound, ClinicNotFound {
+    public DoctorInformation updateDoctor(@PathVariable Long doctorId, @RequestBody DoctorInformation doctorInformation) throws DoctorNotFound, ClinicNotFound {
         return doctorService.updateDoctor(doctorId, doctorInformation);
     }
 

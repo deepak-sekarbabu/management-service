@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found : " + ex.getMessage());
     }
 
-    @ExceptionHandler({ DataIntegrityViolationException.class })
+    @ExceptionHandler({DataIntegrityViolationException.class})
     public ResponseEntity<String> handleDataIntegrityViolationExceptionException(Exception ex) {
         LOGGER.error("Cannot add or update a child row: a foreign key constraint fails: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body("Not Modified : " + ex.getMessage());

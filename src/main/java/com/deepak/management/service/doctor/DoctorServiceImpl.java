@@ -18,10 +18,9 @@ import java.util.Optional;
 
 @Service
 public class DoctorServiceImpl implements DoctorService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DoctorServiceImpl.class);
     private final DoctorInformationRepository doctorInformationRepository;
     private final ClinicInformationRepository clinicInformationRepository;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DoctorServiceImpl.class);
 
     public DoctorServiceImpl(DoctorInformationRepository doctorInformationRepository, ClinicInformationRepository clinicInformationRepository) {
         this.doctorInformationRepository = doctorInformationRepository;
@@ -66,7 +65,7 @@ public class DoctorServiceImpl implements DoctorService {
                 doctor.get().setDoctorSpeciality(doctorInformation.getDoctorSpeciality());
                 doctor.get().setDoctorExperience(doctorInformation.getDoctorExperience());
                 doctor.get().setDoctorConsultationFee(doctorInformation.getDoctorConsultationFee());
-                LOGGER.info("Updated doctor information for the Id : {}",doctorId);
+                LOGGER.info("Updated doctor information for the Id : {}", doctorId);
                 return this.doctorInformationRepository.save(doctor.get());
             } else {
                 throw new ClinicNotFound("Clinic with id " + doctorInformation.getClinicId() + " not found");
@@ -82,7 +81,7 @@ public class DoctorServiceImpl implements DoctorService {
         if (!this.doctorInformationRepository.existsById(doctorId)) {
             throw new DoctorNotFound("Doctor with id " + doctorId + " not found");
         }
-        LOGGER.warn("Deleted doctor information for the Id : {}",doctorId);
+        LOGGER.warn("Deleted doctor information for the Id : {}", doctorId);
         this.doctorInformationRepository.deleteById(doctorId);
     }
 }

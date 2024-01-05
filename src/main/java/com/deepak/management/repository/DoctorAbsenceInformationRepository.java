@@ -9,8 +9,7 @@ import java.sql.Date;
 
 public interface DoctorAbsenceInformationRepository extends JpaRepository<DoctorAbsenceInformation, Long> {
 
-    Page<DoctorAbsenceInformation> findByAbsenceDateAndClinicIdAndDoctorId(
-            Date absenceDate, Integer clinicId, String doctorId, Pageable pageable);
+    Page<DoctorAbsenceInformation> findByAbsenceDateAndClinicIdAndDoctorId(Date absenceDate, Integer clinicId, String doctorId, Pageable pageable);
 
     Page<DoctorAbsenceInformation> findByAbsenceDate(Date absenceDate, Pageable pageable);
 
