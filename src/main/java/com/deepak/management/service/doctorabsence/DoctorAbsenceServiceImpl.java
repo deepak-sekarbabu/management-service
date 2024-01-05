@@ -108,7 +108,7 @@ public class DoctorAbsenceServiceImpl implements DoctorAbsenceService {
     @Override
     public void deleteDoctorAbsenceInfoById(Long id) throws DoctorAbsenceNotFound {
         Optional<DoctorAbsenceInformation> absenceInformation = this.getDoctorAbsenceInformationsById(id);
-        if (!absenceInformation.isPresent()) {
+        if (absenceInformation.isEmpty()) {
             LOGGER.warn("Attempt to delete a doctor information that does not exist");
             throw new DoctorAbsenceNotFound("Doctor Absence Information with ID " + id + " does not exist.");
         }

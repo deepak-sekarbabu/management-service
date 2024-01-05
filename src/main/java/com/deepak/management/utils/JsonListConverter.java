@@ -1,6 +1,5 @@
 package com.deepak.management.utils;
 
-import com.deepak.management.service.doctorabsence.DoctorAbsenceServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;

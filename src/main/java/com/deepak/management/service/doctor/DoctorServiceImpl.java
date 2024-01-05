@@ -6,7 +6,6 @@ import com.deepak.management.model.clinic.ClinicInformation;
 import com.deepak.management.model.doctor.DoctorInformation;
 import com.deepak.management.repository.ClinicInformationRepository;
 import com.deepak.management.repository.DoctorInformationRepository;
-import com.deepak.management.service.doctorabsence.DoctorAbsenceServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
