@@ -30,7 +30,7 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public List<DoctorInformation> getDoctorInformations(Pageable page) {
+    public List<DoctorInformation> getDoctorInformation(Pageable page) {
 
         Page<DoctorInformation> pagedResult = this.doctorInformationRepository.findAll(page);
 

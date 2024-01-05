@@ -14,7 +14,7 @@ import java.util.Optional;
 @Service
 public interface DoctorService {
 
-    List<DoctorInformation> getDoctorInformations(Pageable page);
+    List<DoctorInformation> getDoctorInformation(Pageable page);
 
     Optional<DoctorInformation> getDoctorById(Long doctorId) throws DoctorNotFound;
 

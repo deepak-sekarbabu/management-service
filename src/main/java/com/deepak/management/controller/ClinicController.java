@@ -33,6 +33,7 @@ public class ClinicController {
     @PostMapping
     @Operation(summary = "Create a new clinic")
     public ClinicInformation saveClinic(@Valid @RequestBody ClinicInformation clinic) {
+        LOGGER.info("Adding new clinic: {}", clinic);
         return this.clinicInformationRepository.save(clinic);
     }
 

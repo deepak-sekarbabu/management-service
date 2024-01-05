@@ -7,6 +7,8 @@ import com.deepak.management.service.doctorabsence.DoctorAbsenceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,7 +25,7 @@ import java.util.Optional;
 @Tag(name = "Doctor Absence", description = "Handles CRUD operations for Doctor Absence Information")
 @Validated
 public class DoctorAbsenceController {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(DoctorAbsenceController.class);
     private final DoctorAbsenceInformationRepository doctorAbsenceInformationRepository;
     private final DoctorAbsenceService doctorAbsenceService;
 
@@ -35,6 +37,7 @@ public class DoctorAbsenceController {
     @PostMapping
     @Operation(summary = "Create a new doctor absence information")
     public DoctorAbsenceInformation saveAbsence(@Valid @RequestBody DoctorAbsenceInformation doctorAbsenceInformation) {
+        LOGGER.info("Adding new doctor absence information: {}", doctorAbsenceInformation);
         return doctorAbsenceInformationRepository.save(doctorAbsenceInformation);
     }
 

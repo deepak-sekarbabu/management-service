@@ -8,6 +8,8 @@ import com.deepak.management.service.doctor.DoctorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
@@ -21,7 +23,7 @@ import java.util.Optional;
 @Tag(name = "Doctor Service", description = "Handles CRUD operations for Doctor Information")
 @Validated
 public class DoctorController {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(DoctorController.class);
     private final DoctorInformationRepository doctorInformationRepository;
     private final DoctorService doctorService;
 
@@ -33,14 +35,15 @@ public class DoctorController {
     @PostMapping
     @Operation(summary = "Create a new doctor")
     public DoctorInformation saveDoctor(@Valid @RequestBody DoctorInformation doctorInformation) {
+        LOGGER.info("Saving a new doctor: {}", doctorInformation);
         return this.doctorInformationRepository.save(doctorInformation);
     }
 
     @GetMapping
     @Operation(summary = "Get all doctor information")
-    public List<DoctorInformation> getDoctorInformations(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+    public List<DoctorInformation> getDoctorInformation(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
         Pageable paging = PageRequest.of(page, size);
-        return doctorService.getDoctorInformations(paging);
+        return doctorService.getDoctorInformation(paging);
 
     }
 
