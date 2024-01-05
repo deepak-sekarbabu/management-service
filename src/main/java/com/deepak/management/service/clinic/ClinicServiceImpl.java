@@ -3,6 +3,9 @@ package com.deepak.management.service.clinic;
 import com.deepak.management.exception.ClinicNotFound;
 import com.deepak.management.model.clinic.ClinicInformation;
 import com.deepak.management.repository.ClinicInformationRepository;
+import com.deepak.management.service.doctor.DoctorServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +19,7 @@ import java.util.Optional;
 public class ClinicServiceImpl implements ClinicService {
 
     private final ClinicInformationRepository clinicInformationRepository;
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClinicServiceImpl.class);
     public ClinicServiceImpl(ClinicInformationRepository clinicInformationRepository) {
         this.clinicInformationRepository = clinicInformationRepository;
     }
@@ -58,6 +61,7 @@ public class ClinicServiceImpl implements ClinicService {
             existingClinic.get().setClinicTimings(clinicInformation.getClinicTimings());
             existingClinic.get().setClinicAmenities(clinicInformation.getClinicAmenities());
             existingClinic.get().setClinicWebsite(clinicInformation.getClinicWebsite());
+            LOGGER.info("Updated Clinic information for clinic id {}", clinicId);
             return this.clinicInformationRepository.save(existingClinic.get());
         } else {
             throw new ClinicNotFound("Clinic with id " + clinicId + " not found");

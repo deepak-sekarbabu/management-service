@@ -7,6 +7,8 @@ import com.deepak.management.service.clinic.ClinicService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +21,7 @@ import java.util.Optional;
 @Validated
 public class ClinicController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClinicController.class);
     private final ClinicInformationRepository clinicInformationRepository;
     private final ClinicService clinicService;
 
@@ -58,6 +61,7 @@ public class ClinicController {
         if (!this.clinicInformationRepository.existsById(clinicId)) {
             throw new ClinicNotFound("Clinic with id " + clinicId + " not found");
         }
+        LOGGER.warn("Deleted Clinic information for clinic id {}", clinicId);
         this.clinicInformationRepository.deleteById(clinicId);
 
     }

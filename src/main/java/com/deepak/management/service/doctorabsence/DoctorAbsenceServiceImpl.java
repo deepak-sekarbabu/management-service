@@ -97,6 +97,7 @@ public class DoctorAbsenceServiceImpl implements DoctorAbsenceService {
             existingInfo.setClinicId(doctorAbsenceInformation.getClinicId());
             existingInfo.setDoctorId(doctorAbsenceInformation.getDoctorId());
             existingInfo.setOptionalMessage(doctorAbsenceInformation.getOptionalMessage());
+            LOGGER.info("Updated absence info with id: {}", existingInfo.getId());
             return Optional.of(doctorAbsenceInformationRepository.save(existingInfo));
         } else {
             LOGGER.error("Doctor Absence Information not found with ID: {}", id);
@@ -111,6 +112,7 @@ public class DoctorAbsenceServiceImpl implements DoctorAbsenceService {
             LOGGER.warn("Attempt to delete a doctor information that does not exist");
             throw new DoctorAbsenceNotFound("Doctor Absence Information with ID " + id + " does not exist.");
         }
+        LOGGER.warn("Deleted doctor absence info with id: {}", id);
         doctorAbsenceInformationRepository.deleteById(id);
     }
 

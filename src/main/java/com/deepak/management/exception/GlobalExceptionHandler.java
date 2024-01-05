@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({ DataIntegrityViolationException.class })
     public ResponseEntity<String> handleDataIntegrityViolationExceptionException(Exception ex) {
-        LOGGER.error("Cannot add or update a child row: a foreign key constraint fails: ", ex.getMessage());
+        LOGGER.error("Cannot add or update a child row: a foreign key constraint fails: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body("Not Modified : " + ex.getMessage());
     }
 
