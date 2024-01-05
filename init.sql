@@ -6,16 +6,16 @@ DROP TABLE IF EXISTS doctor_information;
 CREATE TABLE clinic_information
 (
     clinic_id            INTEGER NOT NULL AUTO_INCREMENT,
-    clinic_name      VARCHAR(150),
-    clinic_address   VARCHAR(200),
+    clinic_name          VARCHAR(150),
+    clinic_address       VARCHAR(200),
     clinic_pin_code      VARCHAR(10),
     map_geo_location     VARCHAR(50),
-    clinic_amenities VARCHAR(200),
+    clinic_amenities     VARCHAR(200),
     clinic_email         VARCHAR(120),
-    clinic_timing    VARCHAR(150),
-    clinic_website   VARCHAR(150),
+    clinic_timing        VARCHAR(150),
+    clinic_website       VARCHAR(150),
     clinic_phone_numbers JSON,
-    no_of_doctors    INTEGER CHECK ((no_of_doctors <= 100) AND (no_of_doctors >= 1)),
+    no_of_doctors        INTEGER CHECK ((no_of_doctors <= 100) AND (no_of_doctors >= 1)),
     PRIMARY KEY (clinic_id)
 ) ENGINE = InnoDB;
 
@@ -35,7 +35,6 @@ CREATE TABLE doctor_information
     id                       INTEGER NOT NULL AUTO_INCREMENT,
     FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id) -- Foreign key relation to clinic_information
 ) ENGINE = InnoDB;
-
 -- Table for doctor absence information
 CREATE TABLE doctor_absence_information
 (
