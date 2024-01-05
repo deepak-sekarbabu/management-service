@@ -4,6 +4,7 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -42,6 +43,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDoctorNotFoundException(DoctorNotFound ex) {
         LOGGER.error("An error occurred: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found : " + ex.getMessage());
+    }
+
+    @ExceptionHandler(DoctorAbsenceNotFound.class)
+    public ResponseEntity<String> handleDoctorAbsenceNotFoundException(DoctorAbsenceNotFound ex) {
+        LOGGER.error("An error occurred: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found : " + ex.getMessage());
+    }
+
+    @ExceptionHandler({ DataIntegrityViolationException.class })
+    public ResponseEntity<String> handleDataIntegrityViolationExceptionException(Exception ex) {
+        LOGGER.error("Cannot add or update a child row: a foreign key constraint fails: ", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body("Not Modified : " + ex.getMessage());
     }
 
     @ExceptionHandler({ValidationException.class, WebExchangeBindException.class, MethodArgumentNotValidException.class, ResponseStatusException.class, ConstraintViolationException.class})

@@ -1,9 +1,9 @@
 package com.deepak.management.controller;
 
 import com.deepak.management.exception.ClinicNotFound;
-import com.deepak.management.model.ClinicInformation;
+import com.deepak.management.model.clinic.ClinicInformation;
 import com.deepak.management.repository.ClinicInformationRepository;
-import com.deepak.management.service.ClinicService;
+import com.deepak.management.service.clinic.ClinicService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -27,6 +27,12 @@ public class ClinicController {
         this.clinicService = clinicService;
     }
 
+    @PostMapping
+    @Operation(summary = "Create a new clinic")
+    public ClinicInformation saveClinic(@Valid @RequestBody ClinicInformation clinic) {
+        return this.clinicInformationRepository.save(clinic);
+    }
+
     @GetMapping
     @Operation(summary = "Get all clinic information")
     public List<ClinicInformation> getAllClinics(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
@@ -39,18 +45,11 @@ public class ClinicController {
         return clinicService.getClinicById(clinicId);
     }
 
-    @PostMapping
-    @Operation(summary = "Create a new clinic")
-    public ClinicInformation saveClinic(@Valid @RequestBody ClinicInformation clinic) {
-        return this.clinicInformationRepository.save(clinic);
-    }
-
     @PutMapping("/{clinicId}")
     @Operation(summary = "Update clinic by Id")
     public ClinicInformation updateClinic(@PathVariable Integer clinicId, @RequestBody ClinicInformation clinic) throws ClinicNotFound {
         return this.clinicService.updateClinic(clinicId, clinic);
     }
-
 
     @DeleteMapping("/{clinicId}")
     @Operation(summary = "Delete clinic by Id")
