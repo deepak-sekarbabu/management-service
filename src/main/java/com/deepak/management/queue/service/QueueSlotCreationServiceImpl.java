@@ -25,13 +25,13 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
     }
 
     @Override
-    public List<DoctorAvailabilityInformation> getDetailsForSlotCreation(String doctorId, String clinicId) throws JsonProcessingException {
+    public List<DoctorAvailabilityInformation> getDetailsForSlotCreation(String doctorId, String clinicId) {
         List<Object[]> objects = this.doctorInformationRepository.getDoctorsWithCurrentDateAndDayOfWeek(doctorId, clinicId);
         List<DoctorAvailabilityInformation> doctorAvailabilityList = new ArrayList<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             for (Object[] obj : objects) {
-                List<DoctorAvailability> doctorShifts = objectMapper.readValue((String) obj[0], new TypeReference<List<DoctorAvailability>>() {
+                List<DoctorAvailability> doctorShifts = objectMapper.readValue((String) obj[0], new TypeReference<>() {
                 });
                 String doctorName = (String) obj[1];
                 String doctorIdFromRepo = (String) obj[2];
@@ -57,9 +57,9 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
 
                 doctorAvailabilityList.add(doctorAvailabilityInformation);
             }
-            LOGGER.info(doctorAvailabilityList.toString());
+            //LOGGER.info(doctorAvailabilityList.toString());
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Error occurred while parsing doctor availability info", e);
         }
         return doctorAvailabilityList;
     }

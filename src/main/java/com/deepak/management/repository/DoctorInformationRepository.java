@@ -1,7 +1,6 @@
 package com.deepak.management.repository;
 
 import com.deepak.management.model.doctor.DoctorInformation;
-import com.deepak.management.queue.model.DoctorAvailabilityInformation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
