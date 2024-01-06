@@ -1,6 +1,8 @@
-package com.deepak.management.queue;
+package com.deepak.management.queue.controller;
 
+import com.deepak.management.queue.model.DoctorAvailabilityInformation;
 import com.deepak.management.queue.service.QueueSlotCreationService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +22,7 @@ public class QueueSlotController {
     }
 
     @GetMapping
-    public List<Object[]> getQueueSlotsForDoctorAndClinic(@RequestParam String doctorId, @RequestParam String clinicId) {
-        return slotCreationService.getDetailsForSlotCreation(doctorId,clinicId);
+    public List<DoctorAvailabilityInformation> getQueueSlotsForDoctorAndClinic(@RequestParam String doctorId, @RequestParam String clinicId) throws JsonProcessingException {
+        return slotCreationService.getDetailsForSlotCreation(doctorId, clinicId);
     }
 }
