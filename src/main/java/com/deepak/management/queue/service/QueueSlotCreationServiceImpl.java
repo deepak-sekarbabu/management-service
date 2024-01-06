@@ -3,7 +3,6 @@ package com.deepak.management.queue.service;
 import com.deepak.management.model.common.DoctorAvailability;
 import com.deepak.management.queue.model.DoctorAvailabilityInformation;
 import com.deepak.management.repository.DoctorInformationRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
