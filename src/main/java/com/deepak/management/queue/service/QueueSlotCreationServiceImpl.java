@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -61,6 +62,21 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
             LOGGER.error("Error occurred while parsing doctor availability info", e);
         }
         return doctorAvailabilityList;
+    }
+
+
+    public List<DoctorAvailability> getDoctorShiftsForDay(String day, List<DoctorAvailability> availabilityInformation) {
+        List<DoctorAvailability> shiftsForDay = new ArrayList<>();
+        DayOfWeek targetDay = DayOfWeek.valueOf(day.toUpperCase());
+
+        for (DoctorAvailability shift : availabilityInformation) {
+            DayOfWeek shiftDay = DayOfWeek.valueOf(String.valueOf(shift.getAvailableDays()));
+            if (shiftDay == targetDay) {
+                shiftsForDay.add(shift);
+            }
+        }
+        LOGGER.info("Found {} shifts for doctor on {} : {} ", shiftsForDay.size(), day , shiftsForDay.toString());
+        return shiftsForDay;
     }
 }
 
