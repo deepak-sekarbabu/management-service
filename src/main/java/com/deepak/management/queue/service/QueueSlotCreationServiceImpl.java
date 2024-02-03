@@ -2,6 +2,8 @@ package com.deepak.management.queue.service;
 
 import com.deepak.management.model.common.DoctorAvailability;
 import com.deepak.management.queue.model.DoctorAvailabilityInformation;
+import com.deepak.management.queue.model.DoctorShiftAbsence;
+import com.deepak.management.queue.model.DoctorShiftAvailability;
 import com.deepak.management.repository.DoctorInformationRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,11 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
@@ -31,29 +35,52 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             for (Object[] obj : objects) {
-                List<DoctorAvailability> doctorShifts = objectMapper.readValue((String) obj[0], new TypeReference<>() {
-                });
+                DoctorAvailabilityInformation doctorAvailabilityInformation = new DoctorAvailabilityInformation();
+                DoctorShiftAvailability doctorShiftAvailability = new DoctorShiftAvailability();
+                DoctorShiftAbsence doctorShiftAbsence = new DoctorShiftAbsence();
+                List<DoctorAvailability> shiftDetails = null;
+                if (obj[0] != null) {
+                    shiftDetails = objectMapper.readValue((String) obj[0], new TypeReference<>() {
+                    });
+                }
+
                 String doctorName = (String) obj[1];
                 String doctorIdFromRepo = (String) obj[2];
                 Integer clinicIdFromRepo = (Integer) obj[3];
                 Integer doctorConsultationTime = (Integer) obj[4];
-                LocalDate absenceDate = LocalDate.parse(obj[5].toString());
-                LocalTime absenceEndTime = LocalTime.parse(obj[6].toString());
-                LocalTime absenceStartTime = LocalTime.parse(obj[7].toString());
-                java.sql.Date today = (java.sql.Date) obj[8];
-                String currentDayOfWeek = (String) obj[9];
 
-                DoctorAvailabilityInformation doctorAvailabilityInformation = new DoctorAvailabilityInformation();
-                doctorAvailabilityInformation.setDoctorShifts(doctorShifts);
-                doctorAvailabilityInformation.setDoctorName(doctorName);
-                doctorAvailabilityInformation.setDoctorId(doctorIdFromRepo);
-                doctorAvailabilityInformation.setClinicId(Math.toIntExact(clinicIdFromRepo));
-                doctorAvailabilityInformation.setDoctorConsultationTime(doctorConsultationTime);
-                doctorAvailabilityInformation.setAbsenceDate(absenceDate);
-                doctorAvailabilityInformation.setAbsenceEndTime(absenceEndTime);
-                doctorAvailabilityInformation.setAbsenceStartTime(absenceStartTime);
-                doctorAvailabilityInformation.setToday(today.toLocalDate());
+                if (obj[5] != null) {
+                    LocalDate absenceDate = LocalDate.parse(obj[5].toString());
+                    doctorShiftAbsence.setAbsenceDate(absenceDate);
+                }
+                if (obj[6] != null) {
+                    LocalTime absenceEndTime = LocalTime.parse(obj[6].toString());
+                    doctorShiftAbsence.setAbsenceEndTime(absenceEndTime);
+                }
+                if (obj[7] != null) {
+                    LocalTime absenceStartTime = LocalTime.parse(obj[7].toString());
+                    doctorShiftAbsence.setAbsenceStartTime(absenceStartTime);
+                }
+
+                Date today = (Date) obj[8];
+                String currentDayOfWeek = (String) obj[9];
+                doctorAvailabilityInformation.setCurrentDate(today.toLocalDate());
                 doctorAvailabilityInformation.setCurrentDayOfWeek(currentDayOfWeek);
+
+                doctorShiftAvailability.setShiftDetails(filterShiftDetails(shiftDetails, currentDayOfWeek));
+                doctorShiftAvailability.setDoctorName(doctorName);
+                doctorShiftAvailability.setDoctorId(doctorIdFromRepo);
+                doctorShiftAvailability.setClinicId(clinicIdFromRepo);
+                doctorShiftAvailability.setDoctorConsultationTime(doctorConsultationTime);
+                doctorAvailabilityInformation.setDoctorShiftAvailability(doctorShiftAvailability);
+
+                doctorShiftAbsence.setDoctorName(doctorName);
+                doctorShiftAbsence.setDoctorId(doctorIdFromRepo);
+                doctorShiftAbsence.setClinicId(clinicIdFromRepo);
+
+                if (obj[5] != null) {
+                    doctorAvailabilityInformation.setDoctorShiftAbsence(doctorShiftAbsence);
+                }
 
                 doctorAvailabilityList.add(doctorAvailabilityInformation);
             }
@@ -64,19 +91,24 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
         return doctorAvailabilityList;
     }
 
-
-    public List<DoctorAvailability> getDoctorShiftsForDay(String day, List<DoctorAvailability> availabilityInformation) {
-        List<DoctorAvailability> shiftsForDay = new ArrayList<>();
-        DayOfWeek targetDay = DayOfWeek.valueOf(day.toUpperCase());
-
-        for (DoctorAvailability shift : availabilityInformation) {
-            DayOfWeek shiftDay = DayOfWeek.valueOf(String.valueOf(shift.getAvailableDays()));
-            if (shiftDay == targetDay) {
-                shiftsForDay.add(shift);
-            }
-        }
-        LOGGER.info("Found {} shifts for doctor on {} : {} ", shiftsForDay.size(), day , shiftsForDay.toString());
-        return shiftsForDay;
+    @Override
+    public List<DoctorAvailability> getDoctorShiftsForDay(String day, List<DoctorAvailability> availabilities) {
+        return null;
     }
-}
 
+    private List<DoctorAvailability> filterShiftDetails(List<DoctorAvailability> shiftDetails, String currentDayOfWeek) {
+        List<DoctorAvailability> filteredList = new ArrayList<>();
+        if (shiftDetails == null) {
+            return filteredList;
+        } else {
+            for (DoctorAvailability availability : shiftDetails) {
+                // Check if the DoctorAvailability instance matches the specified day
+                if (availability.getAvailableDays().name().equalsIgnoreCase(currentDayOfWeek)) {
+                    filteredList.add(availability); // Add matching availability to the filtered list
+                }
+            }
+            return filteredList;
+        }
+    }
+
+}

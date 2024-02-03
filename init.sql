@@ -146,4 +146,4 @@ VALUES ('9784561', 1, 'Dr. Deepak Sekarbabu', '[
 
 INSERT INTO `doctor_absence_information` (`clinic_id`, `doctor_id`, `doctor_name`, `absence_date`, `absence_end_time`,
                                           `absence_start_time`, `optional_message`)
-VALUES (1, '9784561', 'Dr. Deepak Sekarbabu', '2024-01-06', '20:00:00', '19:00:00', 'Personal Emergency');
+VALUES (1, '9784561', 'Dr. Deepak Sekarbabu', '2024-01-09', '20:00:00', '19:00:00', 'Personal Emergency');
