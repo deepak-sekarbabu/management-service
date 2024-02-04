@@ -3,6 +3,7 @@ package com.deepak.management.queue.controller;
 import com.deepak.management.queue.model.DoctorAvailabilityInformation;
 import com.deepak.management.queue.service.QueueSlotCreationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ public class QueueSlotController {
     }
 
     @GetMapping
+    @Operation(summary = "Fetch Data for Queue Slots for Doctor and Clinic")
     public DoctorAvailabilityInformation getQueueSlotsForDoctorAndClinic(@RequestParam String doctorId, @RequestParam Integer clinicId) throws JsonProcessingException {
         LOGGER.info("Request Queue Slots for Doctor: {}, Clinic: {}", doctorId, clinicId);
         DoctorAvailabilityInformation information = slotCreationService.getDetailsForSlotCreation(doctorId, clinicId);
