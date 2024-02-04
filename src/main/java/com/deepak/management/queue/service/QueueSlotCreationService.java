@@ -5,6 +5,7 @@ import com.deepak.management.queue.model.DoctorAvailabilityInformation;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 public interface QueueSlotCreationService {
 

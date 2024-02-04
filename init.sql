@@ -1,4 +1,3 @@
-USE DATABASE QueueManagement;
 DROP TABLE IF EXISTS clinic_information;
 DROP TABLE IF EXISTS doctor_absence_information;
 DROP TABLE IF EXISTS doctor_information;
@@ -66,7 +65,7 @@ VALUES ('Sample Clinic', 'Sample Address', '600103', '40.7128,-74.006', NULL, 't
 INSERT INTO `doctor_information` (`doctor_id`, `clinic_id`, `doctor_name`, `phone_numbers`, `doctor_speciality`,
                                   `doctor_availability`, `doctor_consultation_fee`, `doctor_consultation_time`,
                                   `doctor_experience`)
-VALUES ('9784561', 1, 'Dr. Deepak Sekarbabu', '[
+VALUES ('AB00001', 1, 'Dr. Deepak Sekarbabu', '[
   {
     "phoneNumber": "+91 8932154652"
   }
@@ -147,4 +146,4 @@ VALUES ('9784561', 1, 'Dr. Deepak Sekarbabu', '[
 
 INSERT INTO `doctor_absence_information` (`clinic_id`, `doctor_id`, `doctor_name`, `absence_date`, `absence_end_time`,
                                           `absence_start_time`, `optional_message`)
-VALUES (1, '9784561', 'Dr. Deepak Sekarbabu', '2024-01-09', '20:00:00', '19:00:00', 'Personal Emergency');
+VALUES (1, 'AB00001', 'Dr. Deepak Sekarbabu', CURDATE(), '20:00:00', '19:00:00', 'Personal Emergency');

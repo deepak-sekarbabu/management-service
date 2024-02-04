@@ -1,6 +1,5 @@
 package com.deepak.management.queue.controller;
 
-import com.deepak.management.model.common.DoctorAvailability;
 import com.deepak.management.queue.model.DoctorAvailabilityInformation;
 import com.deepak.management.queue.service.QueueSlotCreationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,9 +18,8 @@ import java.util.List;
 @RequestMapping("queue-slot")
 @Tag(name = "Queue Slot Service", description = "Used for Managing Queue Slot Information")
 public class QueueSlotController {
-    private final QueueSlotCreationService slotCreationService;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(QueueSlotController.class);
+    private final QueueSlotCreationService slotCreationService;
 
     public QueueSlotController(@Qualifier("queueSlotCreationServiceImpl") QueueSlotCreationService slotCreationService) {
         this.slotCreationService = slotCreationService;
