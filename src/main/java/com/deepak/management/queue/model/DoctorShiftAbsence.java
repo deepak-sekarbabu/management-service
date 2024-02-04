@@ -1,5 +1,6 @@
 package com.deepak.management.queue.model;
 
+import com.deepak.management.model.common.ShiftTime;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -9,7 +10,7 @@ import lombok.ToString;
 @ToString
 public class DoctorShiftAbsence {
     private String absenseDay;
-    private String shiftTime;
+    private ShiftTime shiftTime;
     private String absenceStartTime;
     private String absenceEndTime;
 
