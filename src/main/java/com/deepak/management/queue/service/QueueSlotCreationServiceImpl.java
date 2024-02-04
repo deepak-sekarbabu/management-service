@@ -1,11 +1,13 @@
 package com.deepak.management.queue.service;
 
 import com.deepak.management.model.common.DoctorAvailability;
+import com.deepak.management.model.common.ShiftTime;
 import com.deepak.management.model.doctor.DoctorAbsenceInformation;
 import com.deepak.management.model.doctor.DoctorInformation;
 import com.deepak.management.queue.model.DoctorAvailabilityInformation;
 import com.deepak.management.queue.model.DoctorShiftAbsence;
 import com.deepak.management.queue.model.DoctorShiftAvailability;
+import com.deepak.management.queue.model.QueueTimeSlot;
 import com.deepak.management.repository.DoctorAbsenceInformationRepository;
 import com.deepak.management.repository.DoctorInformationRepository;
 import org.slf4j.Logger;
@@ -57,6 +59,82 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
         return doctorAvailabilityInformation;
     }
 
+    @Override
+    public List<QueueTimeSlot> getTimeSlotInformation(String doctorId, Integer clinicId) {
+        DoctorAvailabilityInformation doctorAvailabilityInformation = this.getDetailsForSlotCreation(doctorId, clinicId);
+        List<DoctorAvailability> shiftDetails = doctorAvailabilityInformation.getDoctorShiftAvailability().getShiftDetails();
+
+        int slotNo = 0;
+        List<QueueTimeSlot> queueTimeSlots = new ArrayList<>();
+        for (DoctorAvailability shiftDetail : shiftDetails) {
+            LOGGER.info("Shift Details: {}", shiftDetail);
+            LocalTime shiftStartTime = shiftDetail.getShiftStartTime().toLocalTime();
+            LocalTime shiftEndTime = shiftDetail.getShiftEndTime().toLocalTime();
+            if (shiftDetail.getShiftTime() == ShiftTime.MORNING) {
+                while (shiftStartTime.isBefore(shiftEndTime)) {
+                    QueueTimeSlot queueTimeSlot = new QueueTimeSlot();
+                    queueTimeSlot.setClinicId(String.valueOf(clinicId));
+                    queueTimeSlot.setDoctorId(doctorId);
+                    queueTimeSlot.setDate(String.valueOf(LocalDate.now()));
+                    queueTimeSlot.setShift(String.valueOf(shiftDetail.getShiftTime()));
+                    queueTimeSlot.setSlotNo(slotNo);
+                    queueTimeSlot.setSlotTime(String.valueOf(shiftStartTime));
+                    LOGGER.info("Queue Time Slot: {}", queueTimeSlot);
+                    slotNo++;
+                    shiftStartTime = shiftStartTime.plusMinutes(doctorAvailabilityInformation.getDoctorShiftAvailability().getDoctorConsultationTime());
+                    queueTimeSlots.add(queueTimeSlot);
+                }
+            }
+            if (shiftDetail.getShiftTime() == ShiftTime.AFTERNOON) {
+                while (shiftStartTime.isBefore(shiftEndTime)) {
+                    QueueTimeSlot queueTimeSlot = new QueueTimeSlot();
+                    queueTimeSlot.setClinicId(String.valueOf(clinicId));
+                    queueTimeSlot.setDoctorId(doctorId);
+                    queueTimeSlot.setDate(String.valueOf(LocalDate.now()));
+                    queueTimeSlot.setShift(String.valueOf(shiftDetail.getShiftTime()));
+                    queueTimeSlot.setSlotNo(slotNo);
+                    queueTimeSlot.setSlotTime(String.valueOf(shiftStartTime));
+                    LOGGER.info("Queue Time Slot: {}", queueTimeSlot);
+                    slotNo++;
+                    shiftStartTime = shiftStartTime.plusMinutes(doctorAvailabilityInformation.getDoctorShiftAvailability().getDoctorConsultationTime());
+                    queueTimeSlots.add(queueTimeSlot);
+                }
+            }
+            if (shiftDetail.getShiftTime() == ShiftTime.EVENING) {
+                while (shiftStartTime.isBefore(shiftEndTime)) {
+                    QueueTimeSlot queueTimeSlot = new QueueTimeSlot();
+                    queueTimeSlot.setClinicId(String.valueOf(clinicId));
+                    queueTimeSlot.setDoctorId(doctorId);
+                    queueTimeSlot.setDate(String.valueOf(LocalDate.now()));
+                    queueTimeSlot.setShift(String.valueOf(shiftDetail.getShiftTime()));
+                    queueTimeSlot.setSlotNo(slotNo);
+                    queueTimeSlot.setSlotTime(String.valueOf(shiftStartTime));
+                    LOGGER.info("Queue Time Slot: {}", queueTimeSlot);
+                    slotNo++;
+                    shiftStartTime = shiftStartTime.plusMinutes(doctorAvailabilityInformation.getDoctorShiftAvailability().getDoctorConsultationTime());
+                    queueTimeSlots.add(queueTimeSlot);
+                }
+            }
+            if (shiftDetail.getShiftTime() == ShiftTime.NIGHT) {
+                while (shiftStartTime.isBefore(shiftEndTime)) {
+                    QueueTimeSlot queueTimeSlot = new QueueTimeSlot();
+                    queueTimeSlot.setClinicId(String.valueOf(clinicId));
+                    queueTimeSlot.setDoctorId(doctorId);
+                    queueTimeSlot.setDate(String.valueOf(LocalDate.now()));
+                    queueTimeSlot.setShift(String.valueOf(shiftDetail.getShiftTime()));
+                    queueTimeSlot.setSlotNo(slotNo);
+                    queueTimeSlot.setSlotTime(String.valueOf(shiftStartTime));
+                    LOGGER.info("Queue Time Slot: {}", queueTimeSlot);
+                    slotNo++;
+                    shiftStartTime = shiftStartTime.plusMinutes(doctorAvailabilityInformation.getDoctorShiftAvailability().getDoctorConsultationTime());
+                    queueTimeSlots.add(queueTimeSlot);
+                }
+            }
+        }
+
+        return queueTimeSlots;
+    }
+
     private List<DoctorShiftAbsence> filterAbsenceInformation(List<DoctorAbsenceInformation> absenceInformation) {
         List<DoctorShiftAbsence> doctorShiftAbsenceList = new ArrayList<>();
         if (absenceInformation == null) {
@@ -84,6 +162,8 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
             return "AFTERNOON";
         } else if (localAbsenceEndTime.compareTo(LocalTime.of(22, 0)) <= 0) {
             return "EVENING";
+        } else if (localAbsenceStartTime.compareTo(LocalTime.of(0, 0)) == 0) {
+            return "FULL_DAY";
         } else {
             return "FULL_DAY";
         }
@@ -95,9 +175,8 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
             return filteredList;
         } else {
             for (DoctorAvailability availability : shiftDetails) {
-                // Check if the DoctorAvailability instance matches the specified day
                 if (availability.getAvailableDays().name().equalsIgnoreCase(currentDayOfWeek)) {
-                    filteredList.add(availability); // Add matching availability to the filtered list
+                    filteredList.add(availability);
                 }
             }
             return filteredList;

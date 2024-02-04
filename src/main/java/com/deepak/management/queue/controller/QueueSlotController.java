@@ -1,6 +1,7 @@
 package com.deepak.management.queue.controller;
 
 import com.deepak.management.queue.model.DoctorAvailabilityInformation;
+import com.deepak.management.queue.model.QueueTimeSlot;
 import com.deepak.management.queue.service.QueueSlotCreationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("queue-slot")
@@ -31,5 +34,14 @@ public class QueueSlotController {
         DoctorAvailabilityInformation information = slotCreationService.getDetailsForSlotCreation(doctorId, clinicId);
         LOGGER.info("Response Slots for Doctor: {}, Clinic: {} :: {}", doctorId, clinicId, information);
         return information;
+    }
+
+    @GetMapping("/time-slots")
+    @Operation(summary = "Returns Time Slot Information for Doctor and Clinic")
+    public List<QueueTimeSlot> getTimeSlotInformation(@RequestParam String doctorId, @RequestParam Integer clinicId) throws JsonProcessingException {
+        LOGGER.info("Request Time Slot Information Doctor: {}, Clinic: {}", doctorId, clinicId);
+        List<QueueTimeSlot> timeSlots = slotCreationService.getTimeSlotInformation(doctorId, clinicId);
+        LOGGER.info("Response Time Slot Information Doctor: {}, Clinic: {} :: {}", doctorId, clinicId, timeSlots);
+        return timeSlots;
     }
 }
