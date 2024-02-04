@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.sql.Date;
+import java.util.List;
 
 public interface DoctorAbsenceInformationRepository extends JpaRepository<DoctorAbsenceInformation, Long> {
 
@@ -20,5 +21,7 @@ public interface DoctorAbsenceInformationRepository extends JpaRepository<Doctor
     Page<DoctorAbsenceInformation> findByAbsenceDateBetweenAndClinicId(Date startDate, Date endDate, Integer clinicId, Pageable pageable);
 
     Page<DoctorAbsenceInformation> findByAbsenceDateBetweenAndDoctorId(Date startDate, Date endDate, String doctorId, Pageable pageable);
+
+    List<DoctorAbsenceInformation> findByAbsenceDateAndClinicIdAndDoctorId(Date absenseDate, Integer clinicId, String doctorId);
 
 }

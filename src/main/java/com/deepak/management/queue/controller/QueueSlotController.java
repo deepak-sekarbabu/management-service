@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("queue-slot")
 @Tag(name = "Queue Slot Service", description = "Used for Managing Queue Slot Information")
@@ -26,9 +24,10 @@ public class QueueSlotController {
     }
 
     @GetMapping
-    public List<DoctorAvailabilityInformation> getQueueSlotsForDoctorAndClinic(@RequestParam String doctorId, @RequestParam String clinicId) throws JsonProcessingException {
-        List<DoctorAvailabilityInformation> informations = slotCreationService.getDetailsForSlotCreation(doctorId, clinicId);
-        //List<DoctorAvailability> availabilities = slotCreationService.getDoctorShiftsForDay(informations.get(0).getCurrentDayOfWeek(), informations.get(0).getDoctorShifts());
-        return informations;
+    public DoctorAvailabilityInformation getQueueSlotsForDoctorAndClinic(@RequestParam String doctorId, @RequestParam Integer clinicId) throws JsonProcessingException {
+        LOGGER.info("Request Queue Slots for Doctor: {}, Clinic: {}", doctorId, clinicId);
+        DoctorAvailabilityInformation information = slotCreationService.getDetailsForSlotCreation(doctorId, clinicId);
+        LOGGER.info("Response Slots for Doctor: {}, Clinic: {} :: {}", doctorId, clinicId, information);
+        return information;
     }
 }

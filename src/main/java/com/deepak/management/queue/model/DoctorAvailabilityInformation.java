@@ -5,15 +5,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDate;
-
 @Getter
 @Setter
 @JsonAutoDetect
 @ToString
 public class DoctorAvailabilityInformation {
     private DoctorShiftAvailability doctorShiftAvailability;
-    private DoctorShiftAbsence doctorShiftAbsence;
-    private LocalDate currentDate;
+    private String currentDate;
     private String currentDayOfWeek;
 }

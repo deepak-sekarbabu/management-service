@@ -1,17 +1,19 @@
 package com.deepak.management.queue.service;
 
 import com.deepak.management.model.common.DoctorAvailability;
+import com.deepak.management.model.doctor.DoctorAbsenceInformation;
+import com.deepak.management.model.doctor.DoctorInformation;
 import com.deepak.management.queue.model.DoctorAvailabilityInformation;
 import com.deepak.management.queue.model.DoctorShiftAbsence;
 import com.deepak.management.queue.model.DoctorShiftAvailability;
+import com.deepak.management.repository.DoctorAbsenceInformationRepository;
 import com.deepak.management.repository.DoctorInformationRepository;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -21,77 +23,70 @@ import java.util.List;
 public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(QueueSlotCreationServiceImpl.class);
     private final DoctorInformationRepository doctorInformationRepository;
+    private final DoctorAbsenceInformationRepository doctorAbsenceInformationRepository;
 
-    public QueueSlotCreationServiceImpl(DoctorInformationRepository doctorInformationRepository) {
+    public QueueSlotCreationServiceImpl(DoctorInformationRepository doctorInformationRepository, DoctorAbsenceInformationRepository doctorAbsenceInformationRepository) {
         this.doctorInformationRepository = doctorInformationRepository;
+        this.doctorAbsenceInformationRepository = doctorAbsenceInformationRepository;
     }
 
     @Override
-    public List<DoctorAvailabilityInformation> getDetailsForSlotCreation(String doctorId, String clinicId) {
-        List<Object[]> objects = this.doctorInformationRepository.getDoctorsWithCurrentDateAndDayOfWeek(doctorId, clinicId);
-        List<DoctorAvailabilityInformation> doctorAvailabilityList = new ArrayList<>();
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            for (Object[] obj : objects) {
-                DoctorAvailabilityInformation doctorAvailabilityInformation = new DoctorAvailabilityInformation();
-                DoctorShiftAvailability doctorShiftAvailability = new DoctorShiftAvailability();
+    public DoctorAvailabilityInformation getDetailsForSlotCreation(String doctorId, Integer clinicId) {
+        DoctorInformation information = doctorInformationRepository.findByDoctorIdAndClinicId(doctorId, clinicId);
+        List<DoctorAbsenceInformation> absenceInformation = doctorAbsenceInformationRepository.findByAbsenceDateAndClinicIdAndDoctorId(Date.valueOf(LocalDate.now()), clinicId, doctorId);
+        LOGGER.info("Doctor Availability Information: {}", information);
+        LOGGER.info("Doctor Absence Information: {}", absenceInformation);
+
+        DoctorAvailabilityInformation doctorAvailabilityInformation = new DoctorAvailabilityInformation();
+
+        DoctorShiftAvailability doctorShiftAvailability = new DoctorShiftAvailability();
+        doctorShiftAvailability.setDoctorName(information.getDoctorName());
+        doctorShiftAvailability.setDoctorId(information.getDoctorId());
+        doctorShiftAvailability.setClinicId(information.getClinicId());
+
+        doctorShiftAvailability.setShiftDetails(filterShiftDetails(information.getDoctorAvailability(), LocalDate.now().getDayOfWeek().toString()));
+        doctorShiftAvailability.setShiftAbsense(filterAbsenceInformation(absenceInformation));
+
+
+        doctorShiftAvailability.setDoctorConsultationTime(information.getDoctorConsultationTime());
+        doctorAvailabilityInformation.setDoctorShiftAvailability(doctorShiftAvailability);
+
+
+        doctorAvailabilityInformation.setCurrentDate(String.valueOf(LocalDate.now()));
+        doctorAvailabilityInformation.setCurrentDayOfWeek(LocalDate.now().getDayOfWeek().toString());
+        return doctorAvailabilityInformation;
+    }
+
+    private List<DoctorShiftAbsence> filterAbsenceInformation(List<DoctorAbsenceInformation> absenceInformation) {
+        List<DoctorShiftAbsence> doctorShiftAbsenceList = new ArrayList<>();
+        if (absenceInformation == null) {
+            return doctorShiftAbsenceList;
+        } else {
+            for (DoctorAbsenceInformation information : absenceInformation) {
                 DoctorShiftAbsence doctorShiftAbsence = new DoctorShiftAbsence();
-                List<DoctorAvailability> shiftDetails = null;
-                if (obj[0] != null) {
-                    shiftDetails = objectMapper.readValue((String) obj[0], new TypeReference<>() {
-                    });
-                }
+                doctorShiftAbsence.setAbsenseDay(LocalDate.now().getDayOfWeek().toString());
+                doctorShiftAbsence.setShiftTime(calculateShiftTime(information.getAbsenceStartTime(), information.getAbsenceEndTime()));
+                doctorShiftAbsence.setAbsenceStartTime(String.valueOf(information.getAbsenceStartTime()));
+                doctorShiftAbsence.setAbsenceEndTime(String.valueOf(information.getAbsenceEndTime()));
+                doctorShiftAbsenceList.add(doctorShiftAbsence);
 
-                String doctorName = (String) obj[1];
-                String doctorIdFromRepo = (String) obj[2];
-                Integer clinicIdFromRepo = (Integer) obj[3];
-                Integer doctorConsultationTime = (Integer) obj[4];
-
-                if (obj[5] != null) {
-                    LocalDate absenceDate = LocalDate.parse(obj[5].toString());
-                    doctorShiftAbsence.setAbsenceDate(absenceDate);
-                }
-                if (obj[6] != null) {
-                    LocalTime absenceEndTime = LocalTime.parse(obj[6].toString());
-                    doctorShiftAbsence.setAbsenceEndTime(absenceEndTime);
-                }
-                if (obj[7] != null) {
-                    LocalTime absenceStartTime = LocalTime.parse(obj[7].toString());
-                    doctorShiftAbsence.setAbsenceStartTime(absenceStartTime);
-                }
-
-                Date today = (Date) obj[8];
-                String currentDayOfWeek = (String) obj[9];
-                doctorAvailabilityInformation.setCurrentDate(today.toLocalDate());
-                doctorAvailabilityInformation.setCurrentDayOfWeek(currentDayOfWeek);
-
-                doctorShiftAvailability.setShiftDetails(filterShiftDetails(shiftDetails, currentDayOfWeek));
-                doctorShiftAvailability.setDoctorName(doctorName);
-                doctorShiftAvailability.setDoctorId(doctorIdFromRepo);
-                doctorShiftAvailability.setClinicId(clinicIdFromRepo);
-                doctorShiftAvailability.setDoctorConsultationTime(doctorConsultationTime);
-                doctorAvailabilityInformation.setDoctorShiftAvailability(doctorShiftAvailability);
-
-                doctorShiftAbsence.setDoctorName(doctorName);
-                doctorShiftAbsence.setDoctorId(doctorIdFromRepo);
-                doctorShiftAbsence.setClinicId(clinicIdFromRepo);
-
-                if (obj[5] != null) {
-                    doctorAvailabilityInformation.setDoctorShiftAbsence(doctorShiftAbsence);
-                }
-
-                doctorAvailabilityList.add(doctorAvailabilityInformation);
             }
-            //LOGGER.info(doctorAvailabilityList.toString());
-        } catch (Exception e) {
-            LOGGER.error("Error occurred while parsing doctor availability info", e);
         }
-        return doctorAvailabilityList;
+        return doctorShiftAbsenceList;
     }
 
-    @Override
-    public List<DoctorAvailability> getDoctorShiftsForDay(String day, List<DoctorAvailability> availabilities) {
-        return null;
+    private String calculateShiftTime(Time absenceStartTime, Time absenceEndTime) {
+        LocalTime localAbsenceStartTime = absenceStartTime.toLocalTime();
+        LocalTime localAbsenceEndTime = absenceEndTime.toLocalTime();
+        if (localAbsenceEndTime.compareTo(LocalTime.NOON) <= 0) {
+            return "MORNING";
+        } else if (localAbsenceEndTime.compareTo(LocalTime.of(16, 0)) <= 0) {
+            return "AFTERNOON";
+        } else if (localAbsenceEndTime.compareTo(LocalTime.of(22, 0)) <= 0) {
+            return "EVENING";
+        } else {
+            return "FULL_DAY";
+        }
     }
 
     private List<DoctorAvailability> filterShiftDetails(List<DoctorAvailability> shiftDetails, String currentDayOfWeek) {

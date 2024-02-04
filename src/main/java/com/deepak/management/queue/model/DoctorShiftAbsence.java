@@ -2,17 +2,15 @@ package com.deepak.management.queue.model;
 
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class DoctorShiftAbsence {
-    private String doctorName;
-    private String doctorId;
-    private int clinicId;
-    private LocalDate absenceDate;
-    private LocalTime absenceEndTime;
-    private LocalTime absenceStartTime;
+    private String absenseDay;
+    private String shiftTime;
+    private String absenceStartTime;
+    private String absenceEndTime;
+
 }
