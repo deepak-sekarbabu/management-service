@@ -1,3 +1,4 @@
+USE DATABASE QueueManagement;
 DROP TABLE IF EXISTS clinic_information;
 DROP TABLE IF EXISTS doctor_absence_information;
 DROP TABLE IF EXISTS doctor_information;
