@@ -157,3 +157,13 @@ VALUES (1, 'AB00001', 'Dr. Deepak Sekarbabu', CURDATE(), '20:00:00', '19:00:00',
 INSERT INTO `doctor_absence_information` (`clinic_id`, `doctor_id`, `doctor_name`, `absence_date`, `absence_start_time`,
 `absence_end_time`, `optional_message`)
 VALUES (1, 'AB00001', 'Dr. Deepak Sekarbabu', CURDATE(), '09:00:00', '10:30:00', 'Personal Emergency');
+
+-- View Queries for batch processing later --
+CREATE VIEW doctor_clinic_view AS
+SELECT
+    di.doctor_id,
+    di.clinic_id,
+    di.doctor_name,
+    di.phone_numbers AS doctor_phone_numbers
+FROM
+    doctor_information di;
