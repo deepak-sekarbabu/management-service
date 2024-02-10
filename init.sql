@@ -167,3 +167,15 @@ SELECT
     di.phone_numbers AS doctor_phone_numbers
 FROM
     doctor_information di;
+
+-- Slot Table
+CREATE TABLE slot_information (
+    slot_id INT AUTO_INCREMENT PRIMARY KEY,
+    slot_no INT,
+    shift_time VARCHAR(50),
+    slot_time VARCHAR(50),
+    clinic_id VARCHAR(50),
+    doctor_id VARCHAR(50),
+    slot_date VARCHAR(50),
+    is_available BOOLEAN
+);

@@ -10,6 +10,7 @@ import com.deepak.management.queue.model.DoctorShiftAvailability;
 import com.deepak.management.queue.model.QueueTimeSlot;
 import com.deepak.management.repository.DoctorAbsenceInformationRepository;
 import com.deepak.management.repository.DoctorInformationRepository;
+import com.deepak.management.repository.SlotInformationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,13 +30,35 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
     private final DoctorInformationRepository doctorInformationRepository;
     private final DoctorAbsenceInformationRepository doctorAbsenceInformationRepository;
 
-    public QueueSlotCreationServiceImpl(DoctorInformationRepository doctorInformationRepository, DoctorAbsenceInformationRepository doctorAbsenceInformationRepository) {
+    private final SlotInformationRepository slotInformationRepository;
+
+    public QueueSlotCreationServiceImpl(DoctorInformationRepository doctorInformationRepository, DoctorAbsenceInformationRepository doctorAbsenceInformationRepository, SlotInformationRepository slotInformationRepository) {
         this.doctorInformationRepository = doctorInformationRepository;
         this.doctorAbsenceInformationRepository = doctorAbsenceInformationRepository;
+        this.slotInformationRepository = slotInformationRepository;
     }
 
     private static void removeDoctorAbsence(List<QueueTimeSlot> queueTimeSlots, List<QueueTimeSlot> queueAbsenceTimeSlots) {
         queueTimeSlots.removeIf(slot1 -> queueAbsenceTimeSlots.stream().anyMatch(slot2 -> slot1.getSlotTime().equals(slot2.getSlotTime())));
+    }
+
+    private static void reorderQueueNumbers(List<QueueTimeSlot> queueTimeSlots) {
+        int slotNoMorning = 1;
+        int slotNoAfternoon = 1;
+        int slotNoEvening = 1;
+        for (int i = 0; i < queueTimeSlots.size(); i++) {
+            QueueTimeSlot slot = queueTimeSlots.get(i);
+            if (slot.getShiftTime().equalsIgnoreCase("MORNING")) {
+                slot.setSlotNo(Integer.valueOf(slotNoMorning));
+                slotNoMorning++;
+            } else if (slot.getShiftTime().equalsIgnoreCase("AFTERNOON")) {
+                slot.setSlotNo(Integer.valueOf(slotNoAfternoon));
+                slotNoAfternoon++;
+            } else if (slot.getShiftTime().equalsIgnoreCase("EVENING")) {
+                slot.setSlotNo(Integer.valueOf(slotNoEvening));
+                slotNoEvening++;
+            }
+        }
     }
 
     @Override
@@ -120,37 +143,19 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
         LOGGER.info("Queue Time Slot List After removing absence information: {}", queueTimeSlots);
         reorderQueueNumbers(queueTimeSlots);
 
+        slotInformationRepository.saveAll(queueTimeSlots);
+
         LOGGER.info("Queue Time Slot List After sorting : {}", queueTimeSlots);
         return queueTimeSlots;
     }
-
-    private static void reorderQueueNumbers(List<QueueTimeSlot> queueTimeSlots) {
-        int slotNoMorning = 1;
-        int slotNoAfternoon = 1;
-        int slotNoEvening = 1;
-        for (int i = 0; i < queueTimeSlots.size(); i++) {
-            QueueTimeSlot slot = queueTimeSlots.get(i);
-            if (slot.getShift().equalsIgnoreCase("MORNING")) {
-                slot.setSlotNo(slotNoMorning);
-                slotNoMorning++;
-            } else if (slot.getShift().equalsIgnoreCase("AFTERNOON")) {
-                slot.setSlotNo(slotNoAfternoon);
-                slotNoAfternoon++;
-            } else if (slot.getShift().equalsIgnoreCase("EVENING")) {
-                slot.setSlotNo(slotNoEvening);
-                slotNoEvening++;
-            }
-        }
-    }
-
 
     private QueueTimeSlot createQueueTimeSlot(Integer clinicId, String doctorId, DoctorAvailability shiftDetail, int slotNo, LocalTime slotTime, boolean isAvailable) {
         QueueTimeSlot queueTimeSlot = new QueueTimeSlot();
         queueTimeSlot.setClinicId(String.valueOf(clinicId));
         queueTimeSlot.setDoctorId(doctorId);
-        queueTimeSlot.setDate(String.valueOf(LocalDate.now()));
-        queueTimeSlot.setShift(String.valueOf(shiftDetail.getShiftTime()));
-        queueTimeSlot.setSlotNo(slotNo);
+        queueTimeSlot.setSlotDate(String.valueOf(LocalDate.now()));
+        queueTimeSlot.setShiftTime(String.valueOf(shiftDetail.getShiftTime()));
+        queueTimeSlot.setSlotNo(Integer.valueOf(slotNo));
         queueTimeSlot.setSlotTime(String.valueOf(slotTime));
         queueTimeSlot.setAvailable(isAvailable);
         return queueTimeSlot;
