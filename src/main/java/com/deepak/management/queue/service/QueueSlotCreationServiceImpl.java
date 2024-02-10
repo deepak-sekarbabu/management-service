@@ -34,6 +34,10 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
         this.doctorAbsenceInformationRepository = doctorAbsenceInformationRepository;
     }
 
+    private static void removeDoctorAbsence(List<QueueTimeSlot> queueTimeSlots, List<QueueTimeSlot> queueAbsenceTimeSlots) {
+        queueTimeSlots.removeIf(slot1 -> queueAbsenceTimeSlots.stream().anyMatch(slot2 -> slot1.getSlotTime().equals(slot2.getSlotTime())));
+    }
+
     @Override
     public DoctorAvailabilityInformation getDetailsForSlotCreation(String doctorId, Integer clinicId) {
         DoctorInformation information = this.doctorInformationRepository.findByDoctorIdAndClinicId(doctorId, clinicId);
@@ -73,12 +77,9 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
 
         for (DoctorAvailability shiftDetail : shiftDetails) {
             ShiftTime shiftTime = shiftDetail.getShiftTime();
-            List<DoctorShiftAbsence> shiftAbsencesForShiftTime = shiftAbsences.stream()
-                    .filter(shiftAbsence -> shiftAbsence.getShiftTime() == shiftTime || shiftAbsence.getShiftTime() == ShiftTime.FULL_DAY)
-                    .collect(Collectors.toList());
+            List<DoctorShiftAbsence> shiftAbsencesForShiftTime = shiftAbsences.stream().filter(shiftAbsence -> shiftAbsence.getShiftTime() == shiftTime || shiftAbsence.getShiftTime() == ShiftTime.FULL_DAY).collect(Collectors.toList());
 
-            boolean noQueueForDay = shiftAbsencesForShiftTime.stream()
-                    .anyMatch(shiftAbsence -> shiftAbsence.getShiftTime() == ShiftTime.FULL_DAY);
+            boolean noQueueForDay = shiftAbsencesForShiftTime.stream().anyMatch(shiftAbsence -> shiftAbsence.getShiftTime() == ShiftTime.FULL_DAY);
 
             LocalTime shiftStartTime = shiftDetail.getShiftStartTime().toLocalTime();
             LocalTime shiftEndTime = shiftDetail.getShiftEndTime().toLocalTime();
@@ -114,11 +115,34 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
         LOGGER.info("Queue Time Slot List : {}", queueTimeSlots);
         LOGGER.info("Queue Absence Time Slot List : {}", queueAbsenceTimeSlots);
 
-        removeDoctorAbsense(queueTimeSlots, queueAbsenceTimeSlots);
+        removeDoctorAbsence(queueTimeSlots, queueAbsenceTimeSlots);
 
         LOGGER.info("Queue Time Slot List After removing absence information: {}", queueTimeSlots);
+        reorderQueueNumbers(queueTimeSlots);
+
+        LOGGER.info("Queue Time Slot List After sorting : {}", queueTimeSlots);
         return queueTimeSlots;
     }
+
+    private static void reorderQueueNumbers(List<QueueTimeSlot> queueTimeSlots) {
+        int slotNoMorning = 1;
+        int slotNoAfternoon = 1;
+        int slotNoEvening = 1;
+        for (int i = 0; i < queueTimeSlots.size(); i++) {
+            QueueTimeSlot slot = queueTimeSlots.get(i);
+            if (slot.getShift().equalsIgnoreCase("MORNING")) {
+                slot.setSlotNo(slotNoMorning);
+                slotNoMorning++;
+            } else if (slot.getShift().equalsIgnoreCase("AFTERNOON")) {
+                slot.setSlotNo(slotNoAfternoon);
+                slotNoAfternoon++;
+            } else if (slot.getShift().equalsIgnoreCase("EVENING")) {
+                slot.setSlotNo(slotNoEvening);
+                slotNoEvening++;
+            }
+        }
+    }
+
 
     private QueueTimeSlot createQueueTimeSlot(Integer clinicId, String doctorId, DoctorAvailability shiftDetail, int slotNo, LocalTime slotTime, boolean isAvailable) {
         QueueTimeSlot queueTimeSlot = new QueueTimeSlot();
@@ -132,15 +156,6 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
         return queueTimeSlot;
     }
 
-
-    private static void removeDoctorAbsense(List<QueueTimeSlot> queueTimeSlots, List<QueueTimeSlot> queueAbsenceTimeSlots) {
-        queueTimeSlots.removeIf(slot1 ->
-                queueAbsenceTimeSlots.stream()
-                        .anyMatch(slot2 -> slot1.getSlotTime().equals(slot2.getSlotTime()))
-        );
-    }
-
-
     private List<DoctorShiftAbsence> filterAbsenceInformation(List<DoctorAbsenceInformation> absenceInformation) {
         List<DoctorShiftAbsence> doctorShiftAbsenceList = new ArrayList<>();
         if (absenceInformation == null) {
@@ -148,7 +163,7 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
         } else {
             for (DoctorAbsenceInformation information : absenceInformation) {
                 DoctorShiftAbsence doctorShiftAbsence = new DoctorShiftAbsence();
-                doctorShiftAbsence.setAbsenseDay(LocalDate.now().getDayOfWeek().toString());
+                doctorShiftAbsence.setAbsenceDay(LocalDate.now().getDayOfWeek().toString());
                 doctorShiftAbsence.setShiftTime(this.calculateShiftTime(information.getAbsenceStartTime(), information.getAbsenceEndTime()));
                 doctorShiftAbsence.setAbsenceStartTime(String.valueOf(information.getAbsenceStartTime()));
                 doctorShiftAbsence.setAbsenceEndTime(String.valueOf(information.getAbsenceEndTime()));

@@ -9,7 +9,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class DoctorShiftAbsence {
-    private String absenseDay;
+    private String absenceDay;
     private ShiftTime shiftTime;
     private String absenceStartTime;
     private String absenceEndTime;

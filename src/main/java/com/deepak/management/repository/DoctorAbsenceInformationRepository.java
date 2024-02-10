@@ -22,6 +22,6 @@ public interface DoctorAbsenceInformationRepository extends JpaRepository<Doctor
 
     Page<DoctorAbsenceInformation> findByAbsenceDateBetweenAndDoctorId(Date startDate, Date endDate, String doctorId, Pageable pageable);
 
-    List<DoctorAbsenceInformation> findByAbsenceDateAndClinicIdAndDoctorId(Date absenseDate, Integer clinicId, String doctorId);
+    List<DoctorAbsenceInformation> findByAbsenceDateAndClinicIdAndDoctorId(Date absenceDate, Integer clinicId, String doctorId);
 
 }
