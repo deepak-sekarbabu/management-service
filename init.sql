@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS clinic_information;
 DROP TABLE IF EXISTS doctor_absence_information;
 DROP TABLE IF EXISTS doctor_information;
+DROP TABLE IF EXISTS slot_information;
 
 -- Table for clinic information
 CREATE TABLE IF NOT EXISTS clinic_information
