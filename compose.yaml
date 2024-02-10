@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  mysql:
+    image: mysql:8.3.0
+    command: --default-authentication-plugin=caching_sha2_password
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: QueueManagement
+      MYSQL_USER: my_user
+      MYSQL_PASSWORD: my_password
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    security_opt:
+      - seccomp:unconfined

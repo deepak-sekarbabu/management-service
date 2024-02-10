@@ -1,4 +1,4 @@
-package com.deepak.management.model;
+package com.deepak.management.model.common;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

@@ -4,12 +4,15 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.support.WebExchangeBindException;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -26,28 +29,53 @@ public class GlobalExceptionHandler {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception ex) {
+    public ResponseEntity<ErrorDetails> handleException(Exception ex, WebRequest request) {
         LOGGER.error("An error occurred: {}", ex.getMessage());
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
         ex.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred. Please try again later.");
+        return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(ClinicNotFound.class)
-    public ResponseEntity<String> handleClinicNotFoundException(ClinicNotFound ex) {
+    public ResponseEntity<ErrorDetails> handleClinicNotFoundException(ClinicNotFound ex, WebRequest request) {
         LOGGER.error("An error occurred: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found : " + ex.getMessage());
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DoctorNotFound.class)
-    public ResponseEntity<String> handleDoctorNotFoundException(DoctorNotFound ex) {
+    public ResponseEntity<ErrorDetails> handleDoctorNotFoundException(DoctorNotFound ex, WebRequest request) {
         LOGGER.error("An error occurred: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found : " + ex.getMessage());
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorDetails> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
+        LOGGER.error("Input Argument Not in Expected Format: {}", ex.getMessage());
+        return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DoctorAbsenceNotFound.class)
+    public ResponseEntity<ErrorDetails> handleDoctorAbsenceNotFoundException(DoctorAbsenceNotFound ex, WebRequest request) {
+        LOGGER.error("An error occurred: {}", ex.getMessage());
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({DataIntegrityViolationException.class})
+    public ResponseEntity<ErrorDetails> handleDataIntegrityViolationExceptionException(Exception ex, WebRequest request) {
+        LOGGER.error("Cannot add or update a child row: a foreign key constraint fails: {}", ex.getMessage());
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.NOT_MODIFIED);
     }
 
     @ExceptionHandler({ValidationException.class, WebExchangeBindException.class, MethodArgumentNotValidException.class, ResponseStatusException.class, ConstraintViolationException.class})
-    public ResponseEntity<Object> handleValidationExceptions(Exception ex) {
+    public ResponseEntity<Object> handleValidationExceptions(Exception ex, WebRequest request) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now().format(formatter));
+        body.put("details", request.getDescription(false));
         HttpStatus status = HttpStatus.BAD_REQUEST; // Default status
 
         List<String> errors = new ArrayList<>();
@@ -86,5 +114,6 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(body, status);
     }
+
 
 }

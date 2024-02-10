@@ -1,5 +1,6 @@
-package com.deepak.management.model;
+package com.deepak.management.model.clinic;
 
+import com.deepak.management.model.common.PhoneNumbers;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,8 +20,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@Entity
-@Table(name = "clinic_information")
+@Entity(name = "clinic_information")
 @JsonAutoDetect
 public class ClinicInformation {
     @Id
@@ -51,14 +51,15 @@ public class ClinicInformation {
 
 
     @Schema(description = "Clinic PhoneNumber", example = """
-                                                          [
-                                                                  {
-                                                                      "phoneNumber": "123-456-7890"
-                                                                  },
-                                                                  {
-                                                                      "phoneNumber": "987-654-3210"
-                                                                  }
-                                                              ]""")
+            [
+                    {
+                        "phoneNumber": "123-456-7890"
+                    },
+                    {
+                        "phoneNumber": "987-654-3210"
+                    }
+                ]"""
+    )
     @Column(name = "clinic_phone_numbers")
     @JdbcTypeCode(SqlTypes.JSON)
     private List<PhoneNumbers> clinicPhoneNumbers;
@@ -74,5 +75,17 @@ public class ClinicInformation {
     @Email(message = "Please provide a valid email address")
     @Schema(description = "Email Id of Clinic", example = "clinic@clinic.com")
     private String clinicEmail;
+
+    @Column(name = "clinic_timing", length = 150)
+    @Schema(description = "Timings of the Clinic", example = "MON - FRI  10:00 - 12:00, SAT & SUN 18:00 - 21:00")
+    private String clinicTimings;
+
+    @Column(name = "clinic_website", length = 150)
+    @Schema(description = "Website of the Clinic", example = "https://drmeenakshiclinic.com")
+    private String clinicWebsite;
+
+    @Column(name = "clinic_amenities", length = 200)
+    @Schema(description = "Amenities of the Clinic", example = "Dental Surgery, Pharmacy , Free Wifi ,Televisions")
+    private String clinicAmenities;
 
 }

@@ -1,13 +1,17 @@
-package com.deepak.management.model;
+package com.deepak.management.model.common;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.sql.Time;
 
 @Getter
 @Setter
+@ToString
+@JsonAutoDetect
 public class DoctorAvailability {
     @Schema(description = "Days of Week", example = "SUNDAY")
     private DaysOfWeek availableDays;
@@ -20,8 +24,5 @@ public class DoctorAvailability {
 
     @Schema(description = "Shift End Time", example = "11:00:00")
     private Time shiftEndTime;
-
-    @Schema(description = "Slot Duration", example = "5 , 10 , 15 Mins etc", defaultValue = "5")
-    private int slotDuration;
 
 }
