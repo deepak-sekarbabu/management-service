@@ -30,6 +30,7 @@ public class TimeSlotJobScheduler {
     @Scheduled(cron = "*/30 * * * * *")
     public void scheduleTimeSlotJobForToday() {
         repository.findAll().forEach(doctorInformation -> {
+            long startTime = System.currentTimeMillis();
             List<QueueTimeSlot> list = slotCreationService.getTimeSlotInformation(doctorInformation.getDoctorId(), doctorInformation.getClinicId());
             if (!list.isEmpty()) {
                 SlotGeneration table = new SlotGeneration();
@@ -46,7 +47,11 @@ public class TimeSlotJobScheduler {
                 table.setSlotDate(Date.valueOf(LocalDate.now()));
                 table.setStatus(true);
                 table.setNoOfSlots(0);
+                slotGenerationRepository.save(table);
             }
+            long endTime = System.currentTimeMillis();
+            long timeTaken = endTime - startTime;
+            LOGGER.info("Time taken for generating Slot information for Doctor {} is {} ms", doctorInformation.getDoctorId(), timeTaken);
         });
     }
 }
