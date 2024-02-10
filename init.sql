@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS clinic_information;
 DROP TABLE IF EXISTS doctor_absence_information;
 DROP TABLE IF EXISTS doctor_information;
 DROP TABLE IF EXISTS slot_information;
+DROP TABLE IF EXISTS slot_generation_information;
 
 -- Table for clinic information
 CREATE TABLE IF NOT EXISTS clinic_information
@@ -159,18 +160,9 @@ INSERT INTO `doctor_absence_information` (`clinic_id`, `doctor_id`, `doctor_name
                                           `absence_start_time`, `optional_message`)
 VALUES (1, 'AB00001', 'Dr. Deepak Sekarbabu', CURDATE(), '20:00:00', '19:00:00', 'Personal Emergency');
 
--- View Queries for batch processing later --
-CREATE VIEW doctor_clinic_view AS
-SELECT
-    di.doctor_id,
-    di.clinic_id,
-    di.doctor_name,
-    di.phone_numbers AS doctor_phone_numbers
-FROM
-    doctor_information di;
 
 -- Slot Table
-CREATE TABLE slot_information (
+CREATE TABLE IF NOT EXISTS  slot_information (
     slot_id INT AUTO_INCREMENT PRIMARY KEY,
     slot_no INT,
     shift_time VARCHAR(50),
@@ -179,4 +171,14 @@ CREATE TABLE slot_information (
     doctor_id VARCHAR(50),
     slot_date VARCHAR(50),
     is_available BOOLEAN
+);
+
+-- Slot Generation Table
+CREATE TABLE IF NOT EXISTS slot_generation_information (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    doctor_id VARCHAR(50),
+    clinic_id INTEGER,
+    slot_date DATE,
+    status BOOLEAN,
+    slots INTEGER
 );
