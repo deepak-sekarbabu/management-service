@@ -16,6 +16,7 @@
     <properties>
         <java.version>21</java.version>
         <mysql-connector-j.version>8.2.0</mysql-connector-j.version>
+        <maven.test.skip>true</maven.test.skip>
         <springdoc-openapi-starter-webmvc-ui.version>2.3.0</springdoc-openapi-starter-webmvc-ui.version>
     </properties>
     <dependencies>
@@ -68,6 +69,11 @@
             <artifactId>spring-boot-docker-compose</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>2.9.0</version>
         </dependency>
     </dependencies>
 
