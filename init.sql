@@ -205,7 +205,7 @@ VALUES ('John Doe', '123-456-7890', 'johndoe@example.com', '1990-01-01'),
 -- Appointment Registration Table
 
 CREATE TABLE IF NOT EXISTS  `appointments` (
- `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+ `appointmentId` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
  `user_id` INT NOT NULL,
  `appointment_type` VARCHAR(50) NOT NULL,
  `appointment_for` VARCHAR(10) NOT NULL,
@@ -219,6 +219,9 @@ CREATE TABLE IF NOT EXISTS  `appointments` (
  `active` BOOLEAN NOT NULL DEFAULT TRUE
 ); ALTER TABLE `appointments` ADD CONSTRAINT `user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
+INSERT INTO appointments (user_id, appointment_type, appointment_for, appointment_for_name, appointment_for_age, symptom, other_symptoms, appointment_date, doctor_name, clinic_id)
+VALUES
+(1, 'GENERAL_CHECKUP', 'SELF', 'John Doe', 35, 'HEADACHE', 'Nausea', '2024-02-20 10:00:00', 'Dr. Jane Smith', '1')
 
 CREATE TABLE IF NOT EXISTS  `cron_jobs` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
