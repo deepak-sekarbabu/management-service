@@ -17,7 +17,6 @@ import java.util.List;
 @Component
 public class TimeSlotJobScheduler {
     private static final Logger LOGGER = LoggerFactory.getLogger(TimeSlotJobScheduler.class);
-    public static String VALIDATE_CRON_TIMESLOT = null;
     private final DoctorInformationRepository repository;
     private final SlotGenerationRepository slotGenerationRepository;
     private final QueueSlotCreationService slotCreationService;
