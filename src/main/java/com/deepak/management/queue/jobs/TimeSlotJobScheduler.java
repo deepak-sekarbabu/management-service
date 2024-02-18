@@ -17,18 +17,23 @@ import java.util.List;
 @Component
 public class TimeSlotJobScheduler {
     private static final Logger LOGGER = LoggerFactory.getLogger(TimeSlotJobScheduler.class);
+    public static String VALIDATE_CRON_TIMESLOT = null;
     private final DoctorInformationRepository repository;
     private final SlotGenerationRepository slotGenerationRepository;
     private final QueueSlotCreationService slotCreationService;
+    private final CronJobService cronJobService;
 
-    public TimeSlotJobScheduler(DoctorInformationRepository repository, SlotGenerationRepository slotGenerationRepository, QueueSlotCreationService slotCreationService) {
+
+    public TimeSlotJobScheduler(DoctorInformationRepository repository, SlotGenerationRepository slotGenerationRepository, QueueSlotCreationService slotCreationService, CronJobService cronJobService) {
         this.repository = repository;
         this.slotGenerationRepository = slotGenerationRepository;
         this.slotCreationService = slotCreationService;
+        this.cronJobService = cronJobService;
     }
 
-    @Scheduled(cron = "*/30 * * * * *")
+    @Scheduled(cron = "#{@cronJobService.getCronExpression(1)}")
     public void scheduleTimeSlotJobForToday() {
+        LOGGER.info("TimeSlotJobScheduler: {}", cronJobService.getCronExpression(1));
         repository.findAll().forEach(doctorInformation -> {
             long startTime = System.currentTimeMillis();
             List<QueueTimeSlot> list = slotCreationService.getTimeSlotInformation(doctorInformation.getDoctorId(), doctorInformation.getClinicId());
@@ -53,5 +58,6 @@ public class TimeSlotJobScheduler {
             long timeTaken = endTime - startTime;
             LOGGER.info("Time taken for generating Slot information for Doctor {} is {} ms", doctorInformation.getDoctorId(), timeTaken);
         });
+        cronJobService.updateLastRun(1);
     }
 }

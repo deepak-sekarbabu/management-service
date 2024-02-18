@@ -3,6 +3,9 @@ DROP TABLE IF EXISTS doctor_absence_information;
 DROP TABLE IF EXISTS doctor_information;
 DROP TABLE IF EXISTS slot_information;
 DROP TABLE IF EXISTS slot_generation_information;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS appointments;
+DROP TABLE IF EXISTS cron_jobs;
 
 -- Table for clinic information
 CREATE TABLE IF NOT EXISTS clinic_information
@@ -182,3 +185,48 @@ CREATE TABLE IF NOT EXISTS slot_generation_information (
     status BOOLEAN,
     slots INTEGER
 );
+
+-- User Registration Table
+
+CREATE TABLE IF NOT EXISTS users (
+	id INTEGER AUTO_INCREMENT PRIMARY KEY,
+	name VARCHAR(100),
+	phoneNumber VARCHAR(13),
+	email VARCHAR(100),
+	birthdate DATE
+);
+
+INSERT INTO users (name, phoneNumber, email, birthdate)
+VALUES ('John Doe', '123-456-7890', 'johndoe@example.com', '1990-01-01'),
+       ('Jane Doe', '555-1212', 'janedoe@example.com', '1995-02-15'),
+       ('Alice Smith', '789-012-3456', 'alicesmith@example.com', '2000-10-24');
+
+
+-- Appointment Registration Table
+
+CREATE TABLE IF NOT EXISTS  `appointments` (
+ `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+ `user_id` INT NOT NULL,
+ `appointment_type` VARCHAR(50) NOT NULL,
+ `appointment_for` VARCHAR(10) NOT NULL,
+ `appointment_for_name` VARCHAR(255) NOT NULL,
+ `appointment_for_age` INT,
+ `symptom` VARCHAR(255),
+ `other_symptoms` VARCHAR(255),
+ `appointment_date` DATETIME NOT NULL,
+ `doctor_name` VARCHAR(255) NOT NULL,
+ `clinic_id` VARCHAR(255) NOT NULL,
+ `active` BOOLEAN NOT NULL DEFAULT TRUE
+); ALTER TABLE `appointments` ADD CONSTRAINT `user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+
+CREATE TABLE IF NOT EXISTS  `cron_jobs` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `description` text DEFAULT NULL,
+  `schedule` varchar(255) NOT NULL,
+  `enabled` BOOLEAN NOT NULL DEFAULT TRUE,
+  `last_run` datetime DEFAULT NULL
+);
+
+INSERT INTO cron_jobs (description, schedule, enabled, last_run)
+VALUES ('Create Queue Slots based on doctors availability', '*/30 * * * * *', 1, NULL);
