@@ -25,34 +25,38 @@ CREATE TABLE IF NOT EXISTS clinic_information
 ) ENGINE = InnoDB;
 
 -- Table for doctor information
-CREATE TABLE IF NOT EXISTS doctor_information
-(
-    PRIMARY KEY (id),
-    doctor_id                VARCHAR(255),
-    clinic_id                INTEGER,
-    doctor_name              VARCHAR(120),
-    phone_numbers            JSON,
-    doctor_speciality        VARCHAR(120),
-    doctor_availability      JSON,
-    doctor_consultation_fee  INTEGER CHECK (doctor_consultation_fee <= 1000),
+-- Table for doctor information
+CREATE TABLE IF NOT EXISTS doctor_information (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    doctor_id VARCHAR(255),
+    clinic_id INTEGER,
+    doctor_name VARCHAR(120),
+    phone_numbers JSON,
+    doctor_speciality VARCHAR(120),
+    doctor_availability JSON,
+    doctor_consultation_fee INTEGER CHECK (doctor_consultation_fee <= 1000),
     doctor_consultation_time INTEGER,
-    doctor_experience        INTEGER CHECK (doctor_experience <= 70),
-    id                       INTEGER NOT NULL AUTO_INCREMENT,
-    FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id) -- Foreign key relation to clinic_information
+    doctor_experience INTEGER CHECK (doctor_experience <= 70),
+    PRIMARY KEY (id),
+    FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id),
+    KEY doctor_id_idx (doctor_id),
+    INDEX (doctor_id) -- Add an index on the doctor_id column
 ) ENGINE = InnoDB;
+
 -- Table for doctor absence information
 CREATE TABLE IF NOT EXISTS doctor_absence_information
 (
-    id                 INTEGER NOT NULL AUTO_INCREMENT,
-    clinic_id          INTEGER,
-    doctor_id          VARCHAR(255),
-    doctor_name        VARCHAR(120),
-    absence_date       DATE,
-    absence_end_time   TIME(0),
-    absence_start_time TIME(0),
-    optional_message   VARCHAR(255),
-    PRIMARY KEY (id),
-    FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id) -- Foreign key relation to clinic_information
+ id INTEGER NOT NULL AUTO_INCREMENT,
+ clinic_id INTEGER,
+ doctor_id VARCHAR(255),
+ doctor_name VARCHAR(120),
+ absence_date DATE,
+ absence_end_time TIME(0),
+ absence_start_time TIME(0),
+ optional_message VARCHAR(255),
+ PRIMARY KEY (id),
+ FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id),
+ FOREIGN KEY (doctor_id) REFERENCES doctor_information (doctor_id)
 ) ENGINE = InnoDB;
 
 -- SQL Inserts --
@@ -60,7 +64,7 @@ CREATE TABLE IF NOT EXISTS doctor_absence_information
 INSERT INTO `clinic_information` (`clinic_name`, `clinic_address`, `clinic_pin_code`, `map_geo_location`,
                                   `clinic_amenities`, `clinic_email`, `clinic_timing`, `clinic_website`,
                                   `clinic_phone_numbers`, `no_of_doctors`)
-VALUES ('Sample Clinic', 'Sample Address', '600103', '40.7128,-74.006', NULL, 'testclinic@test.com',
+VALUES ('Sample Clinic', 'Sample Address', '600103', '40.7128,-74.006', 'Wifi, TV', 'testclinic@test.com',
         'MON - FRI  09:00 - 21:00, SAT & SUN 18:00 - 21:00', 'https://drdeepakclinic.com', '[
     {
       "phoneNumber": "+919789801844"
@@ -204,31 +208,35 @@ VALUES ('John Doe', '123-456-7890', 'johndoe@example.com', '1990-01-01'),
 
 -- Appointment Registration Table
 
-CREATE TABLE IF NOT EXISTS  `appointments` (
- `appointmentId` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
- `user_id` INT NOT NULL,
- `appointment_type` VARCHAR(50) NOT NULL,
- `appointment_for` VARCHAR(10) NOT NULL,
- `appointment_for_name` VARCHAR(255) NOT NULL,
- `appointment_for_age` INT,
- `symptom` VARCHAR(255),
- `other_symptoms` VARCHAR(255),
- `appointment_date` DATETIME NOT NULL,
- `doctor_name` VARCHAR(255) NOT NULL,
- `clinic_id` VARCHAR(255) NOT NULL,
- `active` BOOLEAN NOT NULL DEFAULT TRUE
-); ALTER TABLE `appointments` ADD CONSTRAINT `user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+CREATE TABLE IF NOT EXISTS appointments (
+  appointmentId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  appointment_type VARCHAR(50) NOT NULL,
+  appointment_for VARCHAR(10) NOT NULL,
+  appointment_for_name VARCHAR(255) NOT NULL,
+  appointment_for_age INT,
+  symptom VARCHAR(255),
+  other_symptoms VARCHAR(255),
+  appointment_date DATETIME NOT NULL,
+  doctor_id VARCHAR(255) NOT NULL,
+  clinic_id INTEGER NOT NULL,
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  CONSTRAINT user_fk FOREIGN KEY (user_id) REFERENCES users (id),
+  CONSTRAINT doctor_fk FOREIGN KEY (doctor_id) REFERENCES doctor_information (doctor_id),
+  CONSTRAINT clinic_fk FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id),
+  -- Add the missing index
+  KEY doctor_id_idx (doctor_id)
+);
 
-INSERT INTO appointments (user_id, appointment_type, appointment_for, appointment_for_name, appointment_for_age, symptom, other_symptoms, appointment_date, doctor_name, clinic_id)
-VALUES
-(1, 'GENERAL_CHECKUP', 'SELF', 'John Doe', 35, 'HEADACHE', 'Nausea', '2024-02-20 10:00:00', 'Dr. Jane Smith', '1')
+INSERT INTO appointments (user_id, appointment_type, appointment_for, appointment_for_name, appointment_for_age, symptom,other_symptoms, appointment_date, doctor_id, clinic_id)
+VALUES (1, 'GENERAL_CHECKUP', 'SELF', 'John Doe', 30, 'HEADACHE','Nausea', '2024-02-20 10:00:00', 'AB00001', 1);
 
-CREATE TABLE IF NOT EXISTS  `cron_jobs` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `description` text DEFAULT NULL,
-  `schedule` varchar(255) NOT NULL,
-  `enabled` BOOLEAN NOT NULL DEFAULT TRUE,
-  `last_run` datetime DEFAULT NULL
+CREATE TABLE IF NOT EXISTS  cron_jobs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  description text DEFAULT NULL,
+  schedule varchar(255) NOT NULL,
+  enabled BOOLEAN NOT NULL DEFAULT TRUE,
+  last_run datetime DEFAULT NULL
 );
 
 INSERT INTO cron_jobs (description, schedule, enabled, last_run)
