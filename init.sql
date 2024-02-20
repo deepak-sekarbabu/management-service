@@ -195,13 +195,13 @@ CREATE TABLE IF NOT EXISTS slot_generation_information (
 CREATE TABLE IF NOT EXISTS users (
 	id INTEGER AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(100),
-	phoneNumber VARCHAR(13),
+	phoneNumber VARCHAR(13) UNIQUE,
 	email VARCHAR(100),
 	birthdate DATE
 );
 
 INSERT INTO users (name, phoneNumber, email, birthdate)
-VALUES ('John Doe', '123-456-7890', 'johndoe@example.com', '1990-01-01'),
+VALUES ('John Doe', '+919789801844', 'johndoe@example.com', '1990-01-01'),
        ('Jane Doe', '555-1212', 'janedoe@example.com', '1995-02-15'),
        ('Alice Smith', '789-012-3456', 'alicesmith@example.com', '2000-10-24');
 
