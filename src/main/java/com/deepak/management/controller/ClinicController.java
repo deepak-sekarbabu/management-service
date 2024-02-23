@@ -2,8 +2,10 @@ package com.deepak.management.controller;
 
 import com.deepak.management.exception.ClinicNotFound;
 import com.deepak.management.model.clinic.ClinicInformation;
+import com.deepak.management.model.doctor.DoctorInformation;
 import com.deepak.management.repository.ClinicInformationRepository;
 import com.deepak.management.service.clinic.ClinicService;
+import com.deepak.management.service.doctor.DoctorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -24,10 +26,12 @@ public class ClinicController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClinicController.class);
     private final ClinicInformationRepository clinicInformationRepository;
     private final ClinicService clinicService;
+    private final DoctorService doctorService;
 
-    public ClinicController(ClinicInformationRepository clinicInformationRepository, ClinicService clinicService) {
+    public ClinicController(ClinicInformationRepository clinicInformationRepository, ClinicService clinicService, DoctorService doctorService) {
         this.clinicInformationRepository = clinicInformationRepository;
         this.clinicService = clinicService;
+        this.doctorService = doctorService;
     }
 
     @PostMapping
@@ -47,6 +51,12 @@ public class ClinicController {
     @Operation(summary = "Retrieve clinic information by id")
     public Optional<ClinicInformation> getClinicById(@PathVariable Integer clinicId) throws ClinicNotFound {
         return clinicService.getClinicById(clinicId);
+    }
+
+    @GetMapping("/doctorinformation/{clinicId}")
+    @Operation(summary = "Retrieve doctor information by clinic id")
+    public Optional<List<DoctorInformation>> getDoctorInformationByClinicId(@PathVariable Integer clinicId) throws ClinicNotFound {
+        return Optional.ofNullable(doctorService.getDoctorInformationByClinicId(clinicId));
     }
 
     @PutMapping("/{clinicId}")

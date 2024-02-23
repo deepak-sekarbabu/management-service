@@ -84,4 +84,10 @@ public class DoctorServiceImpl implements DoctorService {
         LOGGER.warn("Deleted doctor information for the Id : {}", doctorId);
         this.doctorInformationRepository.deleteById(doctorId);
     }
+
+    @Override
+    public List<DoctorInformation> getDoctorInformationByClinicId(Integer clinicId) {
+        LOGGER.warn("getDoctorInformationByClinicId Id : {}", clinicId);
+        return this.doctorInformationRepository.findAllByClinicId(clinicId);
+    }
 }
