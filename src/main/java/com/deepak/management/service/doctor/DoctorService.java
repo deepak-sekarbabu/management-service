@@ -21,4 +21,6 @@ public interface DoctorService {
     DoctorInformation updateDoctor(@PathVariable Long doctorId, @RequestBody DoctorInformation doctorInformation) throws ClinicNotFound, DoctorNotFound;
 
     void deleteDoctor(@PathVariable Long doctorId) throws DoctorNotFound;
+
+    List<DoctorInformation> getDoctorInformationByClinicId(Integer clinicId);
 }
