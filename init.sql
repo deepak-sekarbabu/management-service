@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS slot_generation_information;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS appointments;
 DROP TABLE IF EXISTS cron_jobs;
+DROP TABLE IF EXISTS appointments_queue;
 
 -- Table for clinic information
 CREATE TABLE IF NOT EXISTS clinic_information
@@ -51,8 +52,8 @@ CREATE TABLE IF NOT EXISTS doctor_absence_information
  doctor_id VARCHAR(255),
  doctor_name VARCHAR(120),
  absence_date DATE,
- absence_end_time TIME(0),
  absence_start_time TIME(0),
+ absence_end_time TIME(0),
  optional_message VARCHAR(255),
  PRIMARY KEY (id),
  FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id),
@@ -165,7 +166,7 @@ VALUES (1, 'AB00001', 'Dr. Deepak Sekarbabu', CURDATE(), '10:00:00', '11:00:00',
 
 INSERT INTO `doctor_absence_information` (`clinic_id`, `doctor_id`, `doctor_name`, `absence_date`, `absence_end_time`,
                                           `absence_start_time`, `optional_message`)
-VALUES (1, 'AB00001', 'Dr. Deepak Sekarbabu', CURDATE(), '20:00:00', '19:00:00', 'Personal Emergency');
+VALUES (1, 'AB00001', 'Dr. Deepak Sekarbabu', CURDATE(), '19:00:00', '18:00:00', 'Personal Emergency');
 
 
 -- Slot Table
@@ -218,6 +219,7 @@ CREATE TABLE IF NOT EXISTS appointments (
   symptom VARCHAR(255),
   other_symptoms VARCHAR(255),
   appointment_date DATETIME NOT NULL,
+  slot_id INT,
   doctor_id VARCHAR(255) NOT NULL,
   clinic_id INTEGER NOT NULL,
   active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -240,4 +242,30 @@ CREATE TABLE IF NOT EXISTS  cron_jobs (
 );
 
 INSERT INTO cron_jobs (description, schedule, enabled, last_run)
-VALUES ('Create Queue Slots based on doctors availability', '*/30 * * * * *', 1, NULL);
+VALUES ('Create Queue Slots based on doctors availability', '0 5 18 * * *', 1, NULL);
+
+
+CREATE TABLE IF NOT EXISTS queue_management (
+    queue_management_id INT AUTO_INCREMENT PRIMARY KEY,
+    appointmentId INT,
+    slot_id INT,
+    clinic_id INTEGER,
+    doctor_id VARCHAR(50),
+    initial_queue_no INT,
+    current_queue_no INT,
+    advance_paid BOOLEAN,
+    cancelled BOOLEAN,
+    advance_revert_if_paid BOOLEAN,
+    patient_reached BOOLEAN,
+    visit_status VARCHAR(255),
+    consultation_fee_paid BOOLEAN,
+    consultation_fee_amount DECIMAL(10, 2),
+    transaction_id_advance_fee VARCHAR(255),
+    transaction_id_consultation_fee VARCHAR(255),
+    transaction_id_advance_revert VARCHAR(255),
+    FOREIGN KEY (slot_id) REFERENCES slot_information(slot_id),
+    FOREIGN KEY (appointmentId) REFERENCES appointments(appointmentId)
+);
+
+INSERT INTO queue_management (slot_id,appointmentId,clinic_id,doctor_id ,initial_queue_no, current_queue_no, advance_paid, patient_reached, visit_status, consultation_fee_paid, consultation_fee_amount, transaction_id_advance_fee, transaction_id_consultation_fee)
+VALUES (11,1,1,'AB00001', 5, 5, TRUE, FALSE, 'Scheduled', FALSE, 500.00, NULL, NULL);
