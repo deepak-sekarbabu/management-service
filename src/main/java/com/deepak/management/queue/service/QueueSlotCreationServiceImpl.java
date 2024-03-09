@@ -46,16 +46,15 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
         int slotNoMorning = 1;
         int slotNoAfternoon = 1;
         int slotNoEvening = 1;
-        for (int i = 0; i < queueTimeSlots.size(); i++) {
-            QueueTimeSlot slot = queueTimeSlots.get(i);
+        for (QueueTimeSlot slot : queueTimeSlots) {
             if (slot.getShiftTime().equalsIgnoreCase("MORNING")) {
-                slot.setSlotNo(Integer.valueOf(slotNoMorning));
+                slot.setSlotNo(slotNoMorning);
                 slotNoMorning++;
             } else if (slot.getShiftTime().equalsIgnoreCase("AFTERNOON")) {
-                slot.setSlotNo(Integer.valueOf(slotNoAfternoon));
+                slot.setSlotNo(slotNoAfternoon);
                 slotNoAfternoon++;
             } else if (slot.getShiftTime().equalsIgnoreCase("EVENING")) {
-                slot.setSlotNo(Integer.valueOf(slotNoEvening));
+                slot.setSlotNo(slotNoEvening);
                 slotNoEvening++;
             }
         }
@@ -100,7 +99,7 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
 
         for (DoctorAvailability shiftDetail : shiftDetails) {
             ShiftTime shiftTime = shiftDetail.getShiftTime();
-            List<DoctorShiftAbsence> shiftAbsencesForShiftTime = shiftAbsences.stream().filter(shiftAbsence -> shiftAbsence.getShiftTime() == shiftTime || shiftAbsence.getShiftTime() == ShiftTime.FULL_DAY).collect(Collectors.toList());
+            List<DoctorShiftAbsence> shiftAbsencesForShiftTime = shiftAbsences.stream().filter(shiftAbsence -> shiftAbsence.getShiftTime() == shiftTime || shiftAbsence.getShiftTime() == ShiftTime.FULL_DAY).toList();
 
             boolean noQueueForDay = shiftAbsencesForShiftTime.stream().anyMatch(shiftAbsence -> shiftAbsence.getShiftTime() == ShiftTime.FULL_DAY);
 
@@ -155,7 +154,7 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
         queueTimeSlot.setDoctorId(doctorId);
         queueTimeSlot.setSlotDate(String.valueOf(LocalDate.now()));
         queueTimeSlot.setShiftTime(String.valueOf(shiftDetail.getShiftTime()));
-        queueTimeSlot.setSlotNo(Integer.valueOf(slotNo));
+        queueTimeSlot.setSlotNo(slotNo);
         queueTimeSlot.setSlotTime(String.valueOf(slotTime));
         queueTimeSlot.setAvailable(isAvailable);
         return queueTimeSlot;
