@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS slot_generation_information;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS appointments;
 DROP TABLE IF EXISTS cron_jobs;
-DROP TABLE IF EXISTS appointments_queue;
+DROP TABLE IF EXISTS queue_management;
 
 -- Table for clinic information
 CREATE TABLE IF NOT EXISTS clinic_information
@@ -263,9 +263,10 @@ CREATE TABLE IF NOT EXISTS queue_management (
     transaction_id_advance_fee VARCHAR(255),
     transaction_id_consultation_fee VARCHAR(255),
     transaction_id_advance_revert VARCHAR(255),
+    queue_date DATE NULL DEFAULT NULL,
     FOREIGN KEY (slot_id) REFERENCES slot_information(slot_id),
     FOREIGN KEY (appointmentId) REFERENCES appointments(appointmentId)
 );
 
-INSERT INTO queue_management (slot_id,appointmentId,clinic_id,doctor_id ,initial_queue_no, current_queue_no, advance_paid, patient_reached, visit_status, consultation_fee_paid, consultation_fee_amount, transaction_id_advance_fee, transaction_id_consultation_fee)
-VALUES (11,1,1,'AB00001', 5, 5, TRUE, FALSE, 'Scheduled', FALSE, 500.00, NULL, NULL);
+--INSERT INTO queue_management (slot_id,appointmentId,clinic_id,doctor_id ,initial_queue_no, current_queue_no, advance_paid, patient_reached, visit_status, consultation_fee_paid, consultation_fee_amount, transaction_id_advance_fee, transaction_id_consultation_fee,queue_date )
+--VALUES (11,1,1,'AB00001', 5, 5, TRUE, FALSE, 'Scheduled', FALSE, 500.00, NULL, NULL, CURDATE() );

@@ -2,7 +2,9 @@ package com.deepak.management.queue.controller;
 
 import com.deepak.management.queue.model.DoctorAvailabilityInformation;
 import com.deepak.management.queue.model.QueueTimeSlot;
+import com.deepak.management.queue.model.SlotGeneration;
 import com.deepak.management.queue.service.QueueSlotCreationService;
+import com.deepak.management.repository.SlotGenerationRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -22,9 +26,11 @@ import java.util.List;
 public class QueueSlotController {
     private static final Logger LOGGER = LoggerFactory.getLogger(QueueSlotController.class);
     private final QueueSlotCreationService slotCreationService;
+    private final SlotGenerationRepository slotGenerationRepository;
 
-    public QueueSlotController(@Qualifier("queueSlotCreationServiceImpl") QueueSlotCreationService slotCreationService) {
+    public QueueSlotController(@Qualifier("queueSlotCreationServiceImpl") QueueSlotCreationService slotCreationService, SlotGenerationRepository slotGenerationRepository) {
         this.slotCreationService = slotCreationService;
+        this.slotGenerationRepository = slotGenerationRepository;
     }
 
     @GetMapping
@@ -42,6 +48,17 @@ public class QueueSlotController {
         LOGGER.info("Request Time Slot Information Doctor: {}, Clinic: {}", doctorId, clinicId);
         List<QueueTimeSlot> timeSlots = slotCreationService.getTimeSlotInformation(doctorId, clinicId);
         LOGGER.info("Response Time Slot Information Doctor: {}, Clinic: {} :: {}", doctorId, clinicId, timeSlots);
+        slotGenerationInformation(doctorId, clinicId, timeSlots);
         return timeSlots;
+    }
+
+    private void slotGenerationInformation(String doctorId, Integer clinicId, List<QueueTimeSlot> timeSlots) {
+        SlotGeneration table = new SlotGeneration();
+        table.setDoctorId(doctorId);
+        table.setClinicId(clinicId);
+        table.setSlotDate(Date.valueOf(LocalDate.now()));
+        table.setStatus(true);
+        table.setNoOfSlots(timeSlots.size());
+        slotGenerationRepository.save(table);
     }
 }
