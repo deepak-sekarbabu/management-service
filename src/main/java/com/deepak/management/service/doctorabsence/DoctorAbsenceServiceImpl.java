@@ -97,7 +97,7 @@ public class DoctorAbsenceServiceImpl implements DoctorAbsenceService {
             existingInfo.setClinicId(doctorAbsenceInformation.getClinicId());
             existingInfo.setDoctorId(doctorAbsenceInformation.getDoctorId());
             existingInfo.setOptionalMessage(doctorAbsenceInformation.getOptionalMessage());
-            LOGGER.info("Updated absence info with id: {}", existingInfo.getId());
+            //LOGGER.info("Updated absence info with id: {}", existingInfo.getId());
             return Optional.of(doctorAbsenceInformationRepository.save(existingInfo));
         } else {
             LOGGER.error("Doctor Absence Information not found with ID: {}", id);

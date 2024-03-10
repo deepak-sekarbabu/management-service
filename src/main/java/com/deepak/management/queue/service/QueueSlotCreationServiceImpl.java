@@ -22,7 +22,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
@@ -64,8 +63,8 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
     public DoctorAvailabilityInformation getDetailsForSlotCreation(String doctorId, Integer clinicId) {
         DoctorInformation information = this.doctorInformationRepository.findByDoctorIdAndClinicId(doctorId, clinicId);
         List<DoctorAbsenceInformation> absenceInformation = this.doctorAbsenceInformationRepository.findByAbsenceDateAndClinicIdAndDoctorId(Date.valueOf(LocalDate.now()), clinicId, doctorId);
-        LOGGER.info("Doctor Availability Information: {}", information);
-        LOGGER.info("Doctor Absence Information: {}", absenceInformation);
+        // LOGGER.info("Doctor Availability Information: {}", information);
+        // LOGGER.info("Doctor Absence Information: {}", absenceInformation);
 
         DoctorAvailabilityInformation doctorAvailabilityInformation = new DoctorAvailabilityInformation();
 
@@ -139,7 +138,7 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
 
         removeDoctorAbsence(queueTimeSlots, queueAbsenceTimeSlots);
 
-        LOGGER.info("Queue Time Slot List After removing absence information: {}", queueTimeSlots);
+        //LOGGER.info("Queue Time Slot List After removing absence information: {}", queueTimeSlots);
         reorderQueueNumbers(queueTimeSlots);
 
         slotInformationRepository.saveAll(queueTimeSlots);

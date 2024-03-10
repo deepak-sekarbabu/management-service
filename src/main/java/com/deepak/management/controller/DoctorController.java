@@ -35,7 +35,7 @@ public class DoctorController {
     @PostMapping
     @Operation(summary = "Create a new doctor")
     public DoctorInformation saveDoctor(@Valid @RequestBody DoctorInformation doctorInformation) {
-        LOGGER.info("Saving a new doctor: {}", doctorInformation);
+        //LOGGER.info("Saving a new doctor: {}", doctorInformation);
         return this.doctorInformationRepository.save(doctorInformation);
     }
 

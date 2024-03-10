@@ -61,7 +61,7 @@ public class ClinicServiceImpl implements ClinicService {
             existingClinic.get().setClinicTimings(clinicInformation.getClinicTimings());
             existingClinic.get().setClinicAmenities(clinicInformation.getClinicAmenities());
             existingClinic.get().setClinicWebsite(clinicInformation.getClinicWebsite());
-            LOGGER.info("Updated Clinic information for clinic id {}", clinicId);
+            //LOGGER.info("Updated Clinic information for clinic id {}", clinicId);
             return this.clinicInformationRepository.save(existingClinic.get());
         } else {
             throw new ClinicNotFound("Clinic with id " + clinicId + " not found");

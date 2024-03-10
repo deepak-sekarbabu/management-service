@@ -65,7 +65,7 @@ public class DoctorServiceImpl implements DoctorService {
                 doctor.get().setDoctorSpeciality(doctorInformation.getDoctorSpeciality());
                 doctor.get().setDoctorExperience(doctorInformation.getDoctorExperience());
                 doctor.get().setDoctorConsultationFee(doctorInformation.getDoctorConsultationFee());
-                LOGGER.info("Updated doctor information for the Id : {}", doctorId);
+                //LOGGER.info("Updated doctor information for the Id : {}", doctorId);
                 return this.doctorInformationRepository.save(doctor.get());
             } else {
                 throw new ClinicNotFound("Clinic with id " + doctorInformation.getClinicId() + " not found");

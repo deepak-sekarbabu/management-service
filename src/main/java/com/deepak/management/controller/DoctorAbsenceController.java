@@ -37,7 +37,7 @@ public class DoctorAbsenceController {
     @PostMapping
     @Operation(summary = "Create a new doctor absence information")
     public DoctorAbsenceInformation saveAbsence(@Valid @RequestBody DoctorAbsenceInformation doctorAbsenceInformation) {
-        LOGGER.info("Adding new doctor absence information: {}", doctorAbsenceInformation);
+        //LOGGER.info("Adding new doctor absence information: {}", doctorAbsenceInformation);
         return doctorAbsenceInformationRepository.save(doctorAbsenceInformation);
     }
 
