@@ -17,20 +17,22 @@ public class LogbookConfiguration {
 
     private static class CustomLoggingStrategy implements HttpLogFormatter, HttpLogWriter {
 
+        @Override
         public String format(Precorrelation precorrelation, HttpRequest request) throws IOException {
             return String.format("[INFO] Incoming Request: %s %s", precorrelation.getId(), request.getRequestUri());
         }
 
+        @Override
         public String format(Correlation correlation, HttpResponse response) {
             return String.format("[INFO] Outgoing Response: %s %d", correlation.getId(), response.getStatus());
         }
 
         public void write(final Precorrelation precorrelation, final HttpRequest request) throws IOException {
-            LOGGER.info(format(precorrelation, request));
+            LOGGER.info(this.format(precorrelation, request));
         }
 
         public void write(final Correlation correlation, final HttpResponse response) throws IOException {
-            LOGGER.info(format(correlation, response));
+            LOGGER.info(this.format(correlation, response));
         }
 
         @Override
