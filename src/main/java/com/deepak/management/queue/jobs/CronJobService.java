@@ -16,7 +16,7 @@ public class CronJobService {
     }
 
     public void updateLastRun(Integer jobId) {
-        CronJob cronJob = this.cronJobRepository.findById(jobId).get();
+        final CronJob cronJob = this.cronJobRepository.findById(jobId).get();
         cronJob.setLastRun(LocalDateTime.now()); // Set to current timestamp
         this.cronJobRepository.save(cronJob);
     }

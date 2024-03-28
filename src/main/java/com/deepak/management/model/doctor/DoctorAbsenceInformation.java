@@ -17,6 +17,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 @Getter
 @Setter
@@ -68,7 +69,7 @@ public class DoctorAbsenceInformation {
 
     public String getAbsenceDate() {
         if (absenceDate != null) {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+            final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
             return sdf.format(absenceDate);
         }
         return null;

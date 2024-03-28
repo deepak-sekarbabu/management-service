@@ -30,7 +30,7 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     public List<DoctorInformation> getDoctorInformation(Pageable page) {
 
-        Page<DoctorInformation> pagedResult = this.doctorInformationRepository.findAll(page);
+        final Page<DoctorInformation> pagedResult = this.doctorInformationRepository.findAll(page);
 
         if (pagedResult.hasContent()) {
             return pagedResult.getContent();
@@ -41,7 +41,7 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public Optional<DoctorInformation> getDoctorById(Long doctorId) throws DoctorNotFound {
-        Optional<DoctorInformation> doctor = this.doctorInformationRepository.findById(doctorId);
+        final Optional<DoctorInformation> doctor = this.doctorInformationRepository.findById(doctorId);
         if (doctor.isPresent()) {
             return doctor;
         } else {
@@ -51,10 +51,10 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public DoctorInformation updateDoctor(Long doctorId, DoctorInformation doctorInformation) throws ClinicNotFound, DoctorNotFound {
-        Optional<DoctorInformation> doctor = this.doctorInformationRepository.findById(doctorId);
+        final Optional<DoctorInformation> doctor = this.doctorInformationRepository.findById(doctorId);
         if (doctor.isPresent()) {
             // Check if the clinicIdToUpdate exists in the clinic_information table
-            Optional<ClinicInformation> clinic = clinicInformationRepository.findById(doctorInformation.getClinicId());
+            final Optional<ClinicInformation> clinic = clinicInformationRepository.findById(doctorInformation.getClinicId());
             if (clinic.isPresent()) {
                 // Update doctor's information with the provided clinicId
                 doctor.get().setClinicId(doctorInformation.getClinicId());

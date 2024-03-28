@@ -42,7 +42,7 @@ public class DoctorController {
     @GetMapping
     @Operation(summary = "Get all doctor information")
     public List<DoctorInformation> getDoctorInformation(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
-        Pageable paging = PageRequest.of(page, size);
+        final Pageable paging = PageRequest.of(page, size);
         return doctorService.getDoctorInformation(paging);
 
     }

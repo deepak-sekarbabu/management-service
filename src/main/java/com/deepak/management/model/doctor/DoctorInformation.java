@@ -77,8 +77,14 @@ public class DoctorInformation {
     @Column(name = "doctor_availability")
     private List<DoctorAvailability> doctorAvailability;
 
-    @Column(name = "doctor_consultation_time", length = 2)
+    /*@Column(name = "doctor_consultation_time", length = 2)
     @Schema(description = "Consultation Time per Patient in minutes", example = "10")
-    private Integer doctorConsultationTime;
+    private Integer doctorConsultationTime;*/
+
+    @Max(1000)
+    @Column(name = "doctor_consultation_fee_other", length = 4)
+    @Schema(description = "Consultation Fee of Doctor for Queue in INR", example = "500")
+    private Integer doctorConsultationFeeOther;
+
 
 }

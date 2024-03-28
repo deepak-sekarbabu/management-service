@@ -44,7 +44,7 @@ public class DoctorAbsenceController {
     @GetMapping
     @Operation(summary = "Get all doctor absence information")
     public List<DoctorAbsenceInformation> getDoctorAbsenceInformations(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
-        Pageable paging = PageRequest.of(page, size);
+        final Pageable paging = PageRequest.of(page, size);
         return doctorAbsenceService.getDoctorAbsenceInformations(paging);
     }
 
@@ -52,7 +52,7 @@ public class DoctorAbsenceController {
     @Operation(summary = "Get all doctor absence information by date")
     public List<DoctorAbsenceInformation> getDoctorAbsenceInformationsByDate(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size, @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate date) {
 
-        Pageable paging = PageRequest.of(page, size);
+        final Pageable paging = PageRequest.of(page, size);
         return doctorAbsenceService.getDoctorAbsenceInformationsByDate(paging, Date.valueOf(date));
     }
 
@@ -60,7 +60,7 @@ public class DoctorAbsenceController {
     @Operation(summary = "Get all doctor absence information by date and clinic id")
     public List<DoctorAbsenceInformation> getDoctorAbsenceInformationsByDateAndClinic(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size, @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate date, @PathVariable Integer clinicId) {
 
-        Pageable paging = PageRequest.of(page, size);
+        final Pageable paging = PageRequest.of(page, size);
         return doctorAbsenceService.getDoctorAbsenceInformationsByDateAndClinic(paging, Date.valueOf(date), clinicId);
     }
 
@@ -68,7 +68,7 @@ public class DoctorAbsenceController {
     @Operation(summary = "Get all doctor absence information by date and doctor id")
     public List<DoctorAbsenceInformation> getDoctorAbsenceInformationsByDateAndDoctor(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size, @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate date, @PathVariable String doctorId) {
 
-        Pageable paging = PageRequest.of(page, size);
+        final Pageable paging = PageRequest.of(page, size);
         return doctorAbsenceService.getDoctorAbsenceInformationsByDateAndDoctor(paging, Date.valueOf(date), doctorId);
     }
 
@@ -94,14 +94,14 @@ public class DoctorAbsenceController {
     @GetMapping("/between-date/clinic/{clinicId}")
     @Operation(summary = "Get all doctor absence information between date and clinic id")
     public List<DoctorAbsenceInformation> getDoctorAbsenceInformationsBetweenDateAndClinic(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size, @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate startDate, @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate endDate, @PathVariable Integer clinicId) {
-        Pageable paging = PageRequest.of(page, size);
+        final Pageable paging = PageRequest.of(page, size);
         return doctorAbsenceService.getDoctorAbsenceInformationsBetweenDateAndClinic(Date.valueOf(startDate), Date.valueOf(endDate), clinicId, paging);
     }
 
     @GetMapping("/between-date/doctor/{doctorId}")
     @Operation(summary = "Get all doctor absence information between date and doctor id")
     public List<DoctorAbsenceInformation> getDoctorAbsenceInformationsBetweenDateAndDoctor(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size, @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate startDate, @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate endDate, @PathVariable String doctorId) {
-        Pageable paging = PageRequest.of(page, size);
+        final Pageable paging = PageRequest.of(page, size);
         return doctorAbsenceService.getDoctorAbsenceInformationsBetweenDateAndDoctor(Date.valueOf(startDate), Date.valueOf(endDate), doctorId, paging);
     }
 

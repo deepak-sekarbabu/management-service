@@ -36,10 +36,11 @@ CREATE TABLE IF NOT EXISTS doctor_information (
     doctor_speciality VARCHAR(120),
     doctor_availability JSON,
     doctor_consultation_fee INTEGER CHECK (doctor_consultation_fee <= 1000),
-    doctor_consultation_time INTEGER,
+    doctor_consultation_fee_other INTEGER,
     doctor_experience INTEGER CHECK (doctor_experience <= 70),
     PRIMARY KEY (id),
     FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id),
+    UNIQUE (doctor_id, clinic_id), -- Add a unique constraint on doctor_id and clinic_id
     KEY doctor_id_idx (doctor_id),
     INDEX (doctor_id) -- Add an index on the doctor_id column
 ) ENGINE = InnoDB;
@@ -73,7 +74,7 @@ VALUES ('Sample Clinic', 'Sample Address', '600103', '40.7128,-74.006', 'Wifi, T
   ]', 1);
 
 INSERT INTO `doctor_information` (`doctor_id`, `clinic_id`, `doctor_name`, `phone_numbers`, `doctor_speciality`,
-                                  `doctor_availability`, `doctor_consultation_fee`, `doctor_consultation_time`,
+                                  `doctor_availability`, `doctor_consultation_fee`, `doctor_consultation_fee_other`,
                                   `doctor_experience`)
 VALUES ('AB00001', 1, 'Dr. Deepak Sekarbabu', '[
   {
@@ -84,81 +85,107 @@ VALUES ('AB00001', 1, 'Dr. Deepak Sekarbabu', '[
     "shiftTime": "MORNING",
     "shiftEndTime": "10:30:00",
     "availableDays": "MONDAY",
-    "shiftStartTime": "09:00:00"
+    "shiftStartTime": "09:00:00",
+    "consultationTime": 10,
+    "configType": "APPOINTMENT"
   },
   {
     "shiftTime": "EVENING",
     "shiftEndTime": "20:00:00",
     "availableDays": "MONDAY",
-    "shiftStartTime": "18:00:00"
+    "shiftStartTime": "18:00:00",
+    "consultationTime": 10,
+    "configType": "APPOINTMENT"
   },
   {
     "shiftTime": "MORNING",
     "shiftEndTime": "10:30:00",
     "availableDays": "TUESDAY",
-    "shiftStartTime": "09:00:00"
+    "shiftStartTime": "09:00:00",
+    "consultationTime": 10,
+    "configType": "APPOINTMENT"
   },
   {
     "shiftTime": "EVENING",
     "shiftEndTime": "20:00:00",
     "availableDays": "TUESDAY",
-    "shiftStartTime": "18:00:00"
+    "shiftStartTime": "18:00:00",
+    "consultationTime": 10,
+    "configType": "APPOINTMENT"
   },
   {
     "shiftTime": "MORNING",
     "shiftEndTime": "10:30:00",
     "availableDays": "WEDNESDAY",
-    "shiftStartTime": "09:00:00"
+    "shiftStartTime": "09:00:00",
+    "consultationTime": 10,
+    "configType": "APPOINTMENT"
   },
   {
     "shiftTime": "EVENING",
     "shiftEndTime": "20:00:00",
     "availableDays": "WEDNESDAY",
-    "shiftStartTime": "18:00:00"
+    "shiftStartTime": "18:00:00",
+    "consultationTime": 10,
+    "configType": "APPOINTMENT"
   },
   {
     "shiftTime": "MORNING",
     "shiftEndTime": "10:30:00",
     "availableDays": "THURSDAY",
-    "shiftStartTime": "09:00:00"
+    "shiftStartTime": "09:00:00",
+    "consultationTime": 10,
+    "configType": "APPOINTMENT"
   },
   {
     "shiftTime": "EVENING",
     "shiftEndTime": "20:00:00",
     "availableDays": "THURSDAY",
-    "shiftStartTime": "18:00:00"
+    "shiftStartTime": "18:00:00",
+    "consultationTime": 10,
+    "configType": "APPOINTMENT"
   },
   {
     "shiftTime": "MORNING",
     "shiftEndTime": "10:30:00",
     "availableDays": "FRIDAY",
-    "shiftStartTime": "09:00:00"
+    "shiftStartTime": "09:00:00",
+    "consultationTime": 10,
+    "configType": "APPOINTMENT"
   },
   {
     "shiftTime": "EVENING",
     "shiftEndTime": "20:00:00",
     "availableDays": "FRIDAY",
-    "shiftStartTime": "18:00:00"
+    "shiftStartTime": "18:00:00",
+    "consultationTime": 10,
+    "configType": "APPOINTMENT"
   },
   {
     "shiftTime": "EVENING",
     "shiftEndTime": "20:00:00",
     "availableDays": "SATURDAY",
-    "shiftStartTime": "18:00:00"
+    "shiftStartTime": "18:00:00",
+    "consultationTime": 10,
+    "configType": "APPOINTMENT"
   },
   {
-      "shiftTime": "MORNING",
-      "shiftEndTime": "12:00:00",
-      "availableDays": "SUNDAY",
-      "shiftStartTime": "10:30:00"
+    "shiftTime": "MORNING",
+    "shiftEndTime": "12:00:00",
+    "availableDays": "SUNDAY",
+    "shiftStartTime": "10:30:00",
+    "consultationTime": 10,
+    "configType": "APPOINTMENT"
   },
   {
     "shiftTime": "EVENING",
     "shiftEndTime": "20:00:00",
     "availableDays": "SUNDAY",
-    "shiftStartTime": "18:00:00"
+    "shiftStartTime": "18:00:00",
+    "consultationTime": 10,
+    "configType": "APPOINTMENT"
   }
-]', 500, 10, 12);
+]', 500, 300, 12);
 
 INSERT INTO `doctor_absence_information` (`clinic_id`, `doctor_id`, `doctor_name`, `absence_date`, `absence_start_time`,
 `absence_end_time`, `optional_message`)
@@ -267,5 +294,5 @@ CREATE TABLE IF NOT EXISTS queue_management (
     FOREIGN KEY (appointmentId) REFERENCES appointments(appointmentId)
 );
 
-INSERT INTO queue_management (slot_id,appointmentId,clinic_id,doctor_id ,initial_queue_no, current_queue_no, advance_paid, patient_reached, visit_status, consultation_fee_paid, consultation_fee_amount, transaction_id_advance_fee, transaction_id_consultation_fee)
-VALUES (11,1,1,'AB00001', 5, 5, TRUE, FALSE, 'Scheduled', FALSE, 500.00, NULL, NULL);
+--INSERT INTO queue_management (slot_id,appointmentId,clinic_id,doctor_id ,initial_queue_no, current_queue_no, advance_paid, patient_reached, visit_status, consultation_fee_paid, consultation_fee_amount, transaction_id_advance_fee, transaction_id_consultation_fee)
+--VALUES (11,1,1,'AB00001', 5, 5, TRUE, FALSE, 'Scheduled', FALSE, 500.00, NULL, NULL);

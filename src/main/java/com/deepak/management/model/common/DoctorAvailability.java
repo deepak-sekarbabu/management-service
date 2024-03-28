@@ -25,4 +25,10 @@ public class DoctorAvailability {
     @Schema(description = "Shift End Time", example = "11:00:00")
     private Time shiftEndTime;
 
+    @Schema(description = "Consultation Time per Patient in minutes", example = "10")
+    private int consultationTime;
+
+    @Schema(description = "Type of Configuration for the Timeslot Possible values are: APPOINTMENT, QUEUE, HYBRID, etc.", example = "APPOINTMENT")
+    private SystemType configType;
+
 }

@@ -16,5 +16,5 @@ public class DoctorShiftAvailability {
     private int clinicId;
     private List<DoctorAvailability> shiftDetails;
     private List<DoctorShiftAbsence> shiftAbsence;
-    private int doctorConsultationTime;
+
 }

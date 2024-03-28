@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -29,7 +30,7 @@ public class DoctorAbsenceServiceImpl implements DoctorAbsenceService {
 
     @Override
     public List<DoctorAbsenceInformation> getDoctorAbsenceInformations(Pageable pageable) {
-        Page<DoctorAbsenceInformation> pagedResult = this.doctorAbsenceInformationRepository.findAll(pageable);
+        final Page<DoctorAbsenceInformation> pagedResult = this.doctorAbsenceInformationRepository.findAll(pageable);
 
         if (pagedResult.hasContent()) {
             return pagedResult.getContent();
@@ -45,7 +46,7 @@ public class DoctorAbsenceServiceImpl implements DoctorAbsenceService {
 
     @Override
     public List<DoctorAbsenceInformation> getDoctorAbsenceInformationsByDate(Pageable paging, Date date) {
-        Page<DoctorAbsenceInformation> pagedResult = this.doctorAbsenceInformationRepository.findByAbsenceDate(date, paging);
+        final Page<DoctorAbsenceInformation> pagedResult = this.doctorAbsenceInformationRepository.findByAbsenceDate(date, paging);
         if (pagedResult.hasContent()) {
             return pagedResult.getContent();
         } else {
@@ -55,7 +56,7 @@ public class DoctorAbsenceServiceImpl implements DoctorAbsenceService {
 
     @Override
     public List<DoctorAbsenceInformation> getDoctorAbsenceInformationsByDateAndClinic(Pageable paging, Date date, Integer clinicId) {
-        Page<DoctorAbsenceInformation> pagedResult = this.doctorAbsenceInformationRepository.findByAbsenceDateAndClinicId(date, clinicId, paging);
+        final Page<DoctorAbsenceInformation> pagedResult = this.doctorAbsenceInformationRepository.findByAbsenceDateAndClinicId(date, clinicId, paging);
         if (pagedResult.hasContent()) {
             return pagedResult.getContent();
         } else {
@@ -65,7 +66,7 @@ public class DoctorAbsenceServiceImpl implements DoctorAbsenceService {
 
     @Override
     public List<DoctorAbsenceInformation> getDoctorAbsenceInformationsByDateAndDoctor(Pageable paging, Date date, String doctorId) {
-        Page<DoctorAbsenceInformation> pagedResult = this.doctorAbsenceInformationRepository.findByAbsenceDateAndDoctorId(date, doctorId, paging);
+        final Page<DoctorAbsenceInformation> pagedResult = this.doctorAbsenceInformationRepository.findByAbsenceDateAndDoctorId(date, doctorId, paging);
         if (pagedResult.hasContent()) {
             return pagedResult.getContent();
         } else {
@@ -75,17 +76,17 @@ public class DoctorAbsenceServiceImpl implements DoctorAbsenceService {
 
     @Override
     public Optional<DoctorAbsenceInformation> updateDoctorAbsenceInformationById(Long id, DoctorAbsenceInformation doctorAbsenceInformation) throws DoctorAbsenceNotFound {
-        Optional<DoctorAbsenceInformation> existingInfoOptional = this.getDoctorAbsenceInformationsById(id);
+        final Optional<DoctorAbsenceInformation> existingInfoOptional = this.getDoctorAbsenceInformationsById(id);
 
         if (existingInfoOptional.isPresent()) {
-            DoctorAbsenceInformation existingInfo = existingInfoOptional.get();
+            final DoctorAbsenceInformation existingInfo = existingInfoOptional.get();
 
-            SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MM-yyyy");
-            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+            final SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
             Date sqlDate = null;
             try {
-                java.util.Date date = inputFormat.parse(doctorAbsenceInformation.getAbsenceDate());
-                String formattedDate = outputFormat.format(date);
+                final java.util.Date date = inputFormat.parse(doctorAbsenceInformation.getAbsenceDate());
+                final String formattedDate = outputFormat.format(date);
                 sqlDate = Date.valueOf(formattedDate);
             } catch (ParseException ignored) {
                 LOGGER.error("Error in parsing date while updating doctor absence information");
@@ -107,7 +108,7 @@ public class DoctorAbsenceServiceImpl implements DoctorAbsenceService {
 
     @Override
     public void deleteDoctorAbsenceInfoById(Long id) throws DoctorAbsenceNotFound {
-        Optional<DoctorAbsenceInformation> absenceInformation = this.getDoctorAbsenceInformationsById(id);
+        final Optional<DoctorAbsenceInformation> absenceInformation = this.getDoctorAbsenceInformationsById(id);
         if (absenceInformation.isEmpty()) {
             LOGGER.warn("Attempt to delete a doctor information that does not exist");
             throw new DoctorAbsenceNotFound("Doctor Absence Information with ID " + id + " does not exist.");
@@ -118,7 +119,7 @@ public class DoctorAbsenceServiceImpl implements DoctorAbsenceService {
 
     @Override
     public List<DoctorAbsenceInformation> getDoctorAbsenceInformationsBetweenDateAndClinic(Date startDate, Date endDate, Integer clinicId, Pageable page) {
-        Page<DoctorAbsenceInformation> pagedResult = doctorAbsenceInformationRepository.findByAbsenceDateBetweenAndClinicId(startDate, endDate, clinicId, page);
+        final Page<DoctorAbsenceInformation> pagedResult = doctorAbsenceInformationRepository.findByAbsenceDateBetweenAndClinicId(startDate, endDate, clinicId, page);
         if (pagedResult.hasContent()) {
             return pagedResult.getContent();
         } else {
@@ -128,7 +129,7 @@ public class DoctorAbsenceServiceImpl implements DoctorAbsenceService {
 
     @Override
     public List<DoctorAbsenceInformation> getDoctorAbsenceInformationsBetweenDateAndDoctor(Date startDate, Date endDate, String doctorId, Pageable page) {
-        Page<DoctorAbsenceInformation> pagedResult = doctorAbsenceInformationRepository.findByAbsenceDateBetweenAndDoctorId(startDate, endDate, doctorId, page);
+        final Page<DoctorAbsenceInformation> pagedResult = doctorAbsenceInformationRepository.findByAbsenceDateBetweenAndDoctorId(startDate, endDate, doctorId, page);
         if (pagedResult.hasContent()) {
             return pagedResult.getContent();
         } else {

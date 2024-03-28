@@ -26,9 +26,9 @@ public class ClinicServiceImpl implements ClinicService {
 
     @Override
     public List<ClinicInformation> getAllClinics(int page, int size) {
-        Pageable paging = PageRequest.of(page, size);
+        final Pageable paging = PageRequest.of(page, size);
 
-        Page<ClinicInformation> pagedResult = this.clinicInformationRepository.findAll(paging);
+        final Page<ClinicInformation> pagedResult = this.clinicInformationRepository.findAll(paging);
 
         if (pagedResult.hasContent()) {
             return pagedResult.getContent();
@@ -39,7 +39,7 @@ public class ClinicServiceImpl implements ClinicService {
 
     @Override
     public Optional<ClinicInformation> getClinicById(Integer clinicId) throws ClinicNotFound {
-        Optional<ClinicInformation> existingClinic = this.clinicInformationRepository.findById(clinicId);
+        final Optional<ClinicInformation> existingClinic = this.clinicInformationRepository.findById(clinicId);
         if (existingClinic.isPresent()) {
             return existingClinic;
         } else {
@@ -49,7 +49,7 @@ public class ClinicServiceImpl implements ClinicService {
 
     @Override
     public ClinicInformation updateClinic(Integer clinicId, ClinicInformation clinicInformation) throws ClinicNotFound {
-        Optional<ClinicInformation> existingClinic = this.clinicInformationRepository.findById(clinicId);
+        final Optional<ClinicInformation> existingClinic = this.clinicInformationRepository.findById(clinicId);
         if (existingClinic.isPresent()) {
             existingClinic.get().setClinicName(clinicInformation.getClinicName());
             existingClinic.get().setClinicAddress(clinicInformation.getClinicAddress());

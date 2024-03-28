@@ -34,10 +34,10 @@ public class TimeSlotJobScheduler {
     public void scheduleTimeSlotJobForToday() {
         LOGGER.info("TimeSlotJobScheduler: {}", cronJobService.getCronExpression(1));
         repository.findAll().forEach(doctorInformation -> {
-            long startTime = System.currentTimeMillis();
+            final long startTime = System.currentTimeMillis();
             List<QueueTimeSlot> list = slotCreationService.getTimeSlotInformation(doctorInformation.getDoctorId(), doctorInformation.getClinicId());
             if (!list.isEmpty()) {
-                SlotGeneration table = new SlotGeneration();
+                final SlotGeneration table = new SlotGeneration();
                 table.setDoctorId(doctorInformation.getDoctorId());
                 table.setClinicId(doctorInformation.getClinicId());
                 table.setSlotDate(Date.valueOf(LocalDate.now()));
@@ -45,7 +45,7 @@ public class TimeSlotJobScheduler {
                 table.setNoOfSlots(list.size());
                 slotGenerationRepository.save(table);
             } else {
-                SlotGeneration table = new SlotGeneration();
+                final SlotGeneration table = new SlotGeneration();
                 table.setDoctorId(doctorInformation.getDoctorId());
                 table.setClinicId(doctorInformation.getClinicId());
                 table.setSlotDate(Date.valueOf(LocalDate.now()));
@@ -53,8 +53,8 @@ public class TimeSlotJobScheduler {
                 table.setNoOfSlots(0);
                 slotGenerationRepository.save(table);
             }
-            long endTime = System.currentTimeMillis();
-            long timeTaken = endTime - startTime;
+            final long endTime = System.currentTimeMillis();
+            final long timeTaken = endTime - startTime;
             LOGGER.info("Time taken for generating Slot information for Doctor {} is {} ms", doctorInformation.getDoctorId(), timeTaken);
         });
         cronJobService.updateLastRun(1);

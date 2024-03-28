@@ -28,7 +28,7 @@ public class ClinicController {
     private final ClinicService clinicService;
     private final DoctorService doctorService;
 
-    public ClinicController(ClinicInformationRepository clinicInformationRepository, ClinicService clinicService, DoctorService doctorService) {
+    public ClinicController(final ClinicInformationRepository clinicInformationRepository,final ClinicService clinicService,final DoctorService doctorService) {
         this.clinicInformationRepository = clinicInformationRepository;
         this.clinicService = clinicService;
         this.doctorService = doctorService;
@@ -36,7 +36,7 @@ public class ClinicController {
 
     @PostMapping
     @Operation(summary = "Create a new clinic")
-    public ClinicInformation saveClinic(@Valid @RequestBody ClinicInformation clinic) {
+    public ClinicInformation saveClinic(@Valid @RequestBody final ClinicInformation clinic) {
         LOGGER.info("Adding new clinic: {}", clinic);
         return this.clinicInformationRepository.save(clinic);
     }
