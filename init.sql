@@ -229,9 +229,9 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 INSERT INTO users (name, phoneNumber, email, birthdate)
-VALUES ('John Doe', '+919789801844', 'johndoe@example.com', '1990-01-01'),
-       ('Jane Doe', '555-1212', 'janedoe@example.com', '1995-02-15'),
-       ('Alice Smith', '789-012-3456', 'alicesmith@example.com', '2000-10-24');
+VALUES ('Deepak S', '+919789801844', 'deepak@example.com', '1990-01-01'),
+       ('Jane Doe', '+919789801843', 'janedoe@example.com', '1995-02-15'),
+       ('Alice Smith', '+919789801842', 'alicesmith@example.com', '2000-10-24');
 
 
 -- Appointment Registration Table
@@ -258,7 +258,7 @@ CREATE TABLE IF NOT EXISTS appointments (
 );
 
 INSERT INTO appointments (user_id, appointment_type, appointment_for, appointment_for_name, appointment_for_age, symptom,other_symptoms, appointment_date, doctor_id, clinic_id)
-VALUES (1, 'GENERAL_CHECKUP', 'SELF', 'John Doe', 30, 'HEADACHE','Nausea', '2024-02-20 10:00:00', 'AB00001', 1);
+VALUES (1, 'GENERAL_CHECKUP', 'SELF', 'Deepak S', 30, 'HEADACHE','Nausea', '2024-02-20 10:00:00', 'AB00001', 1);
 
 CREATE TABLE IF NOT EXISTS  cron_jobs (
   id INT AUTO_INCREMENT PRIMARY KEY,
