@@ -290,6 +290,7 @@ CREATE TABLE IF NOT EXISTS queue_management (
     transaction_id_advance_fee VARCHAR(255),
     transaction_id_consultation_fee VARCHAR(255),
     transaction_id_advance_revert VARCHAR(255),
+    queue_date DATE,
     FOREIGN KEY (slot_id) REFERENCES slot_information(slot_id),
     FOREIGN KEY (appointmentId) REFERENCES appointments(appointmentId)
 );
