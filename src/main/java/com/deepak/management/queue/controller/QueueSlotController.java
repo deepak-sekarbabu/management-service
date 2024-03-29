@@ -1,5 +1,6 @@
 package com.deepak.management.queue.controller;
 
+import com.deepak.management.exception.SlotAlreadyGeneratedException;
 import com.deepak.management.queue.model.DoctorAvailabilityInformation;
 import com.deepak.management.queue.model.QueueTimeSlot;
 import com.deepak.management.queue.model.SlotGeneration;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -42,14 +44,21 @@ public class QueueSlotController {
         return information;
     }
 
-    @GetMapping("/time-slots")
-    @Operation(summary = "Returns Time Slot Information for Doctor and Clinic")
-    public List<QueueTimeSlot> getTimeSlotInformation(@RequestParam String doctorId, @RequestParam Integer clinicId) throws JsonProcessingException {
-        LOGGER.info("Request Time Slot Information Doctor: {}, Clinic: {}", doctorId, clinicId);
-        final List<QueueTimeSlot> timeSlots = slotCreationService.getTimeSlotInformation(doctorId, clinicId);
-        LOGGER.info("Response Time Slot Information Doctor: {}, Clinic: {} :: {}", doctorId, clinicId, timeSlots);
-        saveSlotGenerationInformation(doctorId, clinicId, timeSlots);
-        return timeSlots;
+    @GetMapping("/generate-time-slots")
+    @Operation(summary = "Returns the Generated Slot Information for Doctor and Clinic if not already generated")
+    public List<QueueTimeSlot> generateTimeSlotInformation(@RequestParam String doctorId, @RequestParam Integer clinicId) throws SlotAlreadyGeneratedException {
+        LOGGER.info("Generate Time Slot Information Doctor: {}, Clinic: {}", doctorId, clinicId);
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        List<SlotGeneration> generationList = slotGenerationRepository.findBySlotDateAndDoctorIdAndClinicId(Date.valueOf(currentDate.format(formatter)), doctorId, clinicId);
+        if (generationList.size() == 0) {
+            LOGGER.info("Generated List : {}", generationList.size());
+            final List<QueueTimeSlot> timeSlots = slotCreationService.getTimeSlotInformation(doctorId, clinicId);
+            LOGGER.info("Generated Time Slot Information Doctor: {}, Clinic: {} :: {}", doctorId, clinicId, timeSlots);
+            saveSlotGenerationInformation(doctorId, clinicId, timeSlots);
+            return timeSlots;
+        } else
+            throw new SlotAlreadyGeneratedException("Slot information already generated for this doctorId " + doctorId + " & clinic id " + clinicId + " for this day :" + currentDate);
     }
 
     private void saveSlotGenerationInformation(String doctorId, Integer clinicId, List<QueueTimeSlot> timeSlots) {

@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorDetails> handleException(Exception ex, WebRequest request) {
+    public ResponseEntity<ErrorDetails> handleGlobalException(Exception ex, WebRequest request) {
         LOGGER.error("An error occurred: {}", ex.getMessage());
         ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
         ex.printStackTrace();
@@ -65,10 +65,18 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({DataIntegrityViolationException.class})
-    public ResponseEntity<ErrorDetails> handleDataIntegrityViolationExceptionException(Exception ex, WebRequest request) {
+    public ResponseEntity<ErrorDetails> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
         LOGGER.error("Cannot add or update a child row: a foreign key constraint fails: {}", ex.getMessage());
         ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.NOT_MODIFIED);
+    }
+
+    @ExceptionHandler({SlotAlreadyGeneratedException.class})
+    public ResponseEntity<ErrorDetails> handleSlotAlreadyGeneratedException(SlotAlreadyGeneratedException ex, WebRequest request) {
+        LOGGER.error("Slot information already Generated: {}", ex.getMessage());
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
+        LOGGER.error(errorDetails.toString());
+        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_MODIFIED);
     }
 
     @ExceptionHandler({ValidationException.class, WebExchangeBindException.class, MethodArgumentNotValidException.class, ResponseStatusException.class, ConstraintViolationException.class})

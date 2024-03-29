@@ -67,19 +67,15 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
         LOGGER.info("Doctor Absence Information: {}", absenceInformation);
 
         final DoctorAvailabilityInformation doctorAvailabilityInformation = new DoctorAvailabilityInformation();
-
         final DoctorShiftAvailability doctorShiftAvailability = new DoctorShiftAvailability();
+
         doctorShiftAvailability.setDoctorName(information.getDoctorName());
         doctorShiftAvailability.setDoctorId(information.getDoctorId());
         doctorShiftAvailability.setClinicId(information.getClinicId());
         doctorShiftAvailability.setShiftDetails(this.filterShiftDetails(information.getDoctorAvailability(), LocalDate.now().getDayOfWeek().toString()));
         doctorShiftAvailability.setShiftAbsence(this.filterAbsenceInformation(absenceInformation));
         //doctorShiftAvailability.setDoctorConsultationTime(information.getDoctorConsultationTime());
-
-
         doctorAvailabilityInformation.setDoctorShiftAvailability(doctorShiftAvailability);
-
-
         doctorAvailabilityInformation.setCurrentDate(String.valueOf(LocalDate.now()));
         doctorAvailabilityInformation.setCurrentDayOfWeek(LocalDate.now().getDayOfWeek().toString());
         return doctorAvailabilityInformation;
