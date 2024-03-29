@@ -43,27 +43,27 @@ public class DoctorController {
     @Operation(summary = "Get all doctor information")
     public List<DoctorInformation> getDoctorInformation(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
         final Pageable paging = PageRequest.of(page, size);
-        return doctorService.getDoctorInformation(paging);
+        return this.doctorService.getDoctorInformation(paging);
 
     }
 
     @GetMapping("/{doctorId}")
     @Operation(summary = "Get Doctor information by id")
     public Optional<DoctorInformation> getDoctorById(@PathVariable Long doctorId) throws DoctorNotFound {
-        return doctorService.getDoctorById(doctorId);
+        return this.doctorService.getDoctorById(doctorId);
     }
 
     @PutMapping("/{doctorId}")
     @Operation(summary = "Update Doctor information by Id")
     public DoctorInformation updateDoctor(@PathVariable Long doctorId, @RequestBody DoctorInformation doctorInformation) throws DoctorNotFound, ClinicNotFound {
-        return doctorService.updateDoctor(doctorId, doctorInformation);
+        return this.doctorService.updateDoctor(doctorId, doctorInformation);
     }
 
 
     @DeleteMapping("/{doctorId}")
     @Operation(summary = "Delete Doctor information by Id")
     public void deleteDoctor(@PathVariable Long doctorId) throws DoctorNotFound {
-        doctorService.deleteDoctor(doctorId);
+        this.doctorService.deleteDoctor(doctorId);
 
     }
 }
