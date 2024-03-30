@@ -250,6 +250,7 @@ CREATE TABLE IF NOT EXISTS appointments (
   doctor_id VARCHAR(255) NOT NULL,
   clinic_id INTEGER NOT NULL,
   active BOOLEAN NOT NULL DEFAULT TRUE,
+  UNIQUE INDEX `slot_id` (`slot_id`) USING BTREE,
   CONSTRAINT user_fk FOREIGN KEY (user_id) REFERENCES users (id),
   CONSTRAINT doctor_fk FOREIGN KEY (doctor_id) REFERENCES doctor_information (doctor_id),
   CONSTRAINT clinic_fk FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id),
