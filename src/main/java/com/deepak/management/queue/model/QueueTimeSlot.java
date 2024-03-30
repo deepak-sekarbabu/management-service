@@ -35,7 +35,7 @@ public class QueueTimeSlot {
 
     @Column(name = "clinic_id")
     @Schema(description = "Clinic Id", example = "CL0001")
-    private String clinicId;
+    private Integer clinicId;
 
     @Column(name = "doctor_id")
     @Schema(description = "Doctor Id", example = "AB0001")

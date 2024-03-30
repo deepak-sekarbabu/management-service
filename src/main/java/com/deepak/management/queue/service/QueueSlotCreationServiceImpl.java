@@ -144,7 +144,7 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
 
     private QueueTimeSlot createQueueTimeSlot(Integer clinicId, String doctorId, DoctorAvailability shiftDetail, int slotNo, LocalTime slotTime, boolean isAvailable) {
         final QueueTimeSlot queueTimeSlot = new QueueTimeSlot();
-        queueTimeSlot.setClinicId(String.valueOf(clinicId));
+        queueTimeSlot.setClinicId(clinicId);
         queueTimeSlot.setDoctorId(doctorId);
         queueTimeSlot.setSlotDate(String.valueOf(LocalDate.now()));
         queueTimeSlot.setShiftTime(String.valueOf(shiftDetail.getShiftTime()));
