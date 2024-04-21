@@ -19,11 +19,12 @@ public class QueueManagementRepository {
     public List<QueueManagementDTO> getQueueManagementData() {
         String sql = "SELECT " +
                 "q.queue_management_id as id, " +
+                "CONCAT('/assets/images/avatars/avatar_', FLOOR(RAND() * 24) + 1, '.jpg') AS avatarUrl," +
                 "u.name AS patientName, " +
                 "u.phoneNumber AS patientPhoneNumber, " +
                 "d.doctor_name AS doctorName, " +
                 "q.current_queue_no AS queueNo, " +
-                "q.patient_reached AS patientReached, " +
+                "CASE WHEN q.patient_reached = 0 THEN 'false' ELSE 'true' END AS patientReached," +
                 "s.slot_time AS time " +
                 "FROM queue_management q " +
                 "JOIN appointments a ON q.appointment_id = a.appointment_id " +

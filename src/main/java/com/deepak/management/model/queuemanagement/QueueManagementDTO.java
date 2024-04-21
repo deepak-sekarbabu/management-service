@@ -9,15 +9,17 @@ import lombok.ToString;
 @ToString
 public class QueueManagementDTO {
     private Integer id;
+    private String avatarUrl;
     private String patientName;
     private String patientPhoneNumber;
     private String doctorName;
     private Integer queueNo;
-    private Boolean patientReached;
+    private String patientReached;
     private String time;
 
-    public QueueManagementDTO(Integer id, String patientName, String patientPhoneNumber, String doctorName, Integer queueNo, Boolean patientReached, String time) {
+    public QueueManagementDTO(Integer id, String avatarUrl, String patientName, String patientPhoneNumber, String doctorName, Integer queueNo, String patientReached, String time) {
         this.id = id;
+        this.avatarUrl = avatarUrl;
         this.patientName = patientName;
         this.patientPhoneNumber = patientPhoneNumber;
         this.doctorName = doctorName;
