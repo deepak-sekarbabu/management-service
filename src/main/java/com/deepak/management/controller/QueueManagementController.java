@@ -1,13 +1,9 @@
 package com.deepak.management.controller;
 
-import com.deepak.management.model.doctor.DoctorInformation;
 import com.deepak.management.model.queuemanagement.QueueManagementDTO;
 import com.deepak.management.repository.QueueManagementRepository;
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,5 +22,11 @@ public class QueueManagementController {
     @Operation(summary = "Get all Queue Information")
     public List<QueueManagementDTO> getQueueInformation() {
         return queueManagementRepository.getQueueManagementData();
+    }
+
+    @GetMapping("/details/{clinicId}/{doctorId}")
+    @Operation(summary = "Get all Queue Information for a doctor")
+    public List<QueueManagementDTO> getQueueInformationForDoctor(@PathVariable String clinicId, @PathVariable String doctorId) {
+        return queueManagementRepository.getQueueManagementData(clinicId, doctorId);
     }
 }

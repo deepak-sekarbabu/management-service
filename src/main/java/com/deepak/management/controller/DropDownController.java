@@ -19,7 +19,6 @@ public class DropDownController {
 
     @GetMapping("/doctor-clinic")
     public List<ClinicDoctorView> getAllDoctorClinicViews() {
-        System.out.println("Here");
         return clinicDoctorService.getAllDoctorClinicViews();
     }
 }
