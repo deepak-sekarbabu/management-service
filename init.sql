@@ -137,6 +137,11 @@ CREATE TABLE
  queue_date DATE, FOREIGN KEY (slot_id) REFERENCES slot_information (slot_id), FOREIGN KEY (appointment_id) REFERENCES appointments (appointment_id)
 );
 
+-- SQL Views --
+CREATE VIEW doctor_clinic_view AS
+SELECT di.doctor_id, di.doctor_name, di.clinic_id, ci.clinic_name
+FROM doctor_information di
+JOIN clinic_information ci ON di.clinic_id = ci.clinic_id;
 
 -- SQL Inserts --
 INSERT INTO

@@ -16,8 +16,9 @@ public class QueueManagementDTO {
     private Integer queueNo;
     private String patientReached;
     private String time;
+    private String shiftTime;
 
-    public QueueManagementDTO(Integer id, String avatarUrl, String patientName, String patientPhoneNumber, String doctorName, Integer queueNo, String patientReached, String time) {
+    public QueueManagementDTO(Integer id, String avatarUrl, String patientName, String patientPhoneNumber, String doctorName, Integer queueNo, String patientReached, String time,String shiftTime) {
         this.id = id;
         this.avatarUrl = avatarUrl;
         this.patientName = patientName;
@@ -26,6 +27,7 @@ public class QueueManagementDTO {
         this.queueNo = queueNo;
         this.patientReached = patientReached;
         this.time = time;
+        this.shiftTime = shiftTime;
     }
 
 }
