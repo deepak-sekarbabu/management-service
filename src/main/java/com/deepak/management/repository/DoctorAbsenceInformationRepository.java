@@ -24,4 +24,6 @@ public interface DoctorAbsenceInformationRepository extends JpaRepository<Doctor
 
     List<DoctorAbsenceInformation> findByAbsenceDateAndClinicIdAndDoctorId(Date absenceDate, Integer clinicId, String doctorId);
 
+    Page<DoctorAbsenceInformation> findByAbsenceDateGreaterThanEqualAndClinicId(Date absenceDate, Integer clinicId, Pageable pageable);
+
 }

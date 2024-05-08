@@ -26,6 +26,8 @@ public interface DoctorAbsenceService {
 
     void deleteDoctorAbsenceInfoById(Long id) throws DoctorAbsenceNotFound;
 
+    List<DoctorAbsenceInformation> getDoctorAbsenceInformationsAfterDateAndClinic(Date startDate, Integer clinicId, Pageable page);
+
     List<DoctorAbsenceInformation> getDoctorAbsenceInformationsBetweenDateAndClinic(Date startDate, Date endDate, Integer clinicId, Pageable page);
 
     List<DoctorAbsenceInformation> getDoctorAbsenceInformationsBetweenDateAndDoctor(Date startDate, Date endDate, String doctorId, Pageable page);

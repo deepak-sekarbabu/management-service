@@ -91,6 +91,14 @@ public class DoctorAbsenceController {
         doctorAbsenceService.deleteDoctorAbsenceInfoById(id);
     }
 
+    @GetMapping("/after-date/clinic/{clinicId}")
+    @Operation(summary = "Get all doctor absence information after specified date and clinic id")
+    public List<DoctorAbsenceInformation> getDoctorAbsenceInformationsAfterDateAndClinic(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size, @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate afterDate, @PathVariable Integer clinicId) {
+        final Pageable paging = PageRequest.of(page, size);
+        return doctorAbsenceService.getDoctorAbsenceInformationsAfterDateAndClinic(Date.valueOf(afterDate), clinicId, paging);
+    }
+
+
     @GetMapping("/between-date/clinic/{clinicId}")
     @Operation(summary = "Get all doctor absence information between date and clinic id")
     public List<DoctorAbsenceInformation> getDoctorAbsenceInformationsBetweenDateAndClinic(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size, @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate startDate, @RequestParam @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate endDate, @PathVariable Integer clinicId) {

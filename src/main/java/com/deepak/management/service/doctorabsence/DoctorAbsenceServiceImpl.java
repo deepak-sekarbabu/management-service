@@ -118,6 +118,16 @@ public class DoctorAbsenceServiceImpl implements DoctorAbsenceService {
     }
 
     @Override
+    public List<DoctorAbsenceInformation> getDoctorAbsenceInformationsAfterDateAndClinic(Date absenceDate, Integer clinicId, Pageable page) {
+        final Page<DoctorAbsenceInformation> pagedResult = doctorAbsenceInformationRepository.findByAbsenceDateGreaterThanEqualAndClinicId(absenceDate, clinicId, page);
+        if (pagedResult.hasContent()) {
+            return pagedResult.getContent();
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
     public List<DoctorAbsenceInformation> getDoctorAbsenceInformationsBetweenDateAndClinic(Date startDate, Date endDate, Integer clinicId, Pageable page) {
         final Page<DoctorAbsenceInformation> pagedResult = doctorAbsenceInformationRepository.findByAbsenceDateBetweenAndClinicId(startDate, endDate, clinicId, page);
         if (pagedResult.hasContent()) {
