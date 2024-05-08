@@ -29,4 +29,10 @@ public class QueueManagementController {
     public List<QueueManagementDTO> getQueueInformationForDoctor(@PathVariable String clinicId, @PathVariable String doctorId) {
         return queueManagementRepository.getQueueManagementData(clinicId, doctorId);
     }
+
+    @PutMapping("/patientReached/{id}")
+    @Operation(summary = "Mark the patient as reached")
+    public void patientReached(@PathVariable Integer id) {
+        queueManagementRepository.updatePatientReached(id);
+    }
 }

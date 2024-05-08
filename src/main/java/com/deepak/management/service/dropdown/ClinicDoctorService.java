@@ -19,4 +19,8 @@ public class ClinicDoctorService {
     public List<ClinicDoctorView> getAllDoctorClinicViews() {
         return clinicDoctorViewRepository.findAll();
     }
+
+    public List<ClinicDoctorView> getAllDoctorByClinic(Integer clinicId) {
+        return clinicDoctorViewRepository.findAllByClinicId(clinicId);
+    }
 }
