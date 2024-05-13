@@ -54,7 +54,6 @@ public class DoctorInformation {
     @Schema(description = "Experience of Doctor", example = "12")
     private Integer doctorExperience;
 
-    @Max(1000)
     @Column(name = "doctor_consultation_fee", length = 4)
     @Schema(description = "Consultation Fee of Doctor in INR", example = "500")
     private Integer doctorConsultationFee;
