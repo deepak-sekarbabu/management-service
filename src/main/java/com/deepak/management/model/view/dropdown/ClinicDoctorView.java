@@ -14,18 +14,18 @@ import lombok.ToString;
 @JsonAutoDetect
 public class ClinicDoctorView {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "doctor_id")
-    private String doctorId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "doctor_id")
+  private String doctorId;
 
-    @Column(name = "doctor_name")
-    @Schema(description = "Doctor Name")
-    private String doctorName;
+  @Column(name = "doctor_name")
+  @Schema(description = "Doctor Name")
+  private String doctorName;
 
-    @Column(name = "clinic_id")
-    private Integer clinicId;
+  @Column(name = "clinic_id")
+  private Integer clinicId;
 
-    @Column(name = "clinic_name")
-    private String clinicName;
+  @Column(name = "clinic_name")
+  private String clinicName;
 }
