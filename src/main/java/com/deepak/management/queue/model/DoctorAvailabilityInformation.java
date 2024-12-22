@@ -10,7 +10,7 @@ import lombok.ToString;
 @JsonAutoDetect
 @ToString
 public class DoctorAvailabilityInformation {
-    private DoctorShiftAvailability doctorShiftAvailability;
-    private String currentDate;
-    private String currentDayOfWeek;
+  private DoctorShiftAvailability doctorShiftAvailability;
+  private String currentDate;
+  private String currentDayOfWeek;
 }

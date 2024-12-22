@@ -7,6 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PhoneNumbers {
-    @Schema(description = "PhoneNumber", example = "+91 1234456789")
-    private String phoneNumber;
+  @Schema(description = "PhoneNumber", example = "+91 1234456789")
+  private String phoneNumber;
 }
