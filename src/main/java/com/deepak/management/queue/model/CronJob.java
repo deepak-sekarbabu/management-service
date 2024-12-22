@@ -22,5 +22,6 @@ public class CronJob {
   @Column(nullable = false)
   private boolean enabled;
 
-  @Column private LocalDateTime lastRun;
+  @Column(name = "last_run")
+  private LocalDateTime lastRun;
 }

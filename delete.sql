@@ -1,4 +1,5 @@
 -- Disable foreign key checks temporarily
+SET NOCOUNT ON;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- Delete all rows from appointments table

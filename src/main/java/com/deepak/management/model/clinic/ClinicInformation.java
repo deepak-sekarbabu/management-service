@@ -52,14 +52,14 @@ public class ClinicInformation {
       description = "Clinic PhoneNumber",
       example =
           """
-            [
-                    {
-                        "phoneNumber": "123-456-7890"
-                    },
-                    {
-                        "phoneNumber": "987-654-3210"
-                    }
-                ]""")
+                    [
+                            {
+                                "phoneNumber": "123-456-7890"
+                            },
+                            {
+                                "phoneNumber": "987-654-3210"
+                            }
+                        ]""")
   @Column(name = "clinic_phone_numbers")
   @JdbcTypeCode(SqlTypes.JSON)
   private List<PhoneNumbers> clinicPhoneNumbers;
