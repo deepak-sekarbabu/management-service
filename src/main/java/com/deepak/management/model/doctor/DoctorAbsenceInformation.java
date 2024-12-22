@@ -31,8 +31,9 @@ public class DoctorAbsenceInformation {
   @Hidden
   private Long id;
 
-  @Column(name = "doctorId")
+  @Column(name = "doctor_id", length = 50)
   @Schema(description = "UID", example = "154654")
+  @JdbcTypeCode(SqlTypes.VARCHAR)
   private String doctorId;
 
   @Column(name = "clinic_id")

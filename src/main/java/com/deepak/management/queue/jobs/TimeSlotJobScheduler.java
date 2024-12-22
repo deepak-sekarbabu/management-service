@@ -43,23 +43,21 @@ public class TimeSlotJobScheduler {
               List<QueueTimeSlot> list =
                   slotCreationService.getTimeSlotInformation(
                       doctorInformation.getDoctorId(), doctorInformation.getClinicId());
+              final SlotGeneration table = new SlotGeneration();
               if (!list.isEmpty()) {
-                final SlotGeneration table = new SlotGeneration();
                 table.setDoctorId(doctorInformation.getDoctorId());
                 table.setClinicId(doctorInformation.getClinicId());
                 table.setSlotDate(Date.valueOf(LocalDate.now()));
                 table.setStatus(true);
                 table.setNoOfSlots(list.size());
-                slotGenerationRepository.save(table);
               } else {
-                final SlotGeneration table = new SlotGeneration();
                 table.setDoctorId(doctorInformation.getDoctorId());
                 table.setClinicId(doctorInformation.getClinicId());
                 table.setSlotDate(Date.valueOf(LocalDate.now()));
                 table.setStatus(true);
                 table.setNoOfSlots(0);
-                slotGenerationRepository.save(table);
               }
+              slotGenerationRepository.save(table);
               final long endTime = System.currentTimeMillis();
               final long timeTaken = endTime - startTime;
               LOGGER.info(

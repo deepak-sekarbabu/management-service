@@ -216,13 +216,13 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
   private ShiftTime calculateShiftTime(Time absenceStartTime, Time absenceEndTime) {
     final LocalTime localAbsenceStartTime = absenceStartTime.toLocalTime();
     final LocalTime localAbsenceEndTime = absenceEndTime.toLocalTime();
-    if (localAbsenceEndTime.compareTo(LocalTime.NOON) <= 0) {
+    if (!localAbsenceEndTime.isAfter(LocalTime.NOON)) {
       return ShiftTime.MORNING;
-    } else if (localAbsenceEndTime.compareTo(LocalTime.of(16, 0)) <= 0) {
+    } else if (!localAbsenceEndTime.isAfter(LocalTime.of(16, 0))) {
       return ShiftTime.AFTERNOON;
-    } else if (localAbsenceEndTime.compareTo(LocalTime.of(22, 0)) <= 0) {
+    } else if (!localAbsenceEndTime.isAfter(LocalTime.of(22, 0))) {
       return ShiftTime.EVENING;
-    } else if (localAbsenceStartTime.compareTo(LocalTime.of(0, 0)) == 0) {
+    } else if (localAbsenceStartTime.equals(LocalTime.of(0, 0))) {
       return ShiftTime.FULL_DAY;
     } else {
       return ShiftTime.FULL_DAY;
@@ -232,15 +232,13 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
   private List<DoctorAvailability> filterShiftDetails(
       List<DoctorAvailability> shiftDetails, String currentDayOfWeek) {
     final List<DoctorAvailability> filteredList = new ArrayList<>();
-    if (shiftDetails == null) {
-      return filteredList;
-    } else {
+    if (shiftDetails != null) {
       for (DoctorAvailability availability : shiftDetails) {
         if (availability.getAvailableDays().name().equalsIgnoreCase(currentDayOfWeek)) {
           filteredList.add(availability);
         }
       }
-      return filteredList;
     }
+    return filteredList;
   }
 }

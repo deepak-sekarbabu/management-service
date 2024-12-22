@@ -28,8 +28,9 @@ public class DoctorInformation {
   @Hidden
   private Long id;
 
-  @Column(name = "doctorId")
+  @Column(name = "doctor_id", length = 50)
   @Schema(description = "UID", example = "154654")
+  @JdbcTypeCode(SqlTypes.VARCHAR)
   private String doctorId;
 
   @Column(name = "clinic_id")
@@ -63,23 +64,19 @@ public class DoctorInformation {
       description = "Phone Numbers",
       example =
           """
-            [
-                    {
-                        "phoneNumber": "+91 123-456-7890"
-                    },
-                    {
-                        "phoneNumber": "+91 987-654-3210"
-                    }
-                ]""")
+                    [
+                            {
+                                "phoneNumber": "+91 123-456-7890"
+                            },
+                            {
+                                "phoneNumber": "+91 987-654-3210"
+                            }
+                        ]""")
   private List<PhoneNumbers> phoneNumbers;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "doctor_availability")
   private List<DoctorAvailability> doctorAvailability;
-
-  /*@Column(name = "doctor_consultation_time", length = 2)
-  @Schema(description = "Consultation Time per Patient in minutes", example = "10")
-  private Integer doctorConsultationTime;*/
 
   @Max(1000)
   @Column(name = "doctor_consultation_fee_other", length = 4)
