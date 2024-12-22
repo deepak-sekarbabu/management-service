@@ -388,10 +388,34 @@ INSERT INTO
  'AB00001',
  1
 );
-INSERT INTO
- cron_jobs (description, SCHEDULE, enabled, last_run) VALUES
- (
- 'Create Queue Slots based on doctors availability',
- '0 5 18 * * *',
- 1, NULL
+
+
+INSERT INTO cron_jobs (description, schedule, enabled, last_run)
+VALUES ('Create Queue Slots based on doctors availability', '0 5 18 * * *', 1, NULL);
+
+
+CREATE TABLE IF NOT EXISTS queue_management (
+    queue_management_id INT AUTO_INCREMENT PRIMARY KEY,
+    appointmentId INT,
+    slot_id INT,
+    clinic_id INTEGER,
+    doctor_id VARCHAR(50),
+    initial_queue_no INT,
+    current_queue_no INT,
+    advance_paid BOOLEAN,
+    cancelled BOOLEAN,
+    advance_revert_if_paid BOOLEAN,
+    patient_reached BOOLEAN,
+    visit_status VARCHAR(255),
+    consultation_fee_paid BOOLEAN,
+    consultation_fee_amount DECIMAL(10, 2),
+    transaction_id_advance_fee VARCHAR(255),
+    transaction_id_consultation_fee VARCHAR(255),
+    transaction_id_advance_revert VARCHAR(255),
+    queue_date DATE NULL DEFAULT NULL,
+    FOREIGN KEY (slot_id) REFERENCES slot_information(slot_id),
+    FOREIGN KEY (appointmentId) REFERENCES appointments(appointmentId)
 );
+
+--INSERT INTO queue_management (slot_id,appointmentId,clinic_id,doctor_id ,initial_queue_no, current_queue_no, advance_paid, patient_reached, visit_status, consultation_fee_paid, consultation_fee_amount, transaction_id_advance_fee, transaction_id_consultation_fee,queue_date )
+--VALUES (11,1,1,'AB00001', 5, 5, TRUE, FALSE, 'Scheduled', FALSE, 500.00, NULL, NULL, CURDATE() );
