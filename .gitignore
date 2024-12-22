@@ -161,3 +161,4 @@ target/sonar/report-task.txt
 /.idea/sonarlint/issuestore/4/1/41a4b668d0e75581f1d4183346b52e6d8f5bcf4f
 /.idea/sonarlint/securityhotspotstore/4/1/41a4b668d0e75581f1d4183346b52e6d8f5bcf4f
 *.gz
+/target/spotless-index
