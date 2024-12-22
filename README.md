@@ -1,5 +1,7 @@
 # Management Service
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b88e7facd5c247e69abfacc23128c54f)](https://app.codacy.com/gh/deepak-sekarbabu/management-service?utm_source=github.com&utm_medium=referral&utm_content=deepak-sekarbabu/management-service&utm_campaign=Badge_Grade)
+
 This service contains the logic for creating crud operation of doctor, clinic and doctor absense information.
 Also it contains jobs for scheduling slot information based on doctor availability and absence.
 
