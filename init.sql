@@ -25,34 +25,36 @@ CREATE TABLE
 ) ENGINE = InnoDB;
 
 -- Table for doctor information
--- Table for doctor information
-CREATE TABLE
- IF NOT EXISTS doctor_information (
- id INTEGER NOT NULL AUTO_INCREMENT,
- doctor_id VARCHAR(50),
- clinic_id INTEGER,
- doctor_name VARCHAR(120),
- phone_numbers JSON,
- doctor_speciality VARCHAR(120),
- doctor_availability JSON,
- doctor_consultation_fee INTEGER CHECK (doctor_consultation_fee <= 1000),
- doctor_consultation_fee_other INTEGER,
- doctor_experience INTEGER CHECK (doctor_experience <= 70), PRIMARY KEY (id), FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id), UNIQUE (doctor_id, clinic_id), -- Add a unique constraint on doctor_id and clinic_id
-KEY doctor_id_idx (doctor_id), INDEX (doctor_id) -- Add an index on the doctor_id column
-)
-ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS doctor_information (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    doctor_id VARCHAR(50),
+    clinic_id INTEGER,
+    doctor_name VARCHAR(120),
+    phone_numbers JSON,
+    doctor_speciality VARCHAR(120),
+    doctor_availability JSON,
+    doctor_consultation_fee INTEGER CHECK (doctor_consultation_fee <= 1000),
+    doctor_consultation_fee_other INTEGER,
+    doctor_experience INTEGER CHECK (doctor_experience <= 70),
+    PRIMARY KEY (id),
+    FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id),
+    UNIQUE (doctor_id),  -- Make doctor_id a unique key
+    KEY doctor_id_idx (doctor_id)
+) ENGINE = InnoDB;
 
 -- Table for doctor absence information
-CREATE TABLE
- IF NOT EXISTS doctor_absence_information (
- id INTEGER NOT NULL AUTO_INCREMENT,
- clinic_id INTEGER,
- doctor_id VARCHAR(50),
- doctor_name VARCHAR(120),
- absence_date DATE,
- absence_start_time TIME(0),
- absence_end_time TIME(0),
- optional_message VARCHAR(255), PRIMARY KEY (id), FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id), FOREIGN KEY (doctor_id) REFERENCES doctor_information (doctor_id)
+CREATE TABLE IF NOT EXISTS doctor_absence_information (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    clinic_id INTEGER,
+    doctor_id VARCHAR(50),
+    doctor_name VARCHAR(120),
+    absence_date DATE,
+    absence_start_time TIME(0),
+    absence_end_time TIME(0),
+    optional_message VARCHAR(255),
+    PRIMARY KEY (id),
+    FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id),
+    FOREIGN KEY (doctor_id) REFERENCES doctor_information (doctor_id)
 ) ENGINE = InnoDB;
 
 
@@ -393,7 +395,3 @@ INSERT INTO
  '0 5 18 * * *',
  1, NULL
 );
-
-
---INSERT INTO queue_management (slot_id,appointment_id,clinic_id,doctor_id ,initial_queue_no, current_queue_no, advance_paid, patient_reached, visit_status, consultation_fee_paid, consultation_fee_amount, transaction_id_advance_fee, transaction_id_consultation_fee)
---VALUES (11,1,1,'AB00001', 5, 5, TRUE, FALSE, 'Scheduled', FALSE, 500.00, NULL, NULL);

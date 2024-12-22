@@ -14,8 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class CustomSqlDateDeserializer extends StdDeserializer<Date> {
 
-  @Serial
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
   private static final DateTimeFormatter[] DATE_FORMATS = {
     DateTimeFormatter.ofPattern("dd-MM-yyyy"),
     DateTimeFormatter.ofPattern("yyyy-MM-dd"),
