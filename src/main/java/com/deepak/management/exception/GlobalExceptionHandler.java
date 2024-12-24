@@ -21,6 +21,7 @@ import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -37,6 +38,8 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
+
+
   @ExceptionHandler(ClinicNotFound.class)
   public ResponseEntity<ErrorDetails> handleClinicNotFoundException(
       ClinicNotFound ex, WebRequest request) {
@@ -44,6 +47,11 @@ public class GlobalExceptionHandler {
     ErrorDetails errorDetails =
         new ErrorDetails(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
     return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(NoResourceFoundException.class)
+  public ResponseEntity<String> handleNoResourceFoundException(NoResourceFoundException ex) {
+    return new ResponseEntity<>("Resource not found: " + ex.getMessage(), HttpStatus.NOT_FOUND);
   }
 
   @ExceptionHandler(DoctorNotFound.class)

@@ -58,6 +58,7 @@ public class QueueManagementRepository {
             + "JOIN doctor_information d ON q.doctor_id = d.doctor_id AND q.clinic_id = d.clinic_id "
             + "JOIN slot_information s ON q.slot_id = s.slot_id "
             + "WHERE  q.clinic_id = :clinicId AND q.doctor_id = :doctorId "
+            + "AND q.deleted = 0 "
             + "ORDER BY s.slot_time, s.shift_time ";
 
     Query query = entityManager.createNativeQuery(sql, QueueManagementDTO.class);
@@ -70,6 +71,31 @@ public class QueueManagementRepository {
   @Transactional
   public void updatePatientReached(Integer id) {
     String sql = "UPDATE queue_management SET patient_reached = 1 WHERE queue_management_id = :id";
+    Query query = entityManager.createNativeQuery(sql);
+    query.setParameter("id", id);
+    query.executeUpdate();
+  }
+
+  @Transactional
+  public void updatePatientCancelled(Integer id) {
+    String sql = "UPDATE queue_management SET cancelled = 1 WHERE queue_management_id = :id";
+    Query query = entityManager.createNativeQuery(sql);
+    query.setParameter("id", id);
+    query.executeUpdate();
+  }
+
+  @Transactional
+  public void updatePatientVisited(Integer id) {
+    String sql =
+        "UPDATE queue_management SET visit_status = 'Done' WHERE queue_management_id = :id";
+    Query query = entityManager.createNativeQuery(sql);
+    query.setParameter("id", id);
+    query.executeUpdate();
+  }
+
+  @Transactional
+  public void updatePatientDelete(Integer id) {
+    String sql = "UPDATE queue_management SET deleted = 1 WHERE queue_management_id = :id";
     Query query = entityManager.createNativeQuery(sql);
     query.setParameter("id", id);
     query.executeUpdate();

@@ -2,8 +2,9 @@ package com.deepak.management.queue.jobs;
 
 import com.deepak.management.queue.model.CronJob;
 import com.deepak.management.repository.CronJobRepository;
-import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class CronJobService {
@@ -15,12 +16,17 @@ public class CronJobService {
   }
 
   public void updateLastRun(Integer jobId) {
-    final CronJob cronJob = this.cronJobRepository.findById(jobId).get();
+    final CronJob cronJob = this.cronJobRepository.findById(jobId).orElseThrow(() -> new IllegalArgumentException("CronJob not found for id: " + jobId));
     cronJob.setLastRun(LocalDateTime.now()); // Set to current timestamp
     this.cronJobRepository.save(cronJob);
   }
 
   public String getCronExpression(Integer jobId) {
-    return this.cronJobRepository.findByIdAndEnabled(jobId, true).getSchedule();
+    CronJob cronJob = this.cronJobRepository.findByIdAndEnabled(jobId, true);
+    if (cronJob == null) {
+      // Provide a default cron expression if no CronJob is found or enabled
+      return "0 0 0 * * ?"; // Default to midnight every day
+    }
+    return cronJob.getSchedule();
   }
 }
