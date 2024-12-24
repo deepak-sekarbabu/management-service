@@ -47,4 +47,10 @@ public class QueueManagementController {
   public void patientVisited(@PathVariable Integer id) {
     queueManagementRepository.updatePatientVisited(id);
   }
+
+  @PutMapping("/patientDelete/{id}")
+  @Operation(summary = "Mark the patient as deleted")
+  public void patientDelete(@PathVariable Integer id) {
+    queueManagementRepository.updatePatientDelete(id);
+  }
 }
