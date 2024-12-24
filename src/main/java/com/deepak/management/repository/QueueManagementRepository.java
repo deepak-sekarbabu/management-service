@@ -74,4 +74,21 @@ public class QueueManagementRepository {
     query.setParameter("id", id);
     query.executeUpdate();
   }
+
+  @Transactional
+  public void updatePatientCancelled(Integer id) {
+    String sql = "UPDATE queue_management SET cancelled = 1 WHERE queue_management_id = :id";
+    Query query = entityManager.createNativeQuery(sql);
+    query.setParameter("id", id);
+    query.executeUpdate();
+  }
+
+  @Transactional
+  public void updatePatientVisited(Integer id) {
+    String sql =
+        "UPDATE queue_management SET visit_status = 'Done' WHERE queue_management_id = :id";
+    Query query = entityManager.createNativeQuery(sql);
+    query.setParameter("id", id);
+    query.executeUpdate();
+  }
 }
