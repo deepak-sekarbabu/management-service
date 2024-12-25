@@ -38,6 +38,8 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
+
+
   @ExceptionHandler(ClinicNotFound.class)
   public ResponseEntity<ErrorDetails> handleClinicNotFoundException(
       ClinicNotFound ex, WebRequest request) {

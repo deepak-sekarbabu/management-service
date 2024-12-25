@@ -1,5 +1,7 @@
 # Queue Management System for Healthcare Clinics
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b88e7facd5c247e69abfacc23128c54f)](https://app.codacy.com/gh/deepak-sekarbabu/management-service?utm_source=github.com&utm_medium=referral&utm_content=deepak-sekarbabu/management-service&utm_campaign=Badge_Grade)
+
 This project is a comprehensive queue management system designed for healthcare clinics, enabling efficient scheduling and management of doctor appointments.
 
 The Queue Management System is a Spring Boot application that provides a robust solution for managing doctor appointments, clinic information, and patient queues in healthcare facilities. It offers features such as doctor availability tracking, appointment scheduling, queue generation, and absence management.
