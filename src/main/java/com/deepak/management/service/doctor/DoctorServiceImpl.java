@@ -13,9 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public class DoctorServiceImpl implements DoctorService {
   private static final Logger LOGGER = LoggerFactory.getLogger(DoctorServiceImpl.class);
   private final DoctorInformationRepository doctorInformationRepository;
@@ -64,6 +64,8 @@ public class DoctorServiceImpl implements DoctorService {
         doctor.get().setDoctorName(doctorInformation.getDoctorName());
         doctor.get().setPhoneNumbers(doctorInformation.getPhoneNumbers());
         doctor.get().setDoctorName(doctorInformation.getDoctorName());
+        doctor.get().setDoctorEmail(doctorInformation.getDoctorEmail());
+        doctor.get().setGender(doctorInformation.getGender());
         doctor.get().setDoctorAvailability(doctorInformation.getDoctorAvailability());
         doctor.get().setDoctorSpeciality(doctorInformation.getDoctorSpeciality());
         doctor.get().setDoctorExperience(doctorInformation.getDoctorExperience());

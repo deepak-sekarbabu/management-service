@@ -2,9 +2,8 @@ package com.deepak.management.queue.jobs;
 
 import com.deepak.management.queue.model.CronJob;
 import com.deepak.management.repository.CronJobRepository;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CronJobService {
@@ -16,7 +15,10 @@ public class CronJobService {
   }
 
   public void updateLastRun(Integer jobId) {
-    final CronJob cronJob = this.cronJobRepository.findById(jobId).orElseThrow(() -> new IllegalArgumentException("CronJob not found for id: " + jobId));
+    final CronJob cronJob =
+        this.cronJobRepository
+            .findById(jobId)
+            .orElseThrow(() -> new IllegalArgumentException("CronJob not found for id: " + jobId));
     cronJob.setLastRun(LocalDateTime.now()); // Set to current timestamp
     this.cronJobRepository.save(cronJob);
   }

@@ -43,6 +43,18 @@ public class DoctorInformation {
   @JdbcTypeCode(SqlTypes.VARCHAR)
   private String doctorName;
 
+  @Size(max = 10)
+  @Column(name = "gender", length = 10)
+  @Schema(description = "Gender", example = "Male")
+  @JdbcTypeCode(SqlTypes.VARCHAR)
+  private String gender;
+
+  @Size(max = 120)
+  @Column(name = "doctor_email", length = 120)
+  @Schema(description = "Doctor Email", example = "doctor@gmail.com")
+  @JdbcTypeCode(SqlTypes.VARCHAR)
+  private String doctorEmail;
+
   @Size(max = 120)
   @Column(name = "doctor_speciality", length = 120)
   @Schema(description = "Speciality of Doctor", example = "Child Specialist")

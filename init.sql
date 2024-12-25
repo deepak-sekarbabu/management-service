@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS doctor_information (
     doctor_id VARCHAR(50) UNIQUE,
     clinic_id INTEGER,
     doctor_name VARCHAR(120),
+    gender VARCHAR(10),
+    doctor_email VARCHAR(120),
     phone_numbers JSON,
     doctor_speciality VARCHAR(120),
     doctor_availability JSON,
