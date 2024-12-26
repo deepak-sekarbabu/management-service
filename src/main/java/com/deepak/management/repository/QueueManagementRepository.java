@@ -5,9 +5,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@Slf4j
 public class QueueManagementRepository {
 
   private final EntityManager entityManager;
@@ -105,5 +107,60 @@ public class QueueManagementRepository {
     Query query2 = entityManager.createNativeQuery(sql2);
     query2.setParameter("id", id);
     query2.executeUpdate();
+  }
+
+  @Transactional
+  public void SkipPatient(Integer id) {
+    // Step 1: Retrieve the current slot ID for the given queue management ID
+    String sql1 =
+        "SELECT slot_id, clinic_id, doctor_id FROM queue_management WHERE queue_management_id = :id";
+    Query query1 = entityManager.createNativeQuery(sql1);
+    query1.setParameter("id", id);
+    List<Object[]> result = query1.getResultList();
+
+    if (!result.isEmpty()) {
+      Object[] row = result.get(0);
+      Integer currentSlotId = (Integer) row[0];
+      Integer clinicId = (Integer) row[1];
+      String doctorId = (String) row[2];
+
+      // Step 2: Find the next available slot from the slot_information table
+      String sql2 =
+          "SELECT slot_id FROM slot_information WHERE is_available = 1 AND slot_id > :currentSlotId AND clinic_id = :clinicId AND doctor_id = :doctorId ORDER BY slot_id ASC LIMIT 1";
+      Query query2 = entityManager.createNativeQuery(sql2);
+      query2.setParameter("currentSlotId", currentSlotId);
+      query2.setParameter("clinicId", clinicId);
+      query2.setParameter("doctorId", doctorId);
+      List<Object> nextSlotIds = query2.getResultList();
+
+      if (!nextSlotIds.isEmpty()) {
+        Integer nextSlotId = (Integer) nextSlotIds.get(0);
+
+        // Step 3: Update the queue_management table with the new slot ID
+        String sql3 =
+            "UPDATE queue_management SET slot_id = :nextSlotId WHERE queue_management_id = :id";
+        Query query3 = entityManager.createNativeQuery(sql3);
+        query3.setParameter("nextSlotId", nextSlotId);
+        query3.setParameter("id", id);
+        query3.executeUpdate();
+
+        // Step 4: Mark the new slot as unavailable and the previous slot as available
+        String sql4 = "UPDATE slot_information SET is_available = 0 WHERE slot_id = :nextSlotId";
+        Query query4 = entityManager.createNativeQuery(sql4);
+        query4.setParameter("nextSlotId", nextSlotId);
+        query4.executeUpdate();
+
+        String sql5 = "UPDATE slot_information SET is_available = 1 WHERE slot_id = :currentSlotId";
+        Query query5 = entityManager.createNativeQuery(sql5);
+        query5.setParameter("currentSlotId", currentSlotId);
+        query5.executeUpdate();
+
+        log.info("Patient skipped to slot ID: " + nextSlotId);
+      } else {
+        log.warn("No available slot found for skipping.");
+      }
+    } else {
+      log.info("No slot ID found for queue_management_id: " + id);
+    }
   }
 }

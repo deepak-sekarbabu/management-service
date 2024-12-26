@@ -53,4 +53,10 @@ public class QueueManagementController {
   public void patientDelete(@PathVariable Integer id) {
     queueManagementRepository.updatePatientDelete(id);
   }
+
+  @PutMapping("/patientSkip/{id}")
+  @Operation(summary = "Skip the patient ")
+  public void patientSkip(@PathVariable Integer id) {
+    queueManagementRepository.SkipPatient(id);
+  }
 }
