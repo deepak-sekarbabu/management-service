@@ -138,7 +138,7 @@ public class QueueManagementRepository {
 
         // Step 3: Update the queue_management table with the new slot ID
         String sql3 =
-            "UPDATE queue_management SET slot_id = :nextSlotId WHERE queue_management_id = :id";
+            "UPDATE queue_management SET slot_id = :nextSlotId , current_queue_no = :nextSlotId WHERE queue_management_id = :id";
         Query query3 = entityManager.createNativeQuery(sql3);
         query3.setParameter("nextSlotId", nextSlotId);
         query3.setParameter("id", id);
