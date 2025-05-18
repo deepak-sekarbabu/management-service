@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/doctor")
-@Tag(name = "Doctor Service", description = "Handles CRUD operations for Doctor Information")
+@Tag(name = "Doctor Management", description = "Handles CRUD operations for Doctor Information")
 @Validated
 public class DoctorController {
   private static final Logger LOGGER = LoggerFactory.getLogger(DoctorController.class);
