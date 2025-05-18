@@ -37,6 +37,8 @@ CREATE TABLE IF NOT EXISTS doctor_information (
     doctor_consultation_fee INTEGER CHECK (doctor_consultation_fee <= 1000),
     doctor_consultation_fee_other INTEGER,
     doctor_experience INTEGER CHECK (doctor_experience <= 70),
+    languages_spoken JSON,
+    qualifications JSON,
     FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id)
 );
 
