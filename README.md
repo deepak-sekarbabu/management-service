@@ -7,6 +7,7 @@ This project is a comprehensive queue management system designed for healthcare 
 The Queue Management System is a Spring Boot application that provides a robust solution for managing doctor appointments, clinic information, and patient queues in healthcare facilities. It offers features such as doctor availability tracking, appointment scheduling, queue generation, and absence management.
 
 Key features include:
+
 - Doctor and clinic information management
 - Dynamic queue generation based on doctor availability
 - Doctor absence tracking and management
@@ -32,6 +33,7 @@ The system is built with scalability and performance in mind, utilizing Spring B
   - `utils/`: Utility classes
 
 Key Files:
+
 - `pom.xml`: Maven project configuration file
 - `Dockerfile`: Docker configuration for containerization
 - `compose.yaml`: Docker Compose file for local development setup
@@ -40,6 +42,7 @@ Key Files:
 ## Usage Instructions
 
 ### Prerequisites
+
 - Java Development Kit (JDK) 21
 - Maven 3.6+
 - Docker (optional, for containerized deployment)
@@ -48,12 +51,14 @@ Key Files:
 ### Installation
 
 1. Clone the repository:
+
    ```
    git clone <repository-url>
    cd queue-management-system
    ```
 
 2. Build the project:
+
    ```
    mvn clean install
    ```
@@ -64,6 +69,7 @@ Key Files:
    - Update `application.properties` with your database credentials
 
 4. Run the application:
+
    ```
    java -jar target/management-0.0.1-SNAPSHOT.jar
    ```
@@ -130,6 +136,7 @@ Common issues and solutions:
    - Verify that doctor and clinic information is properly set up in the database
 
 For debugging:
+
 - Enable debug logging by adding `logging.level.com.deepak.management=DEBUG` to `application.properties`
 - Check application logs in the `logs/` directory
 
@@ -149,22 +156,26 @@ The Queue Management System processes requests through the following flow:
 ```
 
 For queue generation:
+
 1. `TimeSlotJobScheduler` runs on a scheduled basis.
 2. It calls `QueueSlotCreationService` to generate slots for each doctor.
 3. Generated slots are saved to the database through `SlotGenerationRepository`.
 
 Important technical considerations:
+
 - Transactions are managed at the service layer to ensure data consistency.
 - Caching mechanisms may be implemented to improve performance for frequently accessed data.
 - Proper error handling and validation are implemented throughout the flow to ensure data integrity and provide meaningful error messages.
 
 ### Prerequisites
+
 - Docker
 - Docker Compose
 
 ### Deployment Steps
 
 1. Build the Docker image:
+
    ```
    docker build -t queue-management-system .
    ```
@@ -172,6 +183,7 @@ Important technical considerations:
 2. Update the `compose.yaml` file with appropriate environment variables.
 
 3. Start the application and database:
+
    ```
    docker-compose up -d
    ```
@@ -213,8 +225,8 @@ The application's infrastructure is defined in the following files:
 
 - [@deepak-sekarbabu](https://github.com/deepak-sekarbabu)
 
-
 ## License
+
 # Restricted Usage License
 
 This repository is protected by a Restricted Usage License. No part of the content within this repository may be used, reproduced, distributed, or modified in any form without prior written permission from the owner.
@@ -224,5 +236,3 @@ For inquiries regarding the use of this repository or its contents, please conta
 Unauthorized use of this repository or its contents may result in legal action.
 
 Thank you for respecting the terms of this license.
-
-
