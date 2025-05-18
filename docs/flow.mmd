@@ -1,0 +1,17 @@
+flowchart TD
+    A[🏥 Clinic Management<br/>POST /clinic<br/>Create Clinic] --> B[👨‍⚕️ Doctor Management<br/>POST /doctor<br/>Add Doctor to Clinic]
+    B --> C[📅 Doctor Absence Management<br/>POST /doctor-absence<br/>Record Doctor Absence]
+
+    C --> D[⚙️ Queue Slot Service<br/>GET /queue-slot<br/>Fetch Doctor/Clinic Availability]
+    D --> E[⏱️ Generate Time Slots<br/>GET /queue-slot/generate-time-slots<br/>Create Slots]
+
+    E --> F[📋 Queue Details<br/>GET /queue/details/&#123;clinicId&#125;/&#123;doctorId&#125;<br/>View Queue Information]
+    F --> G[👥 Information Available for Appointment/Registration Booking<br/>Book Slots]
+
+    style A fill:#d9fdd3,stroke:#333,stroke-width:1px
+    style B fill:#c3f0f4,stroke:#333,stroke-width:1px
+    style C fill:#f9f0c6,stroke:#333,stroke-width:1px
+    style D fill:#e0d8f9,stroke:#333,stroke-width:1px
+    style E fill:#fce2db,stroke:#333,stroke-width:1px
+    style F fill:#e6f7ff,stroke:#333,stroke-width:1px
+    style G fill:#d4eaff,stroke:#333,stroke-width:2px
