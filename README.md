@@ -213,7 +213,7 @@ The application's infrastructure is defined in the following files:
   - Runs the application JAR
 
 - compose.yaml:
-  - Defines a MySQL 8.3.0 database service
+  - Defines a MySQL 8.4.5 database service
     - Environment variables for database setup
     - Port mapping: 3306:3306
     - Mounts an initialization SQL script
@@ -229,7 +229,7 @@ The application's infrastructure is defined in the following files:
 
 ## License
 
-# Restricted Usage License
+## Restricted Usage License
 
 This repository is protected by a Restricted Usage License. No part of the content within this repository may be used, reproduced, distributed, or modified in any form without prior written permission from the owner.
 

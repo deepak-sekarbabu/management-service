@@ -1,17 +1,19 @@
 package com.deepak.management.service.clinic;
 
-import com.deepak.management.exception.ClinicNotFound;
-import com.deepak.management.model.clinic.ClinicInformation;
-import com.deepak.management.repository.ClinicInformationRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import com.deepak.management.exception.ClinicNotFound;
+import com.deepak.management.model.clinic.ClinicInformation;
+import com.deepak.management.repository.ClinicInformationRepository;
 
 @Service
 public class ClinicServiceImpl implements ClinicService {
@@ -53,16 +55,36 @@ public class ClinicServiceImpl implements ClinicService {
     final Optional<ClinicInformation> existingClinic =
         this.clinicInformationRepository.findById(clinicId);
     if (existingClinic.isPresent()) {
-      existingClinic.get().setClinicName(clinicInformation.getClinicName());
-      existingClinic.get().setClinicAddress(clinicInformation.getClinicAddress());
-      existingClinic.get().setClinicPinCode(clinicInformation.getClinicPinCode());
-      existingClinic.get().setMapGeoLocation(clinicInformation.getMapGeoLocation());
-      existingClinic.get().setClinicPhoneNumbers(clinicInformation.getClinicPhoneNumbers());
-      existingClinic.get().setNoOfDoctors(clinicInformation.getNoOfDoctors());
-      existingClinic.get().setClinicEmail(clinicInformation.getClinicEmail());
-      existingClinic.get().setClinicTimings(clinicInformation.getClinicTimings());
-      existingClinic.get().setClinicAmenities(clinicInformation.getClinicAmenities());
-      existingClinic.get().setClinicWebsite(clinicInformation.getClinicWebsite());
+      if (clinicInformation.getClinicName() != null) {
+        existingClinic.get().setClinicName(clinicInformation.getClinicName());
+      }
+      if (clinicInformation.getClinicAddress() != null) {
+        existingClinic.get().setClinicAddress(clinicInformation.getClinicAddress());
+      }
+      if (clinicInformation.getClinicPinCode() != null) {
+        existingClinic.get().setClinicPinCode(clinicInformation.getClinicPinCode());
+      }
+      if (clinicInformation.getMapGeoLocation() != null) {
+        existingClinic.get().setMapGeoLocation(clinicInformation.getMapGeoLocation());
+      }
+      if (clinicInformation.getClinicPhoneNumbers() != null) {
+        existingClinic.get().setClinicPhoneNumbers(clinicInformation.getClinicPhoneNumbers());
+      }
+      if (clinicInformation.getNoOfDoctors() != null) {
+        existingClinic.get().setNoOfDoctors(clinicInformation.getNoOfDoctors());
+      }
+      if (clinicInformation.getClinicEmail() != null) {
+        existingClinic.get().setClinicEmail(clinicInformation.getClinicEmail());
+      }
+      if (clinicInformation.getClinicTimings() != null) {
+        existingClinic.get().setClinicTimings(clinicInformation.getClinicTimings());
+      }
+      if (clinicInformation.getClinicAmenities() != null) {
+        existingClinic.get().setClinicAmenities(clinicInformation.getClinicAmenities());
+      }
+      if (clinicInformation.getClinicWebsite() != null) {
+        existingClinic.get().setClinicWebsite(clinicInformation.getClinicWebsite());
+      }
       LOGGER.info("Updated Clinic information for clinic id {}", clinicId);
       return this.clinicInformationRepository.save(existingClinic.get());
     } else {
