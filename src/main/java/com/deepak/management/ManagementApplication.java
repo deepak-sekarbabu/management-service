@@ -22,7 +22,7 @@ public class ManagementApplication {
           @Info(
               title = "Management service",
               description = "Management Service APIs",
-              version = "1.0",
+                  version = "${api.version}",
               contact = @Contact(name = "Deepak")))
   public static class OpenAPIConfig {}
 }
