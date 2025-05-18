@@ -85,6 +85,8 @@ The application can be configured through the `application.properties` file. Key
 
 ### API Usage
 
+Swagger UI: <https://localhost:8443/swagger-ui/index.html>
+
 The application exposes several RESTful endpoints:
 
 1. Clinic Management:
