@@ -1,7 +1,7 @@
-# Compiled class file
+# Java class files
 *.class
 
-# Log file
+# Log files
 *.log
 
 # BlueJ files
@@ -10,7 +10,7 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# Package Files #
+# Package files
 *.jar
 *.war
 *.nar
@@ -18,11 +18,16 @@
 *.zip
 *.tar.gz
 *.rar
+*.gz
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# VM crash logs
 hs_err_pid*
 replay_pid*
+
+# IDE files
 management.iml
+.idea/
+.idea/*
 .idea/.gitignore
 .idea/compiler.xml
 .idea/encodings.xml
@@ -30,9 +35,25 @@ management.iml
 .idea/misc.xml
 .idea/vcs.xml
 .idea/sonarlint/*
+
+# VSCode files
+.vscode/
 .vscode/cody.json
 .vscode/launch.json
+.vscode/settings.json
+
+# Build output
+/target/
 target/*
-/.idea/*
-*.gz
 /target/spotless-index
+
+# Eclipse project files
+.classpath
+.factorypath
+.project
+.settings/
+.settings/org.eclipse.core.resources.prefs
+.settings/org.eclipse.jdt.apt.core.prefs
+.settings/org.eclipse.jdt.core.prefs
+.settings/org.eclipse.m2e.core.prefs
+.settings/org.springframework.ide.eclipse.prefs
