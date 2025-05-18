@@ -5,6 +5,10 @@ import com.deepak.management.exception.ErrorDetails;
 import com.deepak.management.model.doctor.DoctorAbsenceInformation;
 import com.deepak.management.repository.DoctorAbsenceInformationRepository;
 import com.deepak.management.service.doctorabsence.DoctorAbsenceService;
+import com.deepak.management.repository.ClinicInformationRepository;
+import com.deepak.management.repository.DoctorInformationRepository;
+import com.deepak.management.exception.ClinicNotFound;
+import com.deepak.management.exception.DoctorNotFound;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,12 +36,18 @@ public class DoctorAbsenceController {
   private static final Logger LOGGER = LoggerFactory.getLogger(DoctorAbsenceController.class);
   private final DoctorAbsenceInformationRepository doctorAbsenceInformationRepository;
   private final DoctorAbsenceService doctorAbsenceService;
+  private final ClinicInformationRepository clinicInformationRepository;
+  private final DoctorInformationRepository doctorInformationRepository;
 
   public DoctorAbsenceController(
       DoctorAbsenceInformationRepository doctorAbsenceInformationRepository,
-      DoctorAbsenceService doctorAbsenceService) {
+      DoctorAbsenceService doctorAbsenceService,
+      ClinicInformationRepository clinicInformationRepository,
+      DoctorInformationRepository doctorInformationRepository) {
     this.doctorAbsenceInformationRepository = doctorAbsenceInformationRepository;
     this.doctorAbsenceService = doctorAbsenceService;
+    this.clinicInformationRepository = clinicInformationRepository;
+    this.doctorInformationRepository = doctorInformationRepository;
   }
 
   @PostMapping
@@ -66,8 +76,18 @@ public class DoctorAbsenceController {
           )
   })
   public DoctorAbsenceInformation saveAbsence(
-      @Valid @RequestBody DoctorAbsenceInformation doctorAbsenceInformation) {
+      @Valid @RequestBody DoctorAbsenceInformation doctorAbsenceInformation) throws ClinicNotFound, DoctorNotFound {
     LOGGER.info("Adding new doctor absence information: {}", doctorAbsenceInformation);
+    // Check if clinic exists
+    if (doctorAbsenceInformation.getClinicId() == null ||
+        !clinicInformationRepository.existsById(doctorAbsenceInformation.getClinicId())) {
+      throw new ClinicNotFound("Clinic with id " + doctorAbsenceInformation.getClinicId() + " not found");
+    }
+    // Check if doctor exists for the given clinic
+    if (doctorAbsenceInformation.getDoctorId() == null ||
+        doctorInformationRepository.findByDoctorIdAndClinicId(doctorAbsenceInformation.getDoctorId(), doctorAbsenceInformation.getClinicId()) == null) {
+      throw new DoctorNotFound("Doctor with id " + doctorAbsenceInformation.getDoctorId() + " not found in clinic " + doctorAbsenceInformation.getClinicId());
+    }
     return doctorAbsenceInformationRepository.save(doctorAbsenceInformation);
   }
 
