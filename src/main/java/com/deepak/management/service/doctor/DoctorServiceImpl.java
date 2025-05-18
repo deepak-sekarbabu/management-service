@@ -55,27 +55,43 @@ public class DoctorServiceImpl implements DoctorService {
       throws ClinicNotFound, DoctorNotFound {
     final Optional<DoctorInformation> doctor = this.doctorInformationRepository.findById(doctorId);
     if (doctor.isPresent()) {
-      // Check if the clinicIdToUpdate exists in the clinic_information table
-      final Optional<ClinicInformation> clinic =
-          clinicInformationRepository.findById(doctorInformation.getClinicId());
-      if (clinic.isPresent()) {
-        // Update doctor's information with the provided clinicId
-        doctor.get().setClinicId(doctorInformation.getClinicId());
-        doctor.get().setDoctorName(doctorInformation.getDoctorName());
-        doctor.get().setPhoneNumbers(doctorInformation.getPhoneNumbers());
-        doctor.get().setDoctorName(doctorInformation.getDoctorName());
-        doctor.get().setDoctorEmail(doctorInformation.getDoctorEmail());
-        doctor.get().setGender(doctorInformation.getGender());
-        doctor.get().setDoctorAvailability(doctorInformation.getDoctorAvailability());
-        doctor.get().setDoctorSpeciality(doctorInformation.getDoctorSpeciality());
-        doctor.get().setDoctorExperience(doctorInformation.getDoctorExperience());
-        doctor.get().setDoctorConsultationFee(doctorInformation.getDoctorConsultationFee());
-        LOGGER.info("Updated doctor information for the Id : {}", doctorId);
-        return this.doctorInformationRepository.save(doctor.get());
-      } else {
-        throw new ClinicNotFound(
-            "Clinic with id " + doctorInformation.getClinicId() + " not found");
+      if (doctorInformation.getClinicId() != null) {
+        // Check if the clinicIdToUpdate exists in the clinic_information table
+        final Optional<ClinicInformation> clinic =
+            clinicInformationRepository.findById(doctorInformation.getClinicId());
+        if (clinic.isPresent()) {
+          doctor.get().setClinicId(doctorInformation.getClinicId());
+        } else {
+          throw new ClinicNotFound(
+              "Clinic with id " + doctorInformation.getClinicId() + " not found");
+        }
       }
+      if (doctorInformation.getDoctorName() != null) {
+        doctor.get().setDoctorName(doctorInformation.getDoctorName());
+      }
+      if (doctorInformation.getPhoneNumbers() != null) {
+        doctor.get().setPhoneNumbers(doctorInformation.getPhoneNumbers());
+      }
+      if (doctorInformation.getDoctorEmail() != null) {
+        doctor.get().setDoctorEmail(doctorInformation.getDoctorEmail());
+      }
+      if (doctorInformation.getGender() != null) {
+        doctor.get().setGender(doctorInformation.getGender());
+      }
+      if (doctorInformation.getDoctorAvailability() != null) {
+        doctor.get().setDoctorAvailability(doctorInformation.getDoctorAvailability());
+      }
+      if (doctorInformation.getDoctorSpeciality() != null) {
+        doctor.get().setDoctorSpeciality(doctorInformation.getDoctorSpeciality());
+      }
+      if (doctorInformation.getDoctorExperience() != null) {
+        doctor.get().setDoctorExperience(doctorInformation.getDoctorExperience());
+      }
+      if (doctorInformation.getDoctorConsultationFee() != null) {
+        doctor.get().setDoctorConsultationFee(doctorInformation.getDoctorConsultationFee());
+      }
+      LOGGER.info("Updated doctor information for the Id : {}", doctorId);
+      return this.doctorInformationRepository.save(doctor.get());
     } else {
       throw new DoctorNotFound("Doctor with id " + doctorId + " not found");
     }
