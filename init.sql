@@ -8,6 +8,10 @@ DROP TABLE IF EXISTS appointments;
 DROP TABLE IF EXISTS cron_jobs;
 DROP TABLE IF EXISTS queue_management;
 
+-----------------------------------------------------------------------------------
+--------------------------------Management Tables--------------------------------
+-----------------------------------------------------------------------------------
+
 -- Table for clinic information
 CREATE TABLE IF NOT EXISTS clinic_information (
     clinic_id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -77,6 +81,9 @@ CREATE TABLE IF NOT EXISTS slot_generation_information (
  slots INTEGER
 );
 
+-----------------------------------------------------------------------------------
+--------------------------------Registration Tables--------------------------------
+-----------------------------------------------------------------------------------
 -- User Registration Table
 CREATE TABLE IF NOT EXISTS users (
  id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -104,14 +111,6 @@ CREATE TABLE IF NOT EXISTS appointments (
  KEY doctor_id_idx (doctor_id)
 );
 
--- Cron Jobs Table
-CREATE TABLE IF NOT EXISTS cron_jobs (
- id INTEGER AUTO_INCREMENT PRIMARY KEY,
- description TEXT DEFAULT NULL, SCHEDULE VARCHAR(255) NOT NULL,
- enabled BOOLEAN NOT NULL DEFAULT TRUE,
- last_run DATETIME DEFAULT NULL
-);
-
 -- Queue Management Table
 CREATE TABLE IF NOT EXISTS queue_management (
  queue_management_id INTEGER AUTO_INCREMENT PRIMARY KEY,
@@ -135,7 +134,10 @@ CREATE TABLE IF NOT EXISTS queue_management (
  queue_date DATE, FOREIGN KEY (slot_id) REFERENCES slot_information (slot_id), FOREIGN KEY (appointment_id) REFERENCES QueueManagement.appointments (appointment_id)
 );
 
--- SQL Views --
+-----------------------------------------------------------------------------------
+--------------------------------SQL Views------------------------------------------
+-----------------------------------------------------------------------------------
+
 CREATE VIEW doctor_clinic_view AS
 SELECT
     di.doctor_id,
@@ -148,6 +150,17 @@ JOIN
     clinic_information ci
 ON
     di.clinic_id = ci.clinic_id;
+
+-----------------------------------------------------------------------------------
+--------------------------------CRON JOB ------------------------------------------
+-----------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS cron_jobs (
+ id INTEGER AUTO_INCREMENT PRIMARY KEY,
+ description TEXT DEFAULT NULL, SCHEDULE VARCHAR(255) NOT NULL,
+ enabled BOOLEAN NOT NULL DEFAULT TRUE,
+ last_run DATETIME DEFAULT NULL
+);
+
 
 -- SQL Insert --
 INSERT INTO cron_jobs (description, schedule, enabled, last_run)
