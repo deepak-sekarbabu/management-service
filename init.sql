@@ -103,12 +103,15 @@ CREATE TABLE IF NOT EXISTS slot_generation_information (
 -- -------------------------------------------------------------------------------
 
 -- Patient Registration Table
+
 CREATE TABLE IF NOT EXISTS patients (
-    id INTEGER AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100),
+    id INT AUTO_INCREMENT PRIMARY KEY,
     phoneNumber VARCHAR(13),
-    email VARCHAR(100),
-    birthdate DATE,
+    personal_details JSON,
+    medical_info JSON,
+    insurance_details JSON,
+    emergency_contact JSON,
+    clinic_preferences JSON,
     UNIQUE KEY uq_phone_number (phoneNumber)
 );
 
