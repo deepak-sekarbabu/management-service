@@ -1,17 +1,24 @@
 package com.deepak.management.queue.model;
 
-import com.deepak.management.utils.CustomSqlDateDeserializer;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.*;
 import java.sql.Date;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.deepak.management.utils.CustomSqlDateDeserializer;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -23,7 +30,7 @@ public class SlotGeneration {
   @Id
   private Integer id;
 
-  @Column(name = "doctor_id")
+  @Column(name = "doctor_id", length = 50)
   @Schema(description = "Doctor Id", example = "AB0001")
   private String doctorId;
 
