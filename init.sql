@@ -106,13 +106,13 @@ CREATE TABLE IF NOT EXISTS slot_generation_information (
 
 CREATE TABLE IF NOT EXISTS patients (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    phoneNumber VARCHAR(13),
+    phone_number VARCHAR(13),
     personal_details JSON,
     medical_info JSON,
     insurance_details JSON,
     emergency_contact JSON,
     clinic_preferences JSON,
-    UNIQUE KEY uq_phone_number (phoneNumber)
+    UNIQUE KEY uq_phone_number (phone_number)
 );
 
 -- Appointments Table
