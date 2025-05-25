@@ -1,14 +1,8 @@
 package com.deepak.management.model.doctor;
 
-import java.util.List;
-
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
 import com.deepak.management.model.common.DoctorAvailability;
 import com.deepak.management.model.common.PhoneNumbers;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
@@ -18,9 +12,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter
@@ -81,7 +78,8 @@ public class DoctorInformation {
   @JdbcTypeCode(SqlTypes.JSON)
   @Schema(
       description = "List of phone numbers to contact the doctor",
-      example = """
+      example =
+          """
         [
             {\"phoneNumber\": \"+91 9444-123-456\"},
             {\"phoneNumber\": \"+91 9845-789-012\"}
@@ -91,8 +89,10 @@ public class DoctorInformation {
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "doctor_availability")
   @Schema(
-      description = "Doctor's availability schedule including days, shift times, and consultation details",
-      example = """
+      description =
+          "Doctor's availability schedule including days, shift times, and consultation details",
+      example =
+          """
         [
             {
                 \"availableDays\": \"SUNDAY\",
@@ -120,11 +120,15 @@ public class DoctorInformation {
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "languages_spoken")
-  @Schema(description = "Languages spoken by the doctor", example = "[\"Tamil\", \"English\", \"Malayalam\"]")
+  @Schema(
+      description = "Languages spoken by the doctor",
+      example = "[\"Tamil\", \"English\", \"Malayalam\"]")
   private List<String> languagesSpoken;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "qualifications")
-  @Schema(description = "List of academic and professional qualifications of the doctor", example = "[\"MBBS\", \"MD (Paediatrics)\", \"DCH\"]")
+  @Schema(
+      description = "List of academic and professional qualifications of the doctor",
+      example = "[\"MBBS\", \"MD (Paediatrics)\", \"DCH\"]")
   private List<String> qualifications;
 }

@@ -6,7 +6,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@OpenAPIDefinition(info = @Info(title = "Management service", description = "Management Service APIs", version = "1.0.0", contact = @io.swagger.v3.oas.annotations.info.Contact(name = "Deepak")))
+@OpenAPIDefinition(
+    info =
+        @Info(
+            title = "Management service",
+            description = "Management Service APIs",
+            version = "1.0.0",
+            contact = @io.swagger.v3.oas.annotations.info.Contact(name = "Deepak")))
 @SpringBootApplication
 @EnableScheduling
 public class ManagementApplication {

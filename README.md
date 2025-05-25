@@ -2,226 +2,133 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b88e7facd5c247e69abfacc23128c54f)](https://app.codacy.com/gh/deepak-sekarbabu/management-service?utm_source=github.com&utm_medium=referral&utm_content=deepak-sekarbabu/management-service&utm_campaign=Badge_Grade)
 
-This project is a comprehensive queue management system designed for healthcare clinics, enabling efficient scheduling and management of doctor appointments.
+A modern, scalable queue and appointment management system for healthcare clinics, built with Java 21, Spring Boot 3.5+, and MySQL. The system streamlines doctor scheduling, patient queues, and clinic operations with RESTful APIs, robust validation, and automated slot generation.
 
-The Queue Management System is a Spring Boot application that provides a robust solution for managing doctor appointments, clinic information, and patient queues in healthcare facilities. It offers features such as doctor availability tracking, appointment scheduling, queue generation, and absence management.
-
-Key features include:
+## Key Features
 
 - Doctor and clinic information management
-- Dynamic queue generation based on doctor availability
+- Dynamic queue and time slot generation based on doctor availability
 - Doctor absence tracking and management
-- RESTful API for easy integration with front-end applications
-- Automated time slot generation for efficient scheduling
+- RESTful API with OpenAPI/Swagger documentation
+- Automated, scheduled slot generation (via Spring Scheduler)
+- Scalable, layered architecture (Controller → Service → Repository)
+- Input validation and global exception handling
+- Docker and Docker Compose support for easy deployment
 
-The system is built with scalability and performance in mind, utilizing Spring Boot's powerful features and a MySQL database for data persistence. It's designed to streamline the appointment process, reduce wait times, and improve overall patient experience in healthcare settings.
+## Technology Stack
+
+- Java 21, Spring Boot 3.5+
+- Spring Data JPA (MySQL 8.3+)
+- Maven (build & dependency management)
+- Lombok (boilerplate reduction)
+- Swagger/OpenAPI (API docs)
+- Spotless (code formatting)
+- JUnit 5 & Mockito (testing)
+- Docker, Docker Compose
 
 ## Repository Structure
 
-- `src/main/java/com/deepak/management/`: Root package for the application
-  - `config/`: Configuration classes
-  - `controller/`: REST controllers for handling HTTP requests
-  - `exception/`: Custom exception classes and global exception handler
-  - `model/`: Data models and DTOs
-  - `queue/`: Queue management specific classes
-    - `controller/`: Controllers for queue-related operations
-    - `jobs/`: Scheduled jobs for queue management
-    - `model/`: Queue-specific data models
-    - `service/`: Services for queue operations
-  - `repository/`: Data access layer interfaces
-  - `service/`: Business logic layer
-  - `utils/`: Utility classes
+- `src/main/java/com/deepak/management/`
+  - `config/` – Configuration classes
+  - `controller/` – REST controllers (Clinic, Doctor, Queue, Absence)
+  - `exception/` – Custom exceptions & global handler
+  - `model/` – Data models & DTOs
+  - `queue/` – Queue management (controller, jobs, model, service)
+  - `repository/` – Data access layer
+  - `service/` – Business logic
+  - `utils/` – Utility classes
+- `src/main/resources/` – Application properties, SQL, etc.
+- `src/test/java/` – Unit & integration tests
+- `Dockerfile`, `compose.yaml` – Containerization & orchestration
+- `pom.xml` – Maven project configuration
+- `docs/flow.mmd` – System flowchart (Mermaid)
 
-Key Files:
-
-- `pom.xml`: Maven project configuration file
-- `Dockerfile`: Docker configuration for containerization
-- `compose.yaml`: Docker Compose file for local development setup
-- `src/main/java/com/deepak/management/ManagementApplication.java`: Main application entry point
-
-## Usage Instructions
+## Setup & Usage
 
 ### Prerequisites
 
-- Java Development Kit (JDK) 21
+- Java 21+
 - Maven 3.6+
-- Docker (optional, for containerized deployment)
-- MySQL 8.3.0 (or compatible version)
+- MySQL 8.3+ (or compatible)
+- Docker (optional)
 
-### Installation
+### Installation & Run
 
-1. Clone the repository:
+```sh
+git clone <repository-url>
+cd management-service
+mvn clean install
+```
 
-   ```
-   git clone <repository-url>
-   cd queue-management-system
-   ```
+1. Configure your database in `src/main/resources/application.properties`.
+2. Ensure MySQL is running and a database named `QueueManagement` exists.
+3. Run the application:
 
-2. Build the project:
-
-   ```
-   mvn clean install
-   ```
-
-3. Set up the database:
-   - Ensure MySQL is running
-   - Create a database named `QueueManagement`
-   - Update `application.properties` with your database credentials
-
-4. Run the application:
-
-   ```
+   ```sh
    java -jar target/management-0.0.1-SNAPSHOT.jar
    ```
 
-### Configuration
+### Docker Deployment
 
-The application can be configured through the `application.properties` file. Key configurations include:
-
-- `spring.datasource.url`: Database connection URL
-- `spring.datasource.username`: Database username
-- `spring.datasource.password`: Database password
-- `server.port`: Application server port (default: 8080)
-
-### API Usage
-
-Swagger UI: <https://localhost:8443/swagger-ui/index.html>
-
-The application exposes several RESTful endpoints:
-
-1. Clinic Management:
-   - GET `/clinics`: Retrieve all clinics
-   - GET `/clinics/{id}`: Get clinic by ID
-   - POST `/clinics`: Create a new clinic
-   - PUT `/clinics/{id}`: Update clinic information
-
-2. Doctor Management:
-   - GET `/doctors`: Retrieve all doctors
-   - GET `/doctors/{id}`: Get doctor by ID
-   - POST `/doctors`: Add a new doctor
-   - PUT `/doctors/{id}`: Update doctor information
-   - DELETE `/doctors/{id}`: Delete a doctor
-
-3. Queue Management:
-   - GET `/queue-slot`: Get queue slots for a doctor and clinic
-   - GET `/queue-slot/generate-time-slots`: Generate time slots for a doctor and clinic
-
-4. Doctor Absence Management:
-   - GET `/doctor-absence`: Get all doctor absences
-   - POST `/doctor-absence`: Record a new doctor absence
-   - PUT `/doctor-absence/{id}`: Update an absence record
-   - DELETE `/doctor-absence/{id}`: Delete an absence record
-
-### Testing & Quality
-
-To run the tests:
-
-```
-mvn test
+```sh
+docker build -t queue-management-system .
+docker-compose up -d
 ```
 
-### Troubleshooting
+- The app will be available at [http://localhost:8080](http://localhost:8080).
 
-Common issues and solutions:
+### API Documentation
 
-1. Database connection issues:
-   - Ensure MySQL is running and accessible
-   - Verify database credentials in `application.properties`
-   - Check for proper JDBC driver configuration
+- Swagger UI: [https://localhost:8443/swagger-ui/index.html](https://localhost:8443/swagger-ui/index.html)
+- Endpoints cover:
+  - Clinic: `/clinics`, `/clinics/{id}`
+  - Doctor: `/doctors`, `/doctors/{id}`
+  - Queue: `/queue-slot`, `/queue-slot/generate-time-slots`, `/queue/details/{clinicId}/{doctorId}`
+  - Doctor Absence: `/doctor-absence`, `/doctor-absence/{id}`
 
-2. Application fails to start:
-   - Verify Java version (JDK 21 required)
-   - Ensure all dependencies are properly downloaded (run `mvn dependency:resolve`)
+## Testing & Quality
 
-3. Queue generation not working:
-   - Check logs for any errors in the `TimeSlotJobScheduler` class
-   - Verify that doctor and clinic information is properly set up in the database
+- Run all tests: `mvn test`
+- Code style enforced via Spotless (Google Java Format)
+- High code coverage and meaningful assertions expected
 
-For debugging:
+## Troubleshooting
 
-- Enable debug logging by adding `logging.level.com.deepak.management=DEBUG` to `application.properties`
-- Check application logs in the `logs/` directory
+- **DB connection issues:** Check MySQL is running and credentials in `application.properties`.
+- **App fails to start:** Ensure Java 21+ and all Maven dependencies are resolved.
+- **Queue generation issues:** Check logs for errors in `TimeSlotJobScheduler` or service classes.
 
 ## Data Flow
 
-The Queue Management System processes requests through the following flow:
-
-1. Client sends a request to one of the REST endpoints.
-2. The appropriate controller receives the request and delegates to the corresponding service.
-3. The service layer processes the business logic, interacting with repositories as needed.
-4. Repositories communicate with the MySQL database to persist or retrieve data.
-5. The service layer returns processed data back to the controller.
-6. The controller sends the response back to the client.
-
+```mermaid
+flowchart TD
+    A[🏥 Clinic Management<br/>POST /clinic<br/>Create Clinic] --> B[👨‍⚕️ Doctor Management<br/>POST /doctor<br/>Add Doctor to Clinic]
+    B --> C[📅 Doctor Absence Management<br/>POST /doctor-absence<br/>Record Doctor Absence]
+    C --> D[⚙️ Queue Slot Service<br/>GET /queue-slot<br/>Fetch Doctor/Clinic Availability]
+    D --> E[⏱️ Generate Time Slots<br/>GET /queue-slot/generate-time-slots<br/>Create Slots]
+    E --> F[📋 Queue Details<br/>GET /queue/details/{clinicId}/{doctorId}<br/>View Queue Information]
+    F --> G[👥 Information Available for Appointment/Registration Booking<br/>Book Slots]
+    style A fill:#d9fdd3,stroke:#333,stroke-width:1px
+    style B fill:#c3f0f4,stroke:#333,stroke-width:1px
+    style C fill:#f9f0c6,stroke:#333,stroke-width:1px
+    style D fill:#e0d8f9,stroke:#333,stroke-width:1px
+    style E fill:#fce2db,stroke:#333,stroke-width:1px
+    style F fill:#e6f7ff,stroke:#333,stroke-width:1px
+    style G fill:#d4eaff,stroke:#333,stroke-width:2px
 ```
-[Client] <-> [Controller] <-> [Service] <-> [Repository] <-> [Database]
-```
 
-For queue generation:
+- Scheduled jobs auto-generate slots for each doctor/clinic daily.
+- See `docs/flow.mmd` for a detailed flowchart.
 
-1. `TimeSlotJobScheduler` runs on a scheduled basis.
-2. It calls `QueueSlotCreationService` to generate slots for each doctor.
-3. Generated slots are saved to the database through `SlotGenerationRepository`.
+## Coding Standards
 
-Important technical considerations:
-
-- Transactions are managed at the service layer to ensure data consistency.
-- Caching mechanisms may be implemented to improve performance for frequently accessed data.
-- Proper error handling and validation are implemented throughout the flow to ensure data integrity and provide meaningful error messages.
-
-### Prerequisites
-
-- Docker
-- Docker Compose
-
-### Deployment Steps
-
-1. Build the Docker image:
-
-   ```
-   docker build -t queue-management-system .
-   ```
-
-2. Update the `compose.yaml` file with appropriate environment variables.
-
-3. Start the application and database:
-
-   ```
-   docker-compose up -d
-   ```
-
-4. The application should now be accessible at `http://localhost:8080`.
-
-### Environment Configurations
-
-Ensure the following environment variables are set in your deployment environment:
-
-- `SPRING_DATASOURCE_URL`
-- `SPRING_DATASOURCE_USERNAME`
-- `SPRING_DATASOURCE_PASSWORD`
-- `SPRING_JPA_HIBERNATE_DDL_AUTO`
-- `SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT`
-
-## Infrastructure
-
-The application's infrastructure is defined in the following files:
-
-- Dockerfile:
-  - Base image: openjdk:21-jdk-slim
-  - Copies the application JAR and SSL certificates
-  - Exposes port 8080
-  - Runs the application JAR
-
-- compose.yaml:
-  - Defines a MySQL 8.4.5 database service
-    - Environment variables for database setup
-    - Port mapping: 3306:3306
-    - Mounts an initialization SQL script
-  - (Commented out) Application service configuration
-    - Would build from Dockerfile
-    - Environment variables for Spring Boot configuration
-    - Port mapping: 8080:8080
-    - Depends on the database service
+- Java 21 features (records, pattern matching, etc.)
+- Constructor injection with Lombok's `@RequiredArgsConstructor`
+- JPA for entity mapping, Flyway for migrations (recommended)
+- Global exception handling, input validation
+- RESTful best practices (status codes, DTOs, OpenAPI docs)
+- Code formatting via Spotless
+- See `.github/workflows/instructions.md` for full guidelines
 
 ## Authors
 
@@ -229,12 +136,8 @@ The application's infrastructure is defined in the following files:
 
 ## License
 
-## Restricted Usage License
+This project is licensed under the BSD 3-Clause License. See the [LICENSE](LICENSE) file for details.
 
-This repository is protected by a Restricted Usage License. No part of the content within this repository may be used, reproduced, distributed, or modified in any form without prior written permission from the owner.
+---
 
-For inquiries regarding the use of this repository or its contents, please contact [Deepak Sekarbabu/deepakinmail@gmail.com].
-
-Unauthorized use of this repository or its contents may result in legal action.
-
-Thank you for respecting the terms of this license.
+For inquiries or permission to use this repository, contact Deepak Sekarbabu at [deepakinmail@gmail.com](mailto:deepakinmail@gmail.com).
