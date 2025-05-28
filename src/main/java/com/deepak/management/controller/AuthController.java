@@ -23,9 +23,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(
+    name = "Auth Controller",
+    description = "APIs for managing JWT tokens")
 public class AuthController {
 
     @Autowired
@@ -43,7 +47,7 @@ public class AuthController {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtTokenProvider.generateToken(loginRequest.getUsername());
+        String jwt = jwtTokenProvider.generateToken(loginRequest.getUsername(),"ADMIN");
         return ResponseEntity.ok(new LoginResponse(jwt));
     }
 
@@ -56,9 +60,10 @@ public class AuthController {
         boolean valid = jwtTokenProvider.validateToken(tokenRequest.getToken());
         if (valid) {
             String username = jwtTokenProvider.getUsernameFromJWT(tokenRequest.getToken());
-            return ResponseEntity.ok(new TokenValidationResponse(true, username));
+            String role = jwtTokenProvider.getRoleFromJWT(tokenRequest.getToken());
+            return ResponseEntity.ok(new TokenValidationResponse(true, username, role));
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenValidationResponse(false, null));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new TokenValidationResponse(false, null, null));
         }
     }
 }

@@ -26,10 +26,10 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String username, String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
-        return Jwts.builder().setSubject(username).setIssuedAt(now).setExpiration(expiryDate)
+        return Jwts.builder().setSubject(username).setIssuedAt(now).setExpiration(expiryDate).claim("role", role)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512).compact();
     }
 
@@ -47,5 +47,10 @@ public class JwtTokenProvider {
             // Log the exception if necessary
         }
         return false;
+    }
+
+    public String getRoleFromJWT(String token) {
+        Claims claims = Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
+        return claims.get("role", String.class);
     }
 }
