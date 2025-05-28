@@ -1,8 +1,10 @@
 package com.deepak.management.model.auth;
 
+import com.deepak.management.converter.IntegerListConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.*;
 
 @Entity
@@ -60,6 +62,10 @@ public class User {
 
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
+
+  @Column(name = "clinic_id", columnDefinition = "json")
+  @Convert(converter = IntegerListConverter.class)
+  private List<Integer> clinicIds;
 
   @PrePersist
   protected void onCreate() {

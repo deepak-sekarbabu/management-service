@@ -7,6 +7,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,7 @@ public class JwtTokenProvider {
     return Keys.hmacShaKeyFor(keyBytes);
   }
 
-  public String generateToken(String username, String role) {
+  public String generateToken(String username, String role, List<Integer> clinicIds) {
     Date now = new Date();
     Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
     return Jwts.builder()
@@ -33,6 +34,7 @@ public class JwtTokenProvider {
         .setIssuedAt(now)
         .setExpiration(expiryDate)
         .claim("role", role)
+        .claim("clinicIds", clinicIds) // Add clinicIds to the token
         .signWith(getSigningKey(), SignatureAlgorithm.HS512)
         .compact();
   }
@@ -55,8 +57,19 @@ public class JwtTokenProvider {
   }
 
   public String getRoleFromJWT(String token) {
-    Claims claims =
-        Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
-    return claims.get("role", String.class);
+    return getClaimsFromToken(token).get("role", String.class);
+  }
+
+  @SuppressWarnings("unchecked")
+  public List<Integer> getClinicIdsFromJWT(String token) {
+    return getClaimsFromToken(token).get("clinicIds", List.class);
+  }
+
+  private Claims getClaimsFromToken(String token) {
+    return Jwts.parserBuilder()
+        .setSigningKey(getSigningKey())
+        .build()
+        .parseClaimsJws(token)
+        .getBody();
   }
 }

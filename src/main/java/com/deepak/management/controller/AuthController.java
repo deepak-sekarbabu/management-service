@@ -4,6 +4,7 @@ import com.deepak.management.model.auth.LoginRequest;
 import com.deepak.management.model.auth.LoginResponse;
 import com.deepak.management.model.auth.TokenValidationRequest;
 import com.deepak.management.model.auth.TokenValidationResponse;
+import com.deepak.management.security.CustomUserDetails;
 import com.deepak.management.security.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -52,8 +53,19 @@ public class AuthController {
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 loginRequest.getUsername(), loginRequest.getPassword()));
+
     SecurityContextHolder.getContext().setAuthentication(authentication);
-    String jwt = jwtTokenProvider.generateToken(loginRequest.getUsername(), "ADMIN");
+
+    // Get the authenticated user details
+    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+    // Generate token with username, role and clinicIds
+    String jwt =
+        jwtTokenProvider.generateToken(
+            loginRequest.getUsername(),
+            userDetails.getAuthorities().iterator().next().getAuthority().replace("ROLE_", ""),
+            userDetails.getClinicIds());
+
     return ResponseEntity.ok(new LoginResponse(jwt));
   }
 

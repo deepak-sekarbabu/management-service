@@ -47,4 +47,9 @@ public class CustomUserDetails implements UserDetails {
   public boolean isEnabled() {
     return Boolean.TRUE.equals(user.getIsActive());
   }
+
+  // Get clinic IDs from the user
+  public List<Integer> getClinicIds() {
+    return user.getClinicIds() != null ? user.getClinicIds() : List.of();
+  }
 }

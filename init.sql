@@ -25,6 +25,8 @@ DROP TABLE IF EXISTS doctor_information;
 
 DROP TABLE IF EXISTS clinic_information;
 
+DROP TABLE IF EXISTS users;
+
 -- -------------------------------------------------------------------------------
 -- -------------------------------Management Tables-------------------------------
 -- -------------------------------------------------------------------------------
@@ -119,6 +121,7 @@ CREATE TABLE
         email VARCHAR(100) NOT NULL UNIQUE,
         phone_number VARCHAR(10) NULL,
         role VARCHAR(10) NOT NULL,
+        clinic_id JSON,
         is_active BOOLEAN NOT NULL DEFAULT TRUE,
         failed_login_attempts INT NOT NULL DEFAULT 0,
         locked_until TIMESTAMP NULL,
