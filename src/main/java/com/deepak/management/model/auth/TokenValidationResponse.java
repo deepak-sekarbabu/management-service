@@ -1,5 +1,6 @@
 package com.deepak.management.model.auth;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,4 +14,5 @@ public class TokenValidationResponse {
   private boolean valid;
   private String username;
   private String role;
+  private List<Integer> clinicIds;
 }

@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -90,10 +91,11 @@ public class AuthController {
     if (valid) {
       String username = jwtTokenProvider.getUsernameFromJWT(tokenRequest.getToken());
       String role = jwtTokenProvider.getRoleFromJWT(tokenRequest.getToken());
-      return ResponseEntity.ok(new TokenValidationResponse(true, username, role));
+      List<Integer> clinicIds = jwtTokenProvider.getClinicIdsFromJWT(tokenRequest.getToken());
+      return ResponseEntity.ok(new TokenValidationResponse(true, username, role, clinicIds));
     } else {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body(new TokenValidationResponse(false, null, null));
+          .body(new TokenValidationResponse(false, null, null, null));
     }
   }
 }
