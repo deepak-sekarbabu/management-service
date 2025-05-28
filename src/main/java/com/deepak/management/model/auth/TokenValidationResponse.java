@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TokenValidationResponse {
-    private boolean valid;
-    private String username;
-    private String role;
+  private boolean valid;
+  private String username;
+  private String role;
 }
