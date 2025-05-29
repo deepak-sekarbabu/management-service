@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
+@Tag(name = "User Controller", description = "APIs for managing users")
 public class UserController {
   private final UserService userService;
 
@@ -52,6 +55,7 @@ public class UserController {
         @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
         @ApiResponse(responseCode = "404", description = "User not found", content = @Content)
       })
+  @SecurityRequirement(name = "bearerAuth")
   @PutMapping("/{id}/password")
   public ResponseEntity<Void> updatePassword(
       @Parameter(description = "ID of the user to update", required = true) @PathVariable
@@ -74,6 +78,7 @@ public class UserController {
         @ApiResponse(responseCode = "204", description = "User deleted successfully"),
         @ApiResponse(responseCode = "404", description = "User not found", content = @Content)
       })
+  @SecurityRequirement(name = "bearerAuth")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteUser(
       @Parameter(description = "ID of the user to delete", required = true) @PathVariable
