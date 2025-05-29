@@ -1,5 +1,10 @@
 package com.deepak.management.model.auth;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(
+    description = "Login request payload",
+    example = "{\n  \"username\": \"john_doe\",\n  \"password\": \"securePassword123!\"\n}")
 public class LoginRequest {
   private String username;
   private String password;
