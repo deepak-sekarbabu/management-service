@@ -1,5 +1,6 @@
 package com.deepak.management.queue.controller;
 
+import com.deepak.management.exception.ErrorDetails;
 import com.deepak.management.exception.SlotAlreadyGeneratedException;
 import com.deepak.management.queue.model.DoctorAvailabilityInformation;
 import com.deepak.management.queue.model.QueueTimeSlot;
@@ -8,6 +9,13 @@ import com.deepak.management.queue.service.QueueSlotCreationService;
 import com.deepak.management.repository.SlotGenerationRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -38,7 +46,48 @@ public class QueueSlotController {
   }
 
   @GetMapping
-  @Operation(summary = "Fetch Data for Queue Slots for Doctor and Clinic")
+  @Operation(
+      summary = "Fetch Data for Queue Slots for Doctor and Clinic",
+      description =
+          "Returns doctor availability and slot information for a given doctor and clinic.",
+      parameters = {
+        @Parameter(
+            name = "doctorId",
+            description = "Unique identifier of the doctor",
+            required = true,
+            in = ParameterIn.QUERY,
+            schema = @Schema(type = "string")),
+        @Parameter(
+            name = "clinicId",
+            description = "Unique identifier of the clinic",
+            required = true,
+            in = ParameterIn.QUERY,
+            schema = @Schema(type = "integer"))
+      })
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved doctor availability information",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = DoctorAvailabilityInformation.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Invalid input parameters",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDetails.class))),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDetails.class)))
+      })
   public DoctorAvailabilityInformation getQueueSlotsForDoctorAndClinic(
       @RequestParam String doctorId, @RequestParam Integer clinicId)
       throws JsonProcessingException {
@@ -52,7 +101,54 @@ public class QueueSlotController {
   @GetMapping("/generate-time-slots")
   @Operation(
       summary =
-          "Returns the Generated Slot Information for Doctor and Clinic if not already generated")
+          "Returns the Generated Slot Information for Doctor and Clinic if not already generated",
+      description =
+          "Generates and returns time slots for a doctor and clinic for the current day. Throws an error if already generated.",
+      parameters = {
+        @Parameter(
+            name = "doctorId",
+            description = "Unique identifier of the doctor",
+            required = true,
+            in = ParameterIn.QUERY,
+            schema = @Schema(type = "string")),
+        @Parameter(
+            name = "clinicId",
+            description = "Unique identifier of the clinic",
+            required = true,
+            in = ParameterIn.QUERY,
+            schema = @Schema(type = "integer"))
+      })
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully generated and returned time slots",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = QueueTimeSlot.class)))),
+        @ApiResponse(
+            responseCode = "304",
+            description = "Slot information already generated for this doctor and clinic for today",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDetails.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Invalid input parameters",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDetails.class))),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorDetails.class)))
+      })
   public List<QueueTimeSlot> generateTimeSlotInformation(
       @RequestParam String doctorId, @RequestParam Integer clinicId)
       throws SlotAlreadyGeneratedException {

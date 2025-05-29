@@ -36,7 +36,9 @@ INSERT INTO doctor_information (
  doctor_availability,
  doctor_consultation_fee,
  doctor_consultation_fee_other,
- doctor_experience
+ doctor_experience,
+ languages_spoken,
+ qualifications
 ) VALUES (
  'AB00001',
  1,
@@ -155,7 +157,9 @@ INSERT INTO doctor_information (
 ]',
  500,
  300,
- 12
+ 12,
+ '["Tamil", "English", "Malayalam"]',
+ '["MBBS", "MD (Paediatrics)", "DCH"]'
 );
 
 INSERT INTO doctor_absence_information (

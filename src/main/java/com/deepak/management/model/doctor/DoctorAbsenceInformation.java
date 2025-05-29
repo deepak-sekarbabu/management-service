@@ -32,7 +32,7 @@ public class DoctorAbsenceInformation {
   private Long id;
 
   @Column(name = "doctor_id", length = 50)
-  @Schema(description = "UID", example = "154654")
+  @Schema(description = "UID", example = "100000")
   @JdbcTypeCode(SqlTypes.VARCHAR)
   private String doctorId;
 

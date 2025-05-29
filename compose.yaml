@@ -1,7 +1,6 @@
-version: '3.8'
 services:
   db:
-    image: mysql:8.3.0
+    image: mysql:8.4.5
     environment:
       MYSQL_DATABASE: QueueManagement
       MYSQL_USER: my_user
@@ -14,19 +13,4 @@ services:
     security_opt:
       - seccomp:unconfined
 
-#  app:
-#    build: .
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/QueueManagement?allowPublicKeyRetrieval=true
-#      SPRING_DATASOURCE_USERNAME: my_user
-#      SPRING_DATASOURCE_PASSWORD: my_password
-#      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
-#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-#      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL8Dialect
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - db
-
-volumes:
-  db_data:
+# No volume for /var/lib/mysql!

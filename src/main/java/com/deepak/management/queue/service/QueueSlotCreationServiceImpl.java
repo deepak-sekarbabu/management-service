@@ -73,8 +73,11 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
     final List<DoctorAbsenceInformation> absenceInformation =
         this.doctorAbsenceInformationRepository.findByAbsenceDateAndClinicIdAndDoctorId(
             Date.valueOf(LocalDate.now()), clinicId, doctorId);
+    final List<QueueTimeSlot> queueTimeSlots =
+        this.slotInformationRepository.findByDoctorIdAndClinicId(doctorId, clinicId);
     LOGGER.info("Doctor Availability Information: {}", information);
     LOGGER.info("Doctor Absence Information: {}", absenceInformation);
+    LOGGER.info("Queue Time Slot List: {}", queueTimeSlots);
 
     final DoctorAvailabilityInformation doctorAvailabilityInformation =
         new DoctorAvailabilityInformation();
@@ -91,6 +94,7 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
     doctorAvailabilityInformation.setDoctorShiftAvailability(doctorShiftAvailability);
     doctorAvailabilityInformation.setCurrentDate(String.valueOf(LocalDate.now()));
     doctorAvailabilityInformation.setCurrentDayOfWeek(LocalDate.now().getDayOfWeek().toString());
+    doctorAvailabilityInformation.setQueueTimeSlots(queueTimeSlots);
     return doctorAvailabilityInformation;
   }
 
