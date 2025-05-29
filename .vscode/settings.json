@@ -2,7 +2,7 @@
   "java.compile.nullAnalysis.mode": "automatic",
   "java.format.settings.url": ".vscode/java-formatter.xml",
   "java.configuration.updateBuildConfiguration": "automatic",
-  "maven.view": "hierarchical",
+  "maven.view": "flat",
   "jdk.runConfig.vmOptions": "-Xms256m -Xmx512m",
   "jdk.advanced.disable.nbjavac": false
 }
