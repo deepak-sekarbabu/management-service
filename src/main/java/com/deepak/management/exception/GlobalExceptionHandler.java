@@ -93,9 +93,24 @@ public class GlobalExceptionHandler {
     body.put("timestamp", LocalDateTime.now().format(formatter));
     body.put("status", HttpStatus.CONFLICT.value());
     body.put("error", "Data Integrity Violation");
-    body.put("message", ex.getMostSpecificCause().getMessage());
+    String message = ex.getMostSpecificCause().getMessage();
+    // Custom handling for foreign key and duplicate key violations
+    if (message != null) {
+      if (message.contains("Cannot add or update a child row")
+          && message.contains("doctor_information")
+          && message.contains("clinic_id")) {
+        body.put(
+            "message",
+            "Clinic does not exist for the given clinicId. Please provide a valid clinicId.");
+      } else if (message.contains("Duplicate entry") && message.contains("users.username")) {
+        body.put("message", "Username already exists. Please choose a different username.");
+      } else {
+        body.put("message", message);
+      }
+    } else {
+      body.put("message", ex.getMessage());
+    }
     body.put("path", request.getDescription(false).replace("uri=", ""));
-
     return new ResponseEntity<>(body, HttpStatus.CONFLICT);
   }
 

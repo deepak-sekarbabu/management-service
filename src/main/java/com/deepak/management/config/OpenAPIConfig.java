@@ -2,6 +2,7 @@ package com.deepak.management.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
@@ -14,8 +15,6 @@ public class OpenAPIConfig {
   @Bean
   public OpenAPI customOpenAPI() {
     final String securitySchemeName = "bearerAuth";
-    final String apiTitle = "Management Service API";
-
     return new OpenAPI()
         .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
         .components(
@@ -29,6 +28,12 @@ public class OpenAPIConfig {
                         .bearerFormat("JWT")
                         .description(
                             "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"")))
-        .info(new Info().title(apiTitle).version("1.0"));
+        .info(
+            new Info()
+                .title("Queue Management System API")
+                .description(
+                    "RESTful API for managing clinics, doctors, appointments, and queue slots.")
+                .version("1.0.0")
+                .contact(new Contact().name("Deepak Sekarbabu").email("deepakinmail@gmail.com")));
   }
 }
