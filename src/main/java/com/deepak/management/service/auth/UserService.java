@@ -1,6 +1,7 @@
 package com.deepak.management.service.auth;
 
-import com.deepak.management.model.auth.*;
+import com.deepak.management.model.auth.User;
+import com.deepak.management.model.auth.UserRegistrationRequest;
 import com.deepak.management.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,11 +18,11 @@ public class UserService {
   public User registerUser(UserRegistrationRequest request) {
     User user =
         User.builder()
-            .username(request.username())
-            .passwordHash(passwordEncoder.encode(request.password()))
-            .email(request.email())
-            .phoneNumber(request.phoneNumber())
-            .role(request.role())
+            .username(request.getUsername())
+            .passwordHash(passwordEncoder.encode(request.getPassword()))
+            .email(request.getEmail())
+            .phoneNumber(request.getPhoneNumber())
+            .role(request.getRole())
             .isActive(true)
             .build();
     return userRepository.save(user);

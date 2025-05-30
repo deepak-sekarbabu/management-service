@@ -40,8 +40,10 @@ public class SecurityConfig {
                     // Allow Swagger and auth endpoints
                     .requestMatchers(
                         "/v3/api-docs/**",
+                        "/v3/api-docs",
                         "/swagger-ui/**",
                         "/swagger-ui.html",
+                        "/swagger-ui/index.html",
                         "/auth/**",
                         "/api/v1/users/register")
                     .permitAll()
