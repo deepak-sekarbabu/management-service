@@ -1,5 +1,17 @@
 package com.deepak.management.queue.service;
 
+import java.sql.Date;
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import com.deepak.management.model.common.DoctorAvailability;
 import com.deepak.management.model.common.ShiftTime;
 import com.deepak.management.model.doctor.DoctorAbsenceInformation;
@@ -11,16 +23,6 @@ import com.deepak.management.queue.model.QueueTimeSlot;
 import com.deepak.management.repository.DoctorAbsenceInformationRepository;
 import com.deepak.management.repository.DoctorInformationRepository;
 import com.deepak.management.repository.SlotInformationRepository;
-import java.sql.Date;
-import java.sql.Time;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 @Service
 public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
@@ -39,28 +41,45 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
     this.slotInformationRepository = slotInformationRepository;
   }
 
+  private static final int BATCH_SIZE = 100;
+
   private static void removeDoctorAbsence(
       List<QueueTimeSlot> queueTimeSlots, List<QueueTimeSlot> queueAbsenceTimeSlots) {
+    if (queueTimeSlots == null
+        || queueAbsenceTimeSlots == null
+        || queueTimeSlots.isEmpty()
+        || queueAbsenceTimeSlots.isEmpty()) {
+      return;
+    }
     queueTimeSlots.removeIf(
         slot1 ->
             queueAbsenceTimeSlots.stream()
-                .anyMatch(slot2 -> slot1.getSlotTime().equals(slot2.getSlotTime())));
+                .anyMatch(
+                    slot2 ->
+                        slot1 != null
+                            && slot2 != null
+                            && slot1.getSlotTime() != null
+                            && slot1.getSlotTime().equals(slot2.getSlotTime())));
   }
 
   private static void reorderQueueNumbers(List<QueueTimeSlot> queueTimeSlots) {
+    if (queueTimeSlots == null || queueTimeSlots.isEmpty()) {
+      return;
+    }
+
     int slotNoMorning = 1;
     int slotNoAfternoon = 1;
     int slotNoEvening = 1;
+
     for (QueueTimeSlot slot : queueTimeSlots) {
-      if (slot.getShiftTime().equalsIgnoreCase("MORNING")) {
-        slot.setSlotNo(slotNoMorning);
-        slotNoMorning++;
-      } else if (slot.getShiftTime().equalsIgnoreCase("AFTERNOON")) {
-        slot.setSlotNo(slotNoAfternoon);
-        slotNoAfternoon++;
-      } else if (slot.getShiftTime().equalsIgnoreCase("EVENING")) {
-        slot.setSlotNo(slotNoEvening);
-        slotNoEvening++;
+      if (slot == null || slot.getShiftTime() == null) {
+        continue;
+      }
+
+      switch (slot.getShiftTime().toUpperCase()) {
+        case "MORNING" -> slot.setSlotNo(slotNoMorning++);
+        case "AFTERNOON" -> slot.setSlotNo(slotNoAfternoon++);
+        case "EVENING" -> slot.setSlotNo(slotNoEvening++);
       }
     }
   }
@@ -139,17 +158,31 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
       }
 
       slotNo = 1;
-      if (!noQueueForDay) {
-        while (shiftStartTime.isBefore(shiftEndTime)) {
+      if (!noQueueForDay) { // Add safety check for max slots per shift
+        int maxSlotsPerShift = 100; // Reasonable limit for slots per shift
+        int currentSlotCount = 0;
+
+        while (shiftStartTime.isBefore(shiftEndTime) && currentSlotCount < maxSlotsPerShift) {
+          // Add safety check to prevent infinite loop
+          if (shiftDetail.getConsultationTime() <= 0) {
+            LOGGER.error(
+                "Invalid consultation time of {} minutes", shiftDetail.getConsultationTime());
+            break;
+          }
+
           final QueueTimeSlot queueTimeSlot =
               createQueueTimeSlot(clinicId, doctorId, shiftDetail, slotNo, shiftStartTime, true);
           queueTimeSlots.add(queueTimeSlot);
           shiftStartTime = shiftStartTime.plusMinutes(shiftDetail.getConsultationTime());
           slotNo++;
+          currentSlotCount++;
         }
 
+        // Reset counter for absence slots
+        currentSlotCount = 0;
         while (shiftAbsenceStartTime != null
-            && shiftAbsenceStartTime.isBefore(shiftAbsenceEndTime)) {
+            && shiftAbsenceStartTime.isBefore(shiftAbsenceEndTime)
+            && currentSlotCount < maxSlotsPerShift) {
           QueueTimeSlot queueTimeSlot =
               createQueueTimeSlot(
                   clinicId, doctorId, shiftDetail, slotNo, shiftAbsenceStartTime, false);
@@ -157,21 +190,26 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
           shiftAbsenceStartTime =
               shiftAbsenceStartTime.plusMinutes(shiftDetail.getConsultationTime());
           slotNo++;
+          currentSlotCount++;
         }
       }
     }
-
-    LOGGER.info("Queue Time Slot List : {}", queueTimeSlots);
-    LOGGER.info("Queue Absence Time Slot List : {}", queueAbsenceTimeSlots);
+    LOGGER.info("Generated {} slots, processing in batches...", queueTimeSlots.size());
 
     removeDoctorAbsence(queueTimeSlots, queueAbsenceTimeSlots);
-
-    LOGGER.info("Queue Time Slot List After removing absence information: {}", queueTimeSlots);
     reorderQueueNumbers(queueTimeSlots);
 
-    slotInformationRepository.saveAll(queueTimeSlots);
+    // Save in batches to prevent memory issues
+    for (int i = 0; i < queueTimeSlots.size(); i += BATCH_SIZE) {
+      int end = Math.min(i + BATCH_SIZE, queueTimeSlots.size());
+      List<QueueTimeSlot> batch = queueTimeSlots.subList(i, end);
+      slotInformationRepository.saveAll(batch);
+      LOGGER.info("Saved batch {} to {}", i, end);
+    }
 
-    LOGGER.info("Queue Time Slot List After sorting : {}", queueTimeSlots);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Final queue slots: {}", queueTimeSlots);
+    }
     return queueTimeSlots;
   }
 

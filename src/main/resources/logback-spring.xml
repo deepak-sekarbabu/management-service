@@ -23,7 +23,9 @@
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
-    </appender>    <!-- ERROR File Appender (includes WARN and ERROR levels) -->
+    </appender>
+
+    <!-- ERROR File Appender (includes WARN and ERROR levels) -->
     <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGS}/error.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -38,11 +40,31 @@
         </filter>
     </appender>
 
-    <!-- Root Logger -->    <root level="INFO">
+    <!-- Queue Package File Appender -->
+    <appender name="QUEUE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS}/queue.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS}/archived/queue-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+        </rollingPolicy>
+    </appender>
+
+    <!-- Root Logger -->
+    <root level="INFO">
         <appender-ref ref="Console" />
         <appender-ref ref="INFO_FILE" />
         <appender-ref ref="ERROR_FILE" />
     </root>
+
+    <!-- Queue Package Logger -->
+    <logger name="com.deepak.management.queue" level="DEBUG" additivity="false">
+        <appender-ref ref="Console" />
+        <appender-ref ref="QUEUE_FILE" />
+        <appender-ref ref="ERROR_FILE" />
+    </logger>
 
     <!-- Custom Logger for Deepak's Package -->
     <logger name="com.deepak" level="TRACE" additivity="true" />
