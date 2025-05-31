@@ -1,17 +1,5 @@
 package com.deepak.management.queue.service;
 
-import java.sql.Date;
-import java.sql.Time;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import com.deepak.management.model.common.DoctorAvailability;
 import com.deepak.management.model.common.ShiftTime;
 import com.deepak.management.model.doctor.DoctorAbsenceInformation;
@@ -20,25 +8,39 @@ import com.deepak.management.queue.model.DoctorAvailabilityInformation;
 import com.deepak.management.queue.model.DoctorShiftAbsence;
 import com.deepak.management.queue.model.DoctorShiftAvailability;
 import com.deepak.management.queue.model.QueueTimeSlot;
+import com.deepak.management.queue.model.SlotGeneration;
 import com.deepak.management.repository.DoctorAbsenceInformationRepository;
 import com.deepak.management.repository.DoctorInformationRepository;
+import com.deepak.management.repository.SlotGenerationRepository;
 import com.deepak.management.repository.SlotInformationRepository;
+import java.sql.Date;
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 @Service
 public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
   private static final Logger LOGGER = LoggerFactory.getLogger(QueueSlotCreationServiceImpl.class);
   private final DoctorInformationRepository doctorInformationRepository;
   private final DoctorAbsenceInformationRepository doctorAbsenceInformationRepository;
-
   private final SlotInformationRepository slotInformationRepository;
+  private final SlotGenerationRepository slotGenerationRepository;
 
   public QueueSlotCreationServiceImpl(
       DoctorInformationRepository doctorInformationRepository,
       DoctorAbsenceInformationRepository doctorAbsenceInformationRepository,
-      SlotInformationRepository slotInformationRepository) {
+      SlotInformationRepository slotInformationRepository,
+      SlotGenerationRepository slotGenerationRepository) {
     this.doctorInformationRepository = doctorInformationRepository;
     this.doctorAbsenceInformationRepository = doctorAbsenceInformationRepository;
     this.slotInformationRepository = slotInformationRepository;
+    this.slotGenerationRepository = slotGenerationRepository;
   }
 
   private static final int BATCH_SIZE = 100;
@@ -119,6 +121,21 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
 
   @Override
   public List<QueueTimeSlot> getTimeSlotInformation(String doctorId, Integer clinicId) {
+    // Check if slot generation already exists for today
+    Date today = Date.valueOf(LocalDate.now());
+    if (slotGenerationRepository
+        .findByDoctorIdAndClinicIdAndSlotDate(doctorId, clinicId, today)
+        .isPresent()) {
+      LOGGER.info(
+          "Slot generation already exists for doctor {} and clinic {} for today",
+          doctorId,
+          clinicId);
+      return slotInformationRepository.findByDoctorIdAndClinicId(doctorId, clinicId).stream()
+          .filter(slot -> slot.getSlotDate().equals(String.valueOf(LocalDate.now())))
+          .toList();
+    }
+
+    // Continue with slot generation if no slots exist for today
     final DoctorAvailabilityInformation doctorAvailabilityInformation =
         this.getDetailsForSlotCreation(doctorId, clinicId);
     final List<DoctorAvailability> shiftDetails =
@@ -206,6 +223,15 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
       slotInformationRepository.saveAll(batch);
       LOGGER.info("Saved batch {} to {}", i, end);
     }
+
+    // After successful slot generation, record it in slot_generation_information
+    SlotGeneration slotGeneration = new SlotGeneration();
+    slotGeneration.setDoctorId(doctorId);
+    slotGeneration.setClinicId(clinicId);
+    slotGeneration.setSlotDate(today);
+    slotGeneration.setStatus(true);
+    slotGeneration.setNoOfSlots(queueTimeSlots.size());
+    slotGenerationRepository.save(slotGeneration);
 
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("Final queue slots: {}", queueTimeSlots);
