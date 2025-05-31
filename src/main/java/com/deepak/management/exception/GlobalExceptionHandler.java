@@ -36,12 +36,13 @@ public class GlobalExceptionHandler {
   @Autowired private UserRepository userRepository;
 
   @ExceptionHandler(Exception.class)
+  @SuppressWarnings("CallToPrintStackTrace")
   public ResponseEntity<ErrorDetails> handleGlobalException(Exception ex, WebRequest request) {
     LOGGER.error("An error occurred: {}", ex.getMessage());
     ErrorDetails errorDetails =
         new ErrorDetails(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
     ex.printStackTrace();
-    return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+    return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @ExceptionHandler(ClinicNotFound.class)
@@ -50,7 +51,7 @@ public class GlobalExceptionHandler {
     LOGGER.error("An error occurred: {}", ex.getMessage());
     ErrorDetails errorDetails =
         new ErrorDetails(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
-    return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.NOT_FOUND);
+    return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
   }
 
   @ExceptionHandler(NoResourceFoundException.class)
@@ -64,7 +65,7 @@ public class GlobalExceptionHandler {
     LOGGER.error("An error occurred: {}", ex.getMessage());
     ErrorDetails errorDetails =
         new ErrorDetails(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
-    return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.NOT_FOUND);
+    return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
   }
 
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -73,7 +74,7 @@ public class GlobalExceptionHandler {
     ErrorDetails errorDetails =
         new ErrorDetails(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
     LOGGER.error("Input Argument Not in Expected Format: {}", ex.getMessage());
-    return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(DoctorAbsenceNotFound.class)
@@ -82,7 +83,7 @@ public class GlobalExceptionHandler {
     LOGGER.error("An error occurred: {}", ex.getMessage());
     ErrorDetails errorDetails =
         new ErrorDetails(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
-    return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler({DataIntegrityViolationException.class})

@@ -8,11 +8,15 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenProvider {
+
+  private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
   @Value(
       "${jwt.secret:mfQ3b0HVp6zrzyqP+1m+ZpF7Itd03p2r5ZOU5tPjVgmCL8nspBWyWqN4t4nx3DBQhct+GPtTznhMRl+GcUMWQg==}")
@@ -51,6 +55,7 @@ public class JwtTokenProvider {
       Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(authToken);
       return true;
     } catch (Exception ex) {
+      logger.error("JWT token validation failed: {}", ex.getMessage());
       // Log the exception if necessary
     }
     return false;

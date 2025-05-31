@@ -16,7 +16,8 @@ public class AuthenticationFailureListener
   private final UserRepository userRepository;
 
   @Override
-  public void onApplicationEvent(AuthenticationFailureBadCredentialsEvent event) {
+  public void onApplicationEvent(
+      @SuppressWarnings("null") AuthenticationFailureBadCredentialsEvent event) {
     Object principal = event.getAuthentication().getPrincipal();
     if (principal instanceof String username) {
       userRepository
