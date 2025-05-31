@@ -3,7 +3,6 @@ package com.deepak.management.model.common;
 import com.deepak.spring.log.utils.features.annotations.MaskSensitiveData;
 import com.deepak.spring.log.utils.features.enums.MaskedType;
 import com.deepak.spring.log.utils.features.interfaces.LogMask;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;

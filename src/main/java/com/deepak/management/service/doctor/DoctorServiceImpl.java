@@ -90,6 +90,17 @@ public class DoctorServiceImpl implements DoctorService {
       if (doctorInformation.getDoctorConsultationFee() != null) {
         doctor.get().setDoctorConsultationFee(doctorInformation.getDoctorConsultationFee());
       }
+      if (doctorInformation.getDoctorConsultationFeeOther() != null) {
+        doctor
+            .get()
+            .setDoctorConsultationFeeOther(doctorInformation.getDoctorConsultationFeeOther());
+      }
+      if (doctorInformation.getLanguagesSpoken() != null) {
+        doctor.get().setLanguagesSpoken(doctorInformation.getLanguagesSpoken());
+      }
+      if (doctorInformation.getQualifications() != null) {
+        doctor.get().setQualifications(doctorInformation.getQualifications());
+      }
       LOGGER.info("Updated doctor information for the Id : {}", doctorId);
       return this.doctorInformationRepository.save(doctor.get());
     } else {
