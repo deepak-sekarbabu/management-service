@@ -1,16 +1,6 @@
-# Compiled class file
+# Compiled files
 *.class
-
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
+target/
 *.jar
 *.war
 *.nar
@@ -19,11 +9,35 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Logs
+*.log
 hs_err_pid*
 replay_pid*
-management.iml
-.idea/.gitignore
+
+# IDE - IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# IDE - Eclipse
+.classpath
+.project
+.settings/
+.factorypath
+
+# IDE - VS Code
+.vscode/
+
+# Spring Boot
+application*.yml
+application*.properties
+!src/main/resources/application.properties
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
 .idea/compiler.xml
 .idea/encodings.xml
 .idea/jarRepositories.xml
@@ -64,3 +78,19 @@ management.iml
 .idea/sonarlint/securityhotspotstore/e/7/e72600af5dc1a1f3180a358d1d89f37a7432ee93
 .idea/sonarlint/securityhotspotstore/f/3/f3761d1b9e68291ce22db4bf83b3bda48dda0a42
 .vscode/settings.json
+.classpath
+.factorypath
+.project
+.settings/org.eclipse.core.resources.prefs
+.settings/org.eclipse.jdt.apt.core.prefs
+.settings/org.eclipse.jdt.core.prefs
+.settings/org.eclipse.m2e.core.prefs
+.settings/org.springframework.ide.eclipse.prefs
+.vscode/launch.json
+src/main/java/com/deepak/management/queue/controller/TimeSlotJobController.java
+target/management-1.0.0.jar.original
+target/spotless-index
+target/maven-archiver/pom.properties
+target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+target/classes/application.properties
