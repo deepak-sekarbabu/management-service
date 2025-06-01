@@ -70,7 +70,7 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
     // queueAbsenceTimeSlots
     queueTimeSlots.removeIf(
         slot1 -> // Iterate through each slot in the main list
-            queueAbsenceTimeSlots.stream() // Stream the absence slots for comparison
+        queueAbsenceTimeSlots.stream() // Stream the absence slots for comparison
                 .anyMatch( // Check if any absence slot matches the current main slot
                     slot2 ->
                         slot1 != null // Ensure main slot is not null
@@ -79,17 +79,19 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
                             && slot1
                                 .getSlotTime()
                                 .equals(
-                                    slot2.getSlotTime()) // Compare the string representation of slot times
+                                    slot2
+                                        .getSlotTime()) // Compare the string representation of slot
+                    // times
                     ));
   }
 
   /**
-   * Reorders the queue numbers for a list of time slots, assigning sequential numbers for each shift
-   * period (MORNING, AFTERNOON, EVENING).
+   * Reorders the queue numbers for a list of time slots, assigning sequential numbers for each
+   * shift period (MORNING, AFTERNOON, EVENING).
    *
-   * <p>This method iterates through the provided list of {@link QueueTimeSlot} objects. It maintains
-   * separate counters for morning, afternoon, and evening shifts. Based on the {@code shiftTime}
-   * property of each slot, it assigns a new, sequential {@code slotNo}.
+   * <p>This method iterates through the provided list of {@link QueueTimeSlot} objects. It
+   * maintains separate counters for morning, afternoon, and evening shifts. Based on the {@code
+   * shiftTime} property of each slot, it assigns a new, sequential {@code slotNo}.
    *
    * @param queueTimeSlots The list of {@link QueueTimeSlot} objects to be reordered. This list is
    *     modified in place.
@@ -178,9 +180,9 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
    * Generates or retrieves the daily time slots for a specific doctor at a given clinic for the
    * current day.
    *
-   * <p>Overall goal: This method is responsible for ensuring that a complete and accurate list of time
-   * slots is available for a doctor for the current day. It first checks if slots have already been
-   * generated to avoid redundant processing. If not, it proceeds to generate them based on the
+   * <p>Overall goal: This method is responsible for ensuring that a complete and accurate list of
+   * time slots is available for a doctor for the current day. It first checks if slots have already
+   * been generated to avoid redundant processing. If not, it proceeds to generate them based on the
    * doctor's availability and absences.
    *
    * <p>Initial check for existing slots: Before any generation logic, the method queries the {@code
@@ -207,15 +209,15 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
    *       This utility method filters out any generated slots that fall within the actual absence
    *       periods specified in {@code queueAbsenceTimeSlots}.
    *   <li><b>Reorder Queue Numbers:</b> After slots are generated and absences are accounted for,
-   *       {@link #reorderQueueNumbers(List)} is called to ensure that the {@code slotNo} attribute of
-   *       each {@code QueueTimeSlot} is sequential within its respective shift period (e.g., MORNING
-   *       slots are numbered 1, 2, 3,...).
+   *       {@link #reorderQueueNumbers(List)} is called to ensure that the {@code slotNo} attribute
+   *       of each {@code QueueTimeSlot} is sequential within its respective shift period (e.g.,
+   *       MORNING slots are numbered 1, 2, 3,...).
    *   <li><b>Batch Saving:</b> The newly created and processed {@code QueueTimeSlot} objects are
    *       saved to the {@code slotInformationRepository} in batches (defined by {@code BATCH_SIZE})
    *       to optimize database operations and manage memory.
-   *   <li><b>Record Generation:</b> Finally, a {@link SlotGeneration} record is created and saved to
-   *       the {@code slotGenerationRepository}. This record marks that slots have been generated for
-   *       the doctor, clinic, and date, and includes the total number of slots created. This
+   *   <li><b>Record Generation:</b> Finally, a {@link SlotGeneration} record is created and saved
+   *       to the {@code slotGenerationRepository}. This record marks that slots have been generated
+   *       for the doctor, clinic, and date, and includes the total number of slots created. This
    *       prevents re-generation on subsequent calls for the same day.
    * </ul>
    *
@@ -357,8 +359,8 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
    *
    * @param clinicId The ID of the clinic where the slot is being created.
    * @param doctorId The ID of the doctor for whom the slot is being created.
-   * @param shiftDetail The {@link DoctorAvailability} object representing the current shift, used to
-   *     derive the shift type (e.g., MORNING, AFTERNOON).
+   * @param shiftDetail The {@link DoctorAvailability} object representing the current shift, used
+   *     to derive the shift type (e.g., MORNING, AFTERNOON).
    * @param slotNo The sequential number assigned to this slot within its shift period.
    * @param slotTime The specific {@link LocalTime} at which this slot is scheduled.
    * @param isAvailable A boolean flag indicating if this slot is generally available (true) or
@@ -388,16 +390,17 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
    * Transforms a list of raw {@link DoctorAbsenceInformation} objects into a list of {@link
    * DoctorShiftAbsence} objects.
    *
-   * <p>This method processes each {@code DoctorAbsenceInformation} record, which typically represents
-   * an absence entry directly from a data source. It converts this raw data into a more structured
-   * {@code DoctorShiftAbsence} format, suitable for use within the slot generation logic. The
-   * conversion primarily involves creating a {@code DoctorShiftAbsence} object for each input record
-   * using the {@link #createDoctorShiftAbsence(DoctorAbsenceInformation)} helper method.
+   * <p>This method processes each {@code DoctorAbsenceInformation} record, which typically
+   * represents an absence entry directly from a data source. It converts this raw data into a more
+   * structured {@code DoctorShiftAbsence} format, suitable for use within the slot generation
+   * logic. The conversion primarily involves creating a {@code DoctorShiftAbsence} object for each
+   * input record using the {@link #createDoctorShiftAbsence(DoctorAbsenceInformation)} helper
+   * method.
    *
    * @param absenceInformation A list of {@link DoctorAbsenceInformation} objects representing the
    *     doctor's raw absence data.
-   * @return A list of {@link DoctorShiftAbsence} objects. If the input {@code absenceInformation} is
-   *     null, an empty list is returned.
+   * @return A list of {@link DoctorShiftAbsence} objects. If the input {@code absenceInformation}
+   *     is null, an empty list is returned.
    */
   private List<DoctorShiftAbsence> filterAbsenceInformation(
       List<DoctorAbsenceInformation> absenceInformation) {
@@ -418,12 +421,12 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
    * Converts a single {@link DoctorAbsenceInformation} object into a {@link DoctorShiftAbsence}
    * object.
    *
-   * <p>This method is responsible for transforming a raw absence record into a structured format that
-   * explicitly defines the absence in terms of shifts. It determines the day of the week for the
-   * absence (currently assumes the absence pertains to the day the method is executed, as it uses
-   * {@code LocalDate.now()}) and calculates the effective shift period (e.g., MORNING, AFTERNOON,
-   * FULL_DAY) using the {@link #calculateShiftTime(Time, Time)} method based on the absence's start
-   * and end times.
+   * <p>This method is responsible for transforming a raw absence record into a structured format
+   * that explicitly defines the absence in terms of shifts. It determines the day of the week for
+   * the absence (currently assumes the absence pertains to the day the method is executed, as it
+   * uses {@code LocalDate.now()}) and calculates the effective shift period (e.g., MORNING,
+   * AFTERNOON, FULL_DAY) using the {@link #calculateShiftTime(Time, Time)} method based on the
+   * absence's start and end times.
    *
    * @param information The {@link DoctorAbsenceInformation} object containing the details of a
    *     single absence period.
@@ -442,8 +445,8 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
   }
 
   /**
-   * Determines the general shift period (MORNING, AFTERNOON, EVENING, or FULL_DAY) that an
-   * absence, defined by its start and end times, falls into.
+   * Determines the general shift period (MORNING, AFTERNOON, EVENING, or FULL_DAY) that an absence,
+   * defined by its start and end times, falls into.
    *
    * <p>The classification logic is as follows:
    *
@@ -451,7 +454,8 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
    *   <li>If the absence ends by 12:00 PM (noon), it's classified as {@link ShiftTime#MORNING}.
    *   <li>If the absence ends after 12:00 PM but by 4:00 PM (16:00), it's {@link
    *       ShiftTime#AFTERNOON}.
-   *   <li>If the absence ends after 4:00 PM but by 10:00 PM (22:00), it's {@link ShiftTime#EVENING}.
+   *   <li>If the absence ends after 4:00 PM but by 10:00 PM (22:00), it's {@link
+   *       ShiftTime#EVENING}.
    *   <li>If the absence starts exactly at midnight (00:00), it's considered {@link
    *       ShiftTime#FULL_DAY}.
    *   <li>Any other cases (e.g., an absence spanning past 10:00 PM but not starting at midnight)
@@ -487,16 +491,16 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
    * representing a potential work schedule for a doctor (which can span multiple days). It compares
    * the {@code availableDays} property of each schedule (an enum representing a day like MONDAY,
    * TUESDAY, etc.) with the provided {@code currentDayOfWeek} string. The comparison is
-   * case-insensitive. If a schedule's {@code availableDays} matches the {@code currentDayOfWeek}, it
-   * is included in the returned list.
+   * case-insensitive. If a schedule's {@code availableDays} matches the {@code currentDayOfWeek},
+   * it is included in the returned list.
    *
    * @param shiftDetails The complete list of {@link DoctorAvailability} objects for a doctor,
    *     potentially covering various days.
    * @param currentDayOfWeek A string representing the target day of the week (e.g., "MONDAY",
    *     "tuesday") for which to filter the availability schedules.
-   * @return A new list containing only those {@link DoctorAvailability} entries that are relevant to
-   *     the specified {@code currentDayOfWeek}. If {@code shiftDetails} is null or if no schedules
-   *     match the given day, an empty list is returned.
+   * @return A new list containing only those {@link DoctorAvailability} entries that are relevant
+   *     to the specified {@code currentDayOfWeek}. If {@code shiftDetails} is null or if no
+   *     schedules match the given day, an empty list is returned.
    */
   private List<DoctorAvailability> filterShiftDetails(
       List<DoctorAvailability> shiftDetails, String currentDayOfWeek) {

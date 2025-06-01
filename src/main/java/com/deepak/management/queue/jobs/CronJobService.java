@@ -47,8 +47,8 @@ public class CronJobService {
    * schedule (cron expression string) is returned.
    *
    * <p>If no enabled cron job is found for the given ID, or if the job does not exist, a default
-   * cron expression "0 0 0 * * ?" is returned. This default expression typically signifies execution
-   * at midnight daily.
+   * cron expression "0 0 0 * * ?" is returned. This default expression typically signifies
+   * execution at midnight daily.
    *
    * @param jobId The ID of the cron job for which the schedule expression is to be retrieved.
    * @return The cron expression string of the enabled {@link CronJob} if found; otherwise, a
