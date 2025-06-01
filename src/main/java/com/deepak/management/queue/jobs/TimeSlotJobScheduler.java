@@ -7,6 +7,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+/**
+ * Component responsible for scheduling and executing the daily task of generating time slots for
+ * doctors.
+ *
+ * <p>This scheduler relies on a cron expression, dynamically retrieved via the {@link
+ * CronJobService}, to trigger the slot generation process. It iterates through all registered
+ * doctors and invokes the slot creation logic for each one.
+ */
 @Component
 public class TimeSlotJobScheduler {
   private static final Logger LOGGER = LoggerFactory.getLogger(TimeSlotJobScheduler.class);

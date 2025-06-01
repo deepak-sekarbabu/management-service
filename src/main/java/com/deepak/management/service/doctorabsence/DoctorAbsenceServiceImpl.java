@@ -83,6 +83,22 @@ public class DoctorAbsenceServiceImpl implements DoctorAbsenceService {
     }
   }
 
+  /**
+   * Updates existing doctor absence information for the given ID.
+   *
+   * <p>This method attempts to parse the absence date from the input {@code
+   * doctorAbsenceInformation} assuming the format "dd-MM-yyyy". If parsing is successful, the date
+   * is converted to {@code java.sql.Date}. If a {@code ParseException} occurs during this process,
+   * the error is logged, and the method proceeds using the original {@code sqlDate} (which might be
+   * null or retain a previous value if the field was already populated).
+   *
+   * @param id The ID of the doctor absence information to update.
+   * @param doctorAbsenceInformation The new doctor absence information. The {@code
+   *     doctorAbsenceInformation.getAbsenceDate()} is expected to be in "dd-MM-yyyy" format.
+   * @return An {@code Optional} containing the updated {@code DoctorAbsenceInformation} if the
+   *     update was successful.
+   * @throws DoctorAbsenceNotFound if no doctor absence information is found for the given ID.
+   */
   @Override
   public Optional<DoctorAbsenceInformation> updateDoctorAbsenceInformationById(
       Long id, DoctorAbsenceInformation doctorAbsenceInformation) throws DoctorAbsenceNotFound {
