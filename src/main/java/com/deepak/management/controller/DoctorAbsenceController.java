@@ -76,6 +76,25 @@ public class DoctorAbsenceController {
             description = "Invalid request body",
             content = @Content(schema = @Schema(implementation = ErrorDetails.class)))
       })
+  /**
+   * Saves a new doctor absence record.
+   *
+   * <p>This method performs the following validation steps before saving:
+   *
+   * <ul>
+   *   <li>Checks if the clinic ID provided in {@code doctorAbsenceInformation} is valid and
+   *       corresponds to an existing clinic.
+   *   <li>Checks if the doctor ID provided in {@code doctorAbsenceInformation} is valid and
+   *       corresponds to an existing doctor within the specified clinic.
+   * </ul>
+   *
+   * @param doctorAbsenceInformation The doctor absence information to be saved. Must be a valid
+   *     object.
+   * @return The saved {@code DoctorAbsenceInformation} object if successful.
+   * @throws ClinicNotFound if the specified clinic ID does not exist.
+   * @throws DoctorNotFound if the specified doctor ID does not exist or is not associated with the
+   *     given clinic.
+   */
   public DoctorAbsenceInformation saveAbsence(
       @Valid @RequestBody DoctorAbsenceInformation doctorAbsenceInformation)
       throws ClinicNotFound, DoctorNotFound {
