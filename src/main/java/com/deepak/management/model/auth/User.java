@@ -1,11 +1,26 @@
 package com.deepak.management.model.auth;
 
-import com.deepak.management.converter.IntegerListConverter;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.*;
+
+import com.deepak.management.converter.IntegerListConverter;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
@@ -63,7 +78,7 @@ public class User {
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 
-  @Column(name = "clinic_id", columnDefinition = "json")
+  @Column(name = "clinic_id")
   @Convert(converter = IntegerListConverter.class)
   private List<Integer> clinicIds;
 
