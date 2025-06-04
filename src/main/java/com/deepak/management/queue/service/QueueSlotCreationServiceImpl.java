@@ -16,6 +16,7 @@ import com.deepak.management.repository.SlotInformationRepository;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -230,9 +231,9 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
    */
   @Override
   public List<QueueTimeSlot> getTimeSlotInformation(String doctorId, Integer clinicId) {
-    // Inline comments will be added to the method body below.
-    // Check if slot generation already exists for today
     Date today = Date.valueOf(LocalDate.now());
+
+    // 1. Return existing slots if already generated for today
     if (slotGenerationRepository
         .findByDoctorIdAndClinicIdAndSlotDate(doctorId, clinicId, today)
         .isPresent()) {
@@ -245,107 +246,93 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
           .toList();
     }
 
-    // Continue with slot generation if no slots exist for today
-    final DoctorAvailabilityInformation doctorAvailabilityInformation =
-        this.getDetailsForSlotCreation(doctorId, clinicId);
-    final List<DoctorAvailability> shiftDetails =
-        doctorAvailabilityInformation.getDoctorShiftAvailability().getShiftDetails();
-    final List<DoctorShiftAbsence> shiftAbsences =
-        doctorAvailabilityInformation.getDoctorShiftAvailability().getShiftAbsence();
+    // 2. Fetch Doctor availability and absence information
+    DoctorAvailabilityInformation info = getDetailsForSlotCreation(doctorId, clinicId);
+    List<DoctorAvailability> shiftDetails = info.getDoctorShiftAvailability().getShiftDetails();
+    List<DoctorShiftAbsence> shiftAbsences = info.getDoctorShiftAvailability().getShiftAbsence();
+
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-    int slotNo;
-    final List<QueueTimeSlot> queueTimeSlots = new ArrayList<>();
-    final List<QueueTimeSlot> queueAbsenceTimeSlots = new ArrayList<>();
+    List<QueueTimeSlot> queueTimeSlots = new ArrayList<>();
+    List<QueueTimeSlot> queueAbsenceTimeSlots = new ArrayList<>();
 
-    for (DoctorAvailability shiftDetail : shiftDetails) {
-      final ShiftTime shiftTime = shiftDetail.getShiftTime();
-      final List<DoctorShiftAbsence> shiftAbsencesForShiftTime =
-          shiftAbsences.stream()
-              .filter(
-                  shiftAbsence ->
-                      shiftAbsence.getShiftTime() == shiftTime
-                          || shiftAbsence.getShiftTime() == ShiftTime.FULL_DAY)
-              .toList();
+    for (DoctorAvailability shift : shiftDetails) {
+      ShiftTime shiftTime = shift.getShiftTime();
+      int consultationTime = shift.getConsultationTime();
 
-      final boolean noQueueForDay =
-          shiftAbsencesForShiftTime.stream()
-              .anyMatch(shiftAbsence -> shiftAbsence.getShiftTime() == ShiftTime.FULL_DAY);
-
-      LocalTime shiftStartTime = shiftDetail.getShiftStartTime().toLocalTime();
-      LocalTime shiftEndTime = shiftDetail.getShiftEndTime().toLocalTime();
-      LocalTime shiftAbsenceStartTime = null;
-      LocalTime shiftAbsenceEndTime = null;
-
-      for (DoctorShiftAbsence shiftAbsence : shiftAbsencesForShiftTime) {
-        if (shiftAbsence.getShiftTime() == shiftTime) {
-          shiftAbsenceStartTime = LocalTime.parse(shiftAbsence.getAbsenceStartTime(), formatter);
-          shiftAbsenceEndTime = LocalTime.parse(shiftAbsence.getAbsenceEndTime(), formatter);
-          break;
-        }
+      if (consultationTime <= 0) {
+        LOGGER.warn("Skipping shift due to invalid consultation time for doctor: {}", doctorId);
+        continue;
       }
 
-      slotNo = 1;
-      if (!noQueueForDay) { // Add safety check for max slots per shift
-        int maxSlotsPerShift = 100; // Reasonable limit for slots per shift
-        int currentSlotCount = 0;
+      LocalTime shiftStart = shift.getShiftStartTime().toLocalTime();
+      LocalTime shiftEnd = shift.getShiftEndTime().toLocalTime();
 
-        while (shiftStartTime.isBefore(shiftEndTime) && currentSlotCount < maxSlotsPerShift) {
-          // Add safety check to prevent infinite loop
-          if (shiftDetail.getConsultationTime() <= 0) {
-            LOGGER.error(
-                "Invalid consultation time of {} minutes", shiftDetail.getConsultationTime());
-            break;
-          }
+      // Only proceed if current day matches shift day
+      String currentDay = LocalDate.now().getDayOfWeek().toString();
+      if (!shift.getAvailableDays().name().equalsIgnoreCase(currentDay)) continue;
 
-          final QueueTimeSlot queueTimeSlot =
-              createQueueTimeSlot(clinicId, doctorId, shiftDetail, slotNo, shiftStartTime, true);
-          queueTimeSlots.add(queueTimeSlot);
-          shiftStartTime = shiftStartTime.plusMinutes(shiftDetail.getConsultationTime());
-          slotNo++;
-          currentSlotCount++;
-        }
+      // Check absence
+      boolean fullDayAbsent =
+          shiftAbsences.stream().anyMatch(a -> a.getShiftTime() == ShiftTime.FULL_DAY);
+      if (fullDayAbsent) continue;
 
-        // Reset counter for absence slots
-        currentSlotCount = 0;
-        while (shiftAbsenceStartTime != null
-            && shiftAbsenceStartTime.isBefore(shiftAbsenceEndTime)
-            && currentSlotCount < maxSlotsPerShift) {
-          QueueTimeSlot queueTimeSlot =
-              createQueueTimeSlot(
-                  clinicId, doctorId, shiftDetail, slotNo, shiftAbsenceStartTime, false);
-          queueAbsenceTimeSlots.add(queueTimeSlot);
-          shiftAbsenceStartTime =
-              shiftAbsenceStartTime.plusMinutes(shiftDetail.getConsultationTime());
-          slotNo++;
-          currentSlotCount++;
+      List<DoctorShiftAbsence> absencesForThisShift =
+          shiftAbsences.stream().filter(a -> a.getShiftTime() == shiftTime).toList();
+
+      // Generate normal slots up to shiftEnd (handle next-day overflow)
+      int slotNo = 1;
+      int maxSlots = 100; // Prevent infinite loop
+      int currentSlotCount = 0;
+
+      LocalDateTime slotStart = LocalDateTime.of(LocalDate.now(), shiftStart);
+      LocalDateTime slotEnd = LocalDateTime.of(LocalDate.now(), shiftEnd);
+      if (shiftEnd.isBefore(shiftStart)) {
+        slotEnd = slotEnd.plusDays(1); // Shift ends after midnight
+      }
+
+      while (slotStart.plusMinutes(consultationTime).isBefore(slotEnd)
+          && currentSlotCount < maxSlots) {
+        QueueTimeSlot slot =
+            createQueueTimeSlot(clinicId, doctorId, shift, slotNo++, slotStart.toLocalTime(), true);
+        queueTimeSlots.add(slot);
+        slotStart = slotStart.plusMinutes(consultationTime);
+        currentSlotCount++;
+      }
+
+      // Handle absence slots (to be removed later)
+      for (DoctorShiftAbsence absence : absencesForThisShift) {
+        LocalTime aStart = LocalTime.parse(absence.getAbsenceStartTime(), formatter);
+        LocalTime aEnd = LocalTime.parse(absence.getAbsenceEndTime(), formatter);
+        LocalDateTime aStartDT = LocalDateTime.of(LocalDate.now(), aStart);
+        LocalDateTime aEndDT = LocalDateTime.of(LocalDate.now(), aEnd);
+        if (aEnd.isBefore(aStart)) aEndDT = aEndDT.plusDays(1);
+
+        int count = 0;
+        while (aStartDT.plusMinutes(consultationTime).isBefore(aEndDT) && count++ < 100) {
+          queueAbsenceTimeSlots.add(
+              createQueueTimeSlot(clinicId, doctorId, shift, 0, aStartDT.toLocalTime(), false));
+          aStartDT = aStartDT.plusMinutes(consultationTime);
         }
       }
     }
-    LOGGER.info("Generated {} slots, processing in batches...", queueTimeSlots.size());
 
     removeDoctorAbsence(queueTimeSlots, queueAbsenceTimeSlots);
     reorderQueueNumbers(queueTimeSlots);
 
-    // Save in batches to prevent memory issues
+    // Batch save
     for (int i = 0; i < queueTimeSlots.size(); i += BATCH_SIZE) {
       int end = Math.min(i + BATCH_SIZE, queueTimeSlots.size());
-      List<QueueTimeSlot> batch = queueTimeSlots.subList(i, end);
-      slotInformationRepository.saveAll(batch);
-      LOGGER.info("Saved batch {} to {}", i, end);
+      slotInformationRepository.saveAll(queueTimeSlots.subList(i, end));
     }
 
-    // After successful slot generation, record it in slot_generation_information
-    SlotGeneration slotGeneration = new SlotGeneration();
-    slotGeneration.setDoctorId(doctorId);
-    slotGeneration.setClinicId(clinicId);
-    slotGeneration.setSlotDate(today);
-    slotGeneration.setStatus(true);
-    slotGeneration.setNoOfSlots(queueTimeSlots.size());
-    slotGenerationRepository.save(slotGeneration);
+    SlotGeneration generation = new SlotGeneration();
+    generation.setDoctorId(doctorId);
+    generation.setClinicId(clinicId);
+    generation.setSlotDate(today);
+    generation.setStatus(true);
+    generation.setNoOfSlots(queueTimeSlots.size());
+    slotGenerationRepository.save(generation);
 
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Final queue slots: {}", queueTimeSlots);
-    }
     return queueTimeSlots;
   }
 
@@ -514,5 +501,10 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
       }
     }
     return filteredList;
+  }
+
+  /** Ensures a slot with start time and duration will not exceed shift end time. */
+  private boolean slotFitsInShift(LocalTime slotStart, int durationMinutes, LocalTime shiftEnd) {
+    return !slotStart.plusMinutes(durationMinutes).isAfter(shiftEnd);
   }
 }
