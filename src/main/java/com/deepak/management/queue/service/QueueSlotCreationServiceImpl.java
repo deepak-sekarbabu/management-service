@@ -65,25 +65,42 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
         || queueAbsenceTimeSlots == null
         || queueTimeSlots.isEmpty()
         || queueAbsenceTimeSlots.isEmpty()) {
+      LOGGER.info("No slots to remove for doctor absence - one of the lists is empty or null");
       return; // No action needed if either list is null or empty
     }
+
+    LOGGER.info(
+        "Removing doctor absences: checking {} slots against {} absence periods",
+        queueTimeSlots.size(),
+        queueAbsenceTimeSlots.size());
+
+    int initialSize = queueTimeSlots.size();
+
     // Remove slots from queueTimeSlots if their slotTime matches any slotTime in
     // queueAbsenceTimeSlots
     queueTimeSlots.removeIf(
-        slot1 -> // Iterate through each slot in the main list
-        queueAbsenceTimeSlots.stream() // Stream the absence slots for comparison
-                .anyMatch( // Check if any absence slot matches the current main slot
-                    slot2 ->
-                        slot1 != null // Ensure main slot is not null
-                            && slot2 != null // Ensure absence slot is not null
-                            && slot1.getSlotTime() != null // Ensure main slot time is not null
-                            && slot1
-                                .getSlotTime()
-                                .equals(
-                                    slot2
-                                        .getSlotTime()) // Compare the string representation of slot
-                    // times
-                    ));
+        slot1 -> { // Iterate through each slot in the main list
+          boolean shouldRemove =
+              queueAbsenceTimeSlots.stream() // Stream the absence slots for comparison
+                  .anyMatch( // Check if any absence slot matches the current main slot
+                      slot2 ->
+                          slot1 != null // Ensure main slot is not null
+                              && slot2 != null // Ensure absence slot is not null
+                              && slot1.getSlotTime() != null // Ensure main slot time is not null
+                              && slot1
+                                  .getSlotTime()
+                                  .equals(
+                                      slot2.getSlotTime()) // Compare the string representation of
+                      // slot times
+                      );
+          if (shouldRemove && LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Removing slot at time {} due to doctor absence", slot1.getSlotTime());
+          }
+          return shouldRemove;
+        });
+
+    int removedCount = initialSize - queueTimeSlots.size();
+    LOGGER.info("Removed {} slots due to doctor absence", removedCount);
   }
 
   /**
@@ -98,26 +115,56 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
    *     modified in place.
    */
   private static void reorderQueueNumbers(List<QueueTimeSlot> queueTimeSlots) {
-    // Placeholder for inline comments to be added next
+    // Reorder queue numbers for each shift type (MORNING, AFTERNOON, EVENING, NIGHT)
     if (queueTimeSlots == null || queueTimeSlots.isEmpty()) {
+      LOGGER.info("No queue time slots to reorder");
       return;
     }
 
     int slotNoMorning = 1;
     int slotNoAfternoon = 1;
     int slotNoEvening = 1;
+    int slotNoNight = 1;
+
+    LOGGER.info("Reordering queue numbers for {} slots", queueTimeSlots.size());
 
     for (QueueTimeSlot slot : queueTimeSlots) {
       if (slot == null || slot.getShiftTime() == null) {
+        LOGGER.warn("Skipping null slot or slot with null shift time");
         continue;
       }
 
       switch (slot.getShiftTime().toUpperCase()) {
-        case "MORNING" -> slot.setSlotNo(slotNoMorning++);
-        case "AFTERNOON" -> slot.setSlotNo(slotNoAfternoon++);
-        case "EVENING" -> slot.setSlotNo(slotNoEvening++);
+        case "MORNING" -> {
+          slot.setSlotNo(slotNoMorning++);
+          LOGGER.debug(
+              "Set MORNING slot at time {} to number {}", slot.getSlotTime(), slot.getSlotNo());
+        }
+        case "AFTERNOON" -> {
+          slot.setSlotNo(slotNoAfternoon++);
+          LOGGER.debug(
+              "Set AFTERNOON slot at time {} to number {}", slot.getSlotTime(), slot.getSlotNo());
+        }
+        case "EVENING" -> {
+          slot.setSlotNo(slotNoEvening++);
+          LOGGER.debug(
+              "Set EVENING slot at time {} to number {}", slot.getSlotTime(), slot.getSlotNo());
+        }
+        case "NIGHT" -> {
+          slot.setSlotNo(slotNoNight++);
+          LOGGER.debug(
+              "Set NIGHT slot at time {} to number {}", slot.getSlotTime(), slot.getSlotNo());
+        }
+        default -> LOGGER.warn("Unknown shift time: {}", slot.getShiftTime());
       }
     }
+
+    LOGGER.info(
+        "Slot reordering complete. Counts - Morning: {}, Afternoon: {}, Evening: {}, Night: {}",
+        slotNoMorning - 1,
+        slotNoAfternoon - 1,
+        slotNoEvening - 1,
+        slotNoNight - 1);
   }
 
   /**
@@ -268,6 +315,8 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
       ShiftTime shiftTime = shift.getShiftTime();
       int consultationTime = shift.getConsultationTime();
 
+      LOGGER.info("Processing shift: {} for doctor: {}", shiftTime, doctorId);
+
       if (consultationTime <= 0) {
         LOGGER.warn("Skipping shift due to invalid consultation time for doctor: {}", doctorId);
         continue;
@@ -275,18 +324,33 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
 
       LocalTime shiftStart = shift.getShiftStartTime().toLocalTime();
       LocalTime shiftEnd = shift.getShiftEndTime().toLocalTime();
+      LOGGER.info(
+          "Shift time range: {} to {}, consultation time: {} minutes",
+          shiftStart,
+          shiftEnd,
+          consultationTime);
 
       // Only proceed if current day matches shift day
       String currentDay = LocalDate.now().getDayOfWeek().toString();
-      if (!shift.getAvailableDays().name().equalsIgnoreCase(currentDay)) continue;
+      if (!shift.getAvailableDays().name().equalsIgnoreCase(currentDay)) {
+        LOGGER.info(
+            "Skipping shift as current day {} doesn't match shift day {}",
+            currentDay,
+            shift.getAvailableDays().name());
+        continue;
+      }
 
       // Check absence
       boolean fullDayAbsent =
           shiftAbsences.stream().anyMatch(a -> a.getShiftTime() == ShiftTime.FULL_DAY);
-      if (fullDayAbsent) continue;
+      if (fullDayAbsent) {
+        LOGGER.info("Skipping all shifts due to full day absence");
+        continue;
+      }
 
       List<DoctorShiftAbsence> absencesForThisShift =
           shiftAbsences.stream().filter(a -> a.getShiftTime() == shiftTime).toList();
+      LOGGER.info("Found {} absence periods for this shift", absencesForThisShift.size());
 
       // Generate normal slots up to shiftEnd (handle next-day overflow)
       int slotNo = 1;
@@ -297,16 +361,20 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
       LocalDateTime slotEnd = LocalDateTime.of(LocalDate.now(), shiftEnd);
       if (shiftEnd.isBefore(shiftStart)) {
         slotEnd = slotEnd.plusDays(1); // Shift ends after midnight
+        LOGGER.info("Shift spans midnight, adjusted end time to: {}", slotEnd);
       }
 
       while (slotStart.plusMinutes(consultationTime).isBefore(slotEnd)
           && currentSlotCount < maxSlots) {
+        LOGGER.debug("Creating slot at time: {} for shift: {}", slotStart.toLocalTime(), shiftTime);
         QueueTimeSlot slot =
             createQueueTimeSlot(clinicId, doctorId, shift, slotNo++, slotStart.toLocalTime(), true);
         queueTimeSlots.add(slot);
         slotStart = slotStart.plusMinutes(consultationTime);
         currentSlotCount++;
       }
+
+      LOGGER.info("Created {} slots for {} shift", currentSlotCount, shiftTime);
 
       // Handle absence slots (to be removed later)
       for (DoctorShiftAbsence absence : absencesForThisShift) {
@@ -325,7 +393,9 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
       }
     }
 
+    LOGGER.info("Before removing absences: {} total slots", queueTimeSlots.size());
     removeDoctorAbsence(queueTimeSlots, queueAbsenceTimeSlots);
+    LOGGER.info("After removing absences: {} slots remaining", queueTimeSlots.size());
     reorderQueueNumbers(queueTimeSlots);
 
     // Batch save
@@ -466,15 +536,30 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
     // Method body follows
     final LocalTime localAbsenceStartTime = absenceStartTime.toLocalTime();
     final LocalTime localAbsenceEndTime = absenceEndTime.toLocalTime();
+
+    LOGGER.debug(
+        "Calculating shift time for absence period: {} to {}",
+        localAbsenceStartTime,
+        localAbsenceEndTime);
+
     if (!localAbsenceEndTime.isAfter(LocalTime.NOON)) {
+      LOGGER.debug("Absence ends before noon, classified as MORNING shift");
       return ShiftTime.MORNING;
     } else if (!localAbsenceEndTime.isAfter(LocalTime.of(16, 0))) {
+      LOGGER.debug("Absence ends before 16:00, classified as AFTERNOON shift");
       return ShiftTime.AFTERNOON;
     } else if (!localAbsenceEndTime.isAfter(LocalTime.of(22, 0))) {
+      LOGGER.debug("Absence ends before 22:00, classified as EVENING shift");
       return ShiftTime.EVENING;
+    } else if (!localAbsenceEndTime.isAfter(LocalTime.of(6, 0))
+        || localAbsenceStartTime.isAfter(LocalTime.of(22, 0))) {
+      LOGGER.debug("Absence is during night hours (22:00-06:00), classified as NIGHT shift");
+      return ShiftTime.NIGHT;
     } else if (localAbsenceStartTime.equals(LocalTime.of(0, 0))) {
+      LOGGER.debug("Absence starts at midnight, classified as FULL_DAY");
       return ShiftTime.FULL_DAY;
     } else {
+      LOGGER.debug("Default classification as FULL_DAY for absence period");
       return ShiftTime.FULL_DAY;
     }
   }
@@ -511,9 +596,5 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
     }
     return filteredList;
   }
-
   /** Ensures a slot with start time and duration will not exceed shift end time. */
-  private boolean slotFitsInShift(LocalTime slotStart, int durationMinutes, LocalTime shiftEnd) {
-    return !slotStart.plusMinutes(durationMinutes).isAfter(shiftEnd);
-  }
 }
