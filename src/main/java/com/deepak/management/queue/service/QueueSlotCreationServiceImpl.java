@@ -155,6 +155,13 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
     final List<QueueTimeSlot> queueTimeSlots =
         this.slotInformationRepository.findByDoctorIdAndClinicId(doctorId, clinicId);
     LOGGER.info("Doctor Availability Information: {}", information);
+    List<DoctorAvailability> todayAvailability =
+        this.filterShiftDetails(
+            information.getDoctorAvailability(), LocalDate.now().getDayOfWeek().toString());
+    LOGGER.info(
+        "Doctor Availability for today ({}): {}",
+        LocalDate.now().getDayOfWeek(),
+        todayAvailability);
     LOGGER.info("Doctor Absence Information: {}", absenceInformation);
     LOGGER.info("Queue Time Slot List: {}", queueTimeSlots);
 
@@ -232,6 +239,8 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
   @Override
   public List<QueueTimeSlot> getTimeSlotInformation(String doctorId, Integer clinicId) {
     Date today = Date.valueOf(LocalDate.now());
+    String dayOfWeek = LocalDate.now().getDayOfWeek().toString();
+    LOGGER.info("Executing Scheduled Job for Today: {} : {}", dayOfWeek, today);
 
     // 1. Return existing slots if already generated for today
     if (slotGenerationRepository
