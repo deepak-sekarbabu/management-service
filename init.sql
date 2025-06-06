@@ -87,16 +87,14 @@ CREATE TABLE
 -- Slot Table
 CREATE TABLE
     IF NOT EXISTS slot_information (
-        slot_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+        slot_id BIGINT AUTO_INCREMENT PRIMARY KEY,
         slot_no INT,
-        shift_time VARCHAR(50),
-        slot_time VARCHAR(50),
-        clinic_id INTEGER,
-        doctor_id VARCHAR(50),
-        slot_date VARCHAR(50),
-        is_available BOOLEAN,
-        FOREIGN KEY (clinic_id) REFERENCES clinic_information (clinic_id),
-        FOREIGN KEY (doctor_id) REFERENCES doctor_information (doctor_id)
+        shift_time VARCHAR(255),
+        slot_time TIME,
+        clinic_id INT,
+        doctor_id VARCHAR(255),
+        slot_date DATE,
+        is_available BOOLEAN
     );
 
 -- Slot Generation Table
