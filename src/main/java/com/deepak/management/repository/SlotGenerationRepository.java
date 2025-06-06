@@ -1,6 +1,6 @@
 package com.deepak.management.repository;
 
-import com.deepak.management.queue.model.SlotGeneration;
+import com.deepak.queue.model.SlotGeneration;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;

@@ -1,6 +1,6 @@
 package com.deepak.management.repository;
 
-import com.deepak.management.queue.model.QueueTimeSlot;
+import com.deepak.queue.model.QueueTimeSlot;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
