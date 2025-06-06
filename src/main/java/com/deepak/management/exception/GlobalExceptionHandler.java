@@ -139,7 +139,7 @@ public class GlobalExceptionHandler {
       } else {
         // Try to parse from request description if possible
         String desc = request.getDescription(false);
-        if (desc != null && desc.contains("username")) {
+        if (desc.contains("username")) {
           int idx = desc.indexOf("username=");
           if (idx != -1) {
             int end = desc.indexOf(',', idx);

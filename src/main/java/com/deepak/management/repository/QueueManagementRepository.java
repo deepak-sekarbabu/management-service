@@ -119,7 +119,7 @@ public class QueueManagementRepository {
     List<Object[]> result = query1.getResultList();
 
     if (!result.isEmpty()) {
-      Object[] row = result.get(0);
+      Object[] row = result.getFirst();
       Integer currentSlotId = (Integer) row[0];
       Integer clinicId = (Integer) row[1];
       String doctorId = (String) row[2];
@@ -134,7 +134,7 @@ public class QueueManagementRepository {
       List<Object> nextSlotIds = query2.getResultList();
 
       if (!nextSlotIds.isEmpty()) {
-        Integer nextSlotId = (Integer) nextSlotIds.get(0);
+        Integer nextSlotId = (Integer) nextSlotIds.getFirst();
 
         // Step 3: Update the queue_management table with the new slot ID
         String sql3 =
@@ -155,12 +155,12 @@ public class QueueManagementRepository {
         query5.setParameter("currentSlotId", currentSlotId);
         query5.executeUpdate();
 
-        log.info("Patient skipped to slot ID: " + nextSlotId);
+        log.info("Patient skipped to slot ID: {}", nextSlotId);
       } else {
         log.warn("No available slot found for skipping.");
       }
     } else {
-      log.info("No slot ID found for queue_management_id: " + id);
+      log.info("No slot ID found for queue_management_id: {}", id);
     }
   }
 }

@@ -9,10 +9,6 @@ import com.deepak.management.repository.DoctorAbsenceInformationRepository;
 import com.deepak.management.repository.DoctorInformationRepository;
 import com.deepak.management.repository.SlotGenerationRepository;
 import com.deepak.management.repository.SlotInformationRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
@@ -21,6 +17,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 @Service
 public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
@@ -295,7 +294,7 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
           doctorId,
           clinicId);
       return slotInformationRepository.findByDoctorIdAndClinicId(doctorId, clinicId).stream()
-          .filter(slot -> slot.getSlotDate().equals(String.valueOf(LocalDate.now())))
+          .filter(slot -> slot.getSlotDate().equals(LocalDate.now()))
           .toList();
     }
 
@@ -431,12 +430,12 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
    * @return A newly instantiated and populated {@link QueueTimeSlot} object.
    */
   private QueueTimeSlot createQueueTimeSlot(
-          Integer clinicId,
-          String doctorId,
-          DoctorAvailability shiftDetail,
-          int slotNo,
-          LocalTime slotTime,
-          boolean isAvailable) {
+      Integer clinicId,
+      String doctorId,
+      DoctorAvailability shiftDetail,
+      int slotNo,
+      LocalTime slotTime,
+      boolean isAvailable) {
 
     QueueTimeSlot queueTimeSlot = new QueueTimeSlot();
     queueTimeSlot.setClinicId(clinicId);
@@ -449,7 +448,6 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
 
     return queueTimeSlot;
   }
-
 
   /**
    * Transforms a list of raw {@link DoctorAbsenceInformation} objects into a list of {@link

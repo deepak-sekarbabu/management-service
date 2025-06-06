@@ -194,7 +194,7 @@ public class ClinicController {
                     schema = @Schema(implementation = ErrorDetails.class)))
       })
   public Optional<List<DoctorInformation>> getDoctorInformationByClinicId(
-      @PathVariable Integer clinicId) throws ClinicNotFound {
+      @PathVariable Integer clinicId) {
     return Optional.ofNullable(doctorService.getDoctorInformationByClinicId(clinicId));
   }
 

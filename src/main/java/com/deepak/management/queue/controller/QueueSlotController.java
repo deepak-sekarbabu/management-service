@@ -7,7 +7,6 @@ import com.deepak.management.queue.model.QueueTimeSlot;
 import com.deepak.management.queue.model.SlotGeneration;
 import com.deepak.management.queue.service.QueueSlotCreationService;
 import com.deepak.management.repository.SlotGenerationRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -90,8 +89,7 @@ public class QueueSlotController {
                     schema = @Schema(implementation = ErrorDetails.class)))
       })
   public DoctorAvailabilityInformation getQueueSlotsForDoctorAndClinic(
-      @RequestParam String doctorId, @RequestParam Integer clinicId)
-      throws JsonProcessingException {
+      @RequestParam String doctorId, @RequestParam Integer clinicId) {
     LOGGER.info("Request Queue Slots for Doctor: {}, Clinic: {}", doctorId, clinicId);
     final DoctorAvailabilityInformation information =
         slotCreationService.getDetailsForSlotCreation(doctorId, clinicId);
@@ -161,7 +159,7 @@ public class QueueSlotController {
         slotGenerationRepository.findBySlotDateAndDoctorIdAndClinicId(
             Date.valueOf(currentDate.format(formatter)), doctorId, clinicId);
     if (generationList.isEmpty()) {
-      LOGGER.info("Generated List : {}", generationList.size());
+      LOGGER.info("Generated List : {}", 0);
       final List<QueueTimeSlot> timeSlots =
           slotCreationService.getTimeSlotInformation(doctorId, clinicId);
       LOGGER.info(

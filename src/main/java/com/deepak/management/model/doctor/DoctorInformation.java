@@ -81,8 +81,8 @@ public class DoctorInformation {
       example =
           """
         [
-            {\"phoneNumber\": \"+91 9444-123-456\"},
-            {\"phoneNumber\": \"+91 9845-789-012\"}
+            {"phoneNumber": "+91 9444-123-456"},
+            {"phoneNumber": "+91 9845-789-012"}
         ]""")
   private List<PhoneNumbers> phoneNumbers;
 
@@ -95,20 +95,20 @@ public class DoctorInformation {
           """
         [
             {
-                \"availableDays\": \"SUNDAY\",
-                \"shiftTime\": \"MORNING\",
-                \"shiftStartTime\": \"09:00:00\",
-                \"shiftEndTime\": \"13:00:00\",
-                \"consultationTime\": 10,
-                \"configType\": \"APPOINTMENT\"
+                "availableDays": "SUNDAY",
+                "shiftTime": "MORNING",
+                "shiftStartTime": "09:00:00",
+                "shiftEndTime": "13:00:00",
+                "consultationTime": 10,
+                "configType": "APPOINTMENT"
             },
             {
-                \"availableDays\": \"WEDNESDAY\",
-                \"shiftTime\": \"EVENING\",
-                \"shiftStartTime\": \"16:00:00\",
-                \"shiftEndTime\": \"20:00:00\",
-                \"consultationTime\": 10,
-                \"configType\": \"APPOINTMENT\"
+                "availableDays": "WEDNESDAY",
+                "shiftTime": "EVENING",
+                "shiftStartTime": "16:00:00",
+                "shiftEndTime": "20:00:00",
+                "consultationTime": 10,
+                "configType": "APPOINTMENT"
             }
         ]""")
   private List<DoctorAvailability> doctorAvailability;

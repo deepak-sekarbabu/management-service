@@ -26,7 +26,7 @@ public class IntegerListConverter implements AttributeConverter<List<Integer>, S
     try {
       return dbData == null || dbData.isEmpty()
           ? Collections.emptyList()
-          : objectMapper.readValue(dbData, new TypeReference<List<Integer>>() {});
+          : objectMapper.readValue(dbData, new TypeReference<>() {});
     } catch (JsonProcessingException e) {
       throw new RuntimeException("Error converting JSON to list", e);
     }

@@ -38,7 +38,7 @@ public class User {
 
   @NotBlank
   @Size(min = 8, max = 255)
-  @Column(name = "password_hash", nullable = false, length = 255)
+  @Column(name = "password_hash", nullable = false)
   private String passwordHash;
 
   @NotBlank

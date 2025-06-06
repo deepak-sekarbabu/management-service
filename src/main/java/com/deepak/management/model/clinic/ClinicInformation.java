@@ -64,10 +64,10 @@ public class ClinicInformation implements LogMask {
           """
             [
                     {
-                        \"phoneNumber\": \"+91-0802656789\"
+                        "phoneNumber": "+91-0802656789"
                     },
                     {
-                        \"phoneNumber\": \"+91-9876543210\"
+                        "phoneNumber": "+91-9876543210"
                     }
                 ]""")
   @Column(name = "clinic_phone_numbers")
