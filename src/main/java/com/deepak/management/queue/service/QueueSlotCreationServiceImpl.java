@@ -4,15 +4,15 @@ import com.deepak.management.model.common.DoctorAvailability;
 import com.deepak.management.model.common.ShiftTime;
 import com.deepak.management.model.doctor.DoctorAbsenceInformation;
 import com.deepak.management.model.doctor.DoctorInformation;
-import com.deepak.management.queue.model.DoctorAvailabilityInformation;
-import com.deepak.management.queue.model.DoctorShiftAbsence;
-import com.deepak.management.queue.model.DoctorShiftAvailability;
-import com.deepak.management.queue.model.QueueTimeSlot;
-import com.deepak.management.queue.model.SlotGeneration;
+import com.deepak.management.queue.model.*;
 import com.deepak.management.repository.DoctorAbsenceInformationRepository;
 import com.deepak.management.repository.DoctorInformationRepository;
 import com.deepak.management.repository.SlotGenerationRepository;
 import com.deepak.management.repository.SlotInformationRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
@@ -21,9 +21,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 @Service
 public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
@@ -434,23 +431,25 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
    * @return A newly instantiated and populated {@link QueueTimeSlot} object.
    */
   private QueueTimeSlot createQueueTimeSlot(
-      Integer clinicId,
-      String doctorId,
-      DoctorAvailability shiftDetail,
-      int slotNo,
-      LocalTime slotTime,
-      boolean isAvailable) {
-    // Method body follows
-    final QueueTimeSlot queueTimeSlot = new QueueTimeSlot();
+          Integer clinicId,
+          String doctorId,
+          DoctorAvailability shiftDetail,
+          int slotNo,
+          LocalTime slotTime,
+          boolean isAvailable) {
+
+    QueueTimeSlot queueTimeSlot = new QueueTimeSlot();
     queueTimeSlot.setClinicId(clinicId);
     queueTimeSlot.setDoctorId(doctorId);
-    queueTimeSlot.setSlotDate(String.valueOf(LocalDate.now()));
-    queueTimeSlot.setShiftTime(String.valueOf(shiftDetail.getShiftTime()));
+    queueTimeSlot.setSlotDate(LocalDate.now());
+    queueTimeSlot.setShiftTime(shiftDetail.getShiftTime().toString());
     queueTimeSlot.setSlotNo(slotNo);
-    queueTimeSlot.setSlotTime(String.valueOf(slotTime));
+    queueTimeSlot.setSlotTime(slotTime);
     queueTimeSlot.setAvailable(isAvailable);
+
     return queueTimeSlot;
   }
+
 
   /**
    * Transforms a list of raw {@link DoctorAbsenceInformation} objects into a list of {@link
