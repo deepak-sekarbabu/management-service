@@ -87,7 +87,7 @@ CREATE TABLE
 -- Slot Table
 CREATE TABLE
     IF NOT EXISTS slot_information (
-        slot_id INTEGER PRIMARY KEY AUTO_INCREMENT,
+        slot_id BIGINT PRIMARY KEY AUTO_INCREMENT,
         slot_no INT,
         shift_time VARCHAR(50),
         slot_time VARCHAR(50),
