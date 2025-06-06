@@ -60,7 +60,7 @@
     </root>
 
     <!-- Queue Package Logger -->
-    <logger name="com.deepak.management.queue" level="DEBUG" additivity="false">
+    <logger name="com.deepak.queue" level="DEBUG" additivity="false">
         <appender-ref ref="Console" />
         <appender-ref ref="QUEUE_FILE" />
         <appender-ref ref="ERROR_FILE" />
