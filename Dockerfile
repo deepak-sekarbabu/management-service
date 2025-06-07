@@ -39,4 +39,4 @@ COPY --from=build /app/target/management-1.0.0.jar /app/management.jar
 EXPOSE 8080
 
 # Run the application
-ENTRYPOINT ["sh", "-c", "java -jar management.jar"]
+ENTRYPOINT ["sh", "-c", "java -XX:+UseG1GC -XX:+UseStringDeduplication -XX:+OptimizeStringConcat -jar management.jar"]

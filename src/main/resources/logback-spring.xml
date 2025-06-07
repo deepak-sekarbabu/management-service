@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <springProperty scope="context" name="loggingPath" source="logging.file.path"
-        defaultValue="/app/logs" />
-    <property name="LOGS" value="${loggingPath}" />
+    <property name="LOGS" value="./logs" />
 
     <!-- Console Appender -->
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
@@ -14,7 +12,6 @@
     <!-- INFO File Appender -->
     <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGS}/info.log</file>
-        <prudent>true</prudent>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>%d %-5level %logger{36} - %msg%n</pattern>
         </encoder>
@@ -34,7 +31,6 @@
     <!-- ERROR File Appender (includes WARN and ERROR levels) -->
     <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGS}/error.log</file>
-        <prudent>true</prudent>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>%d %-5level %logger{36} - %msg%n</pattern>
         </encoder>
@@ -52,7 +48,6 @@
     <!-- Queue Package File Appender -->
     <appender name="QUEUE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGS}/queue.log</file>
-        <prudent>true</prudent>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>%d %-5level %logger{36} - %msg%n</pattern>
         </encoder>
