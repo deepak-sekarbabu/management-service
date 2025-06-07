@@ -145,11 +145,13 @@ For inquiries or permission to use this repository, contact Deepak Sekarbabu at 
 ## How to do a native build
 
 Using Spring Boot's native image support:
+
 ```sh
   mvn -Pnative clean package
 ```
 
 Alternative approach using Spring Boot's buildpacks:
+
 ```sh
   mvn spring-boot:build-image -Pnative -T 1C
 ```
