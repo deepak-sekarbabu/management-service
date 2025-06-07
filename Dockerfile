@@ -21,27 +21,10 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # ===============================
-# 🔍 Stage 2: Analyze with jdeps
-# ===============================
-FROM eclipse-temurin:21-jdk-jammy AS jdeps
-WORKDIR /app
-
-COPY --from=build /app/target/management-1.0.0.jar app.jar
-
-# Analyze module dependencies required by the JAR
-RUN jdeps \
-    --ignore-missing-deps \
-    --print-module-deps \
-    --multi-release 21 \
-    app.jar > jre-modules.txt
-
-# ===============================
-# 🛠️ Stage 3: Create Custom JRE
+# 🛠️ Stage 2: Create Custom JRE
 # ===============================
 FROM eclipse-temurin:21-jdk-jammy AS jlink
 WORKDIR /app
-
-COPY --from=jdeps /app/jre-modules.txt .
 
 # Generate minimal custom JRE
 RUN jlink \
@@ -49,8 +32,9 @@ RUN jlink \
     --no-man-pages \
     --compress=2 \
     --strip-debug \
-    --add-modules $(cat jre-modules.txt),jdk.unsupported,java.desktop,java.naming,java.management,java.security.jgss,java.instrument,java.security.jgss,java.security.sasl,jdk.crypto.ec\
+    --add-modules jdk.unsupported,java.desktop,java.naming,java.management,java.security.jgss,java.security.sasl,jdk.crypto.ec,java.instrument,java.sql \
     --output /customjre
+
 
 # ===============================
 # 🚀 Final Stage: Runtime Image
