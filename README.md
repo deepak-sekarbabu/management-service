@@ -141,3 +141,15 @@ This project is licensed under the BSD 3-Clause License. See the [LICENSE](LICEN
 ---
 
 For inquiries or permission to use this repository, contact Deepak Sekarbabu at [deepakinmail@gmail.com](mailto:deepakinmail@gmail.com).
+
+## How to do a native build
+
+Using Spring Boot's native image support:
+```sh
+  mvn -Pnative clean package
+```
+
+Alternative approach using Spring Boot's buildpacks:
+```sh
+  mvn spring-boot:build-image -Pnative
+```

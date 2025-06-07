@@ -24,6 +24,8 @@
         <jjwt.version>0.11.5</jjwt.version>
         <dependency-check-maven.version>12.1.1</dependency-check-maven.version>
         <spotless-maven-plugin.version>2.44.4</spotless-maven-plugin.version>
+        <native-maven-plugin.version>0.10.1</native-maven-plugin.version>
+        <repackage.classifier>exec</repackage.classifier>
     </properties>
     <dependencies>
         <!-- Main dependencies -->
@@ -166,7 +168,58 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <version>${native-maven-plugin.version}</version>
+                <configuration>
+                    <skipNativeTests>true</skipNativeTests>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>native</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <classifier>exec</classifier>
+                            <image>
+                                <builder>paketobuildpacks/builder-noble-java-tiny</builder>
+                                <env>
+                                    <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
+                                    <BP_JVM_VERSION>21</BP_JVM_VERSION>
+                                    <BP_OCI_SOURCE>true</BP_OCI_SOURCE>
+                                    <BP_OCI_DESCRIPTION>${project.description}</BP_OCI_DESCRIPTION>
+                                    <BP_OCI_AUTHORS>${project.organization.name}</BP_OCI_AUTHORS>
+                                </env>
+                            </image>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <configuration>
+                            <skipNativeTests>true</skipNativeTests>
+                            <buildArgs>
+                                <buildArg>--no-fallback</buildArg>
+                                <buildArg>--report-unsupported-elements-at-runtime</buildArg>
+                                <buildArg>--allow-incomplete-classpath</buildArg>
+                                <buildArg>-H:+ReportExceptionStackTraces</buildArg>
+                                <buildArg>-H:+AddAllCharsets</buildArg>
+                                <buildArg>-H:ReflectionConfigurationFiles=reflection-config.json</buildArg>
+                                <buildArg>-H:ResourceConfigurationFiles=resource-config.json</buildArg>
+                            </buildArgs>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
