@@ -162,6 +162,11 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <image>
+                        <env>
+                            <BP_JVM_VERSION>${java.version}</BP_JVM_VERSION>
+                        </env>
+                    </image>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -192,7 +197,7 @@
                         <configuration>
                             <classifier>exec</classifier>
                             <image>
-                                <builder>paketobuildpacks/builder-noble-java-tiny</builder>
+                                <builder>paketobuildpacks/builder-jammy-base:latest</builder>
                                 <env>
                                     <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
                                     <BP_JVM_VERSION>21</BP_JVM_VERSION>
@@ -201,6 +206,7 @@
                                     <BP_OCI_AUTHORS>${project.organization.name}</BP_OCI_AUTHORS>
                                 </env>
                             </image>
+                            <pullPolicy>IF_NOT_PRESENT</pullPolicy>
                         </configuration>
                     </plugin>
                     <plugin>
