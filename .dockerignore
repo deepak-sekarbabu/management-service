@@ -1,6 +1,96 @@
+# Build output
 target/
-*.iml
+build/
+out/
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# IDE files
 .idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.swp
+*.swo
+.project
+.classpath
+.settings/
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+.svn/
+.hg/
+
+# Logs
+logs/
 *.log
-.git
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS specific
 .DS_Store
+Thumbs.db
+desktop.ini
+
+# Test files
+**/test/
+**/tests/
+**/__tests__/
+**/*.test.js
+**/*.spec.js
+**/coverage/
+
+# Documentation
+docs/
+*.md
+!README.md
+LICENSE
+
+# Environment files
+.env
+.env.*
+*.properties
+!src/main/resources/application.properties
+!src/main/resources/application-*.properties
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# Node modules (if any frontend)
+node_modules/
+dist/
+.npm/
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Gradle
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+
+# Docker
+Dockerfile*
+docker-compose*
+.docker/
+
+# Other
+*.pid
+*.seed
+*.pid.lock
