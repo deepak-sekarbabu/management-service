@@ -1,12 +1,14 @@
-# Build stage
+# ===============================
+# 🔧 Stage 1: Build the App
+# ===============================
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Copy the custom library and pom.xml first
+# Copy custom library and POM
 COPY libs/spring-log-utils-1.0.0.jar /app/libs/
 COPY pom.xml .
 
-# Install the custom library
+# Install the custom library to local Maven repo
 RUN mvn install:install-file \
     -Dfile=/app/libs/spring-log-utils-1.0.0.jar \
     -DgroupId=com.deepak \
@@ -14,29 +16,59 @@ RUN mvn install:install-file \
     -Dversion=1.0.0 \
     -Dpackaging=jar
 
-# Copy source code and build
+# Copy and build source code
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Run stage
-FROM eclipse-temurin:21-jre-jammy
+# ===============================
+# 🔍 Stage 2: Analyze with jdeps
+# ===============================
+FROM eclipse-temurin:21-jdk-jammy AS jdeps
 WORKDIR /app
 
-# Create a non-root user
+COPY --from=build /app/target/management-1.0.0.jar app.jar
+
+# Analyze module dependencies required by the JAR
+RUN jdeps \
+    --ignore-missing-deps \
+    --print-module-deps \
+    --multi-release 21 \
+    app.jar > jre-modules.txt
+
+# ===============================
+# 🛠️ Stage 3: Create Custom JRE
+# ===============================
+FROM eclipse-temurin:21-jdk-jammy AS jlink
+WORKDIR /app
+
+COPY --from=jdeps /app/jre-modules.txt .
+
+# Generate minimal custom JRE
+RUN jlink \
+    --no-header-files \
+    --no-man-pages \
+    --compress=2 \
+    --strip-debug \
+    --add-modules $(cat jre-modules.txt),jdk.unsupported,java.desktop,java.naming,java.management,java.security.jgss,java.instrument,java.security.jgss,java.security.sasl,jdk.crypto.ec\
+    --output /customjre
+
+# ===============================
+# 🚀 Final Stage: Runtime Image
+# ===============================
+FROM debian:bullseye-slim
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y libzstd1 && rm -rf /var/lib/apt/lists/*
 RUN groupadd -r spring && useradd -r -g spring spring
+RUN mkdir -p /app/logs/archived && chown -R spring:spring /app
 
-# Create logs directory and set permissions
-RUN mkdir -p /app/logs && \
-    mkdir -p /app/logs/archived && \
-    chown -R spring:spring /app/logs
+COPY --from=build /app/target/management-1.0.0.jar /app/management.jar
+COPY --from=jlink /customjre /opt/java
+RUN chown -R spring:spring /opt/java
 
+ENV PATH="/opt/java/bin:$PATH"
 USER spring:spring
 
-# Copy the built jar from build stage
-COPY --from=build /app/target/management-1.0.0.jar /app/management.jar
-
-# Expose the application port
 EXPOSE 8080
 
-# Run the application
-ENTRYPOINT ["sh", "-c", "java -XX:+UseG1GC -XX:+UseStringDeduplication -XX:+OptimizeStringConcat -jar management.jar"]
+ENTRYPOINT ["java", "-XX:+UseG1GC", "-XX:+UseStringDeduplication", "-XX:+OptimizeStringConcat", "-jar", "/app/management.jar"]
