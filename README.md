@@ -151,5 +151,5 @@ Using Spring Boot's native image support:
 
 Alternative approach using Spring Boot's buildpacks:
 ```sh
-  mvn spring-boot:build-image -Pnative
+  mvn spring-boot:build-image -Pnative -T 1C
 ```
