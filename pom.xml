@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns="http://maven.apache.org/POM/4.0.0"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -24,7 +24,7 @@
         <jjwt.version>0.11.5</jjwt.version>
         <dependency-check-maven.version>12.1.1</dependency-check-maven.version>
         <spotless-maven-plugin.version>2.44.4</spotless-maven-plugin.version>
-        <native-maven-plugin.version>0.10.1</native-maven-plugin.version>
+        <native-maven-plugin.version>0.10.2</native-maven-plugin.version>
         <repackage.classifier>exec</repackage.classifier>
     </properties>
     <dependencies>
@@ -122,6 +122,8 @@
             <groupId>com.deepak</groupId>
             <artifactId>spring-log-utils</artifactId>
             <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/spring-log-utils-1.0.0.jar</systemPath>
         </dependency>
     </dependencies>
 
@@ -206,14 +208,17 @@
                         <artifactId>native-maven-plugin</artifactId>
                         <configuration>
                             <skipNativeTests>true</skipNativeTests>
+                            <metadataRepository>
+                                <enabled>true</enabled>
+                            </metadataRepository>
                             <buildArgs>
                                 <buildArg>--no-fallback</buildArg>
                                 <buildArg>--report-unsupported-elements-at-runtime</buildArg>
-                                <buildArg>--allow-incomplete-classpath</buildArg>
                                 <buildArg>-H:+ReportExceptionStackTraces</buildArg>
                                 <buildArg>-H:+AddAllCharsets</buildArg>
                                 <buildArg>-H:ReflectionConfigurationFiles=reflection-config.json</buildArg>
                                 <buildArg>-H:ResourceConfigurationFiles=resource-config.json</buildArg>
+                                <buildArg>--initialize-at-build-time=org.hibernate.validator.internal.engine.DefaultClockProvider,com.mysql.cj.jdbc.AbandonedConnectionCleanupThread</buildArg>
                             </buildArgs>
                         </configuration>
                     </plugin>
