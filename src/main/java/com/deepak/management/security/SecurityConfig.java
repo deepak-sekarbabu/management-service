@@ -38,7 +38,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             authz ->
                 authz
-                    // Allow Swagger and auth endpoints
+                    // Allow Swagger, auth endpoints, and actuator health/info endpoints
                     .requestMatchers(
                         "/v3/api-docs/**",
                         "/v3/api-docs",
@@ -46,7 +46,11 @@ public class SecurityConfig {
                         "/swagger-ui.html",
                         "/swagger-ui/index.html",
                         "/auth/**",
-                        "/api/v1/users/register")
+                        "/api/v1/users/register",
+                        "/actuator/health",
+                        "/actuator/health/liveness",
+                        "/actuator/health/readiness",
+                        "/actuator/info")
                     .permitAll()
                     .anyRequest()
                     .authenticated());
