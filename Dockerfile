@@ -32,7 +32,7 @@ RUN jlink \
     --no-man-pages \
     --compress=2 \
     --strip-debug \
-    --add-modules jdk.unsupported,java.desktop,java.naming,java.management,java.security.jgss,java.security.sasl,jdk.crypto.ec,java.instrument,java.sql \
+    --add-modules jdk.unsupported,java.desktop,java.naming,java.management,java.security.jgss,java.security.sasl,jdk.crypto.ec,java.instrument,java.sql,jdk.management \
     --output /customjre
 
 
