@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.info.Info;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -17,6 +18,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
             contact = @io.swagger.v3.oas.annotations.info.Contact(name = "Deepak")))
 @SpringBootApplication
 @EnableScheduling
+@ComponentScan({"com.deepak.management", "com.deepak.queue"})
 @EntityScan(basePackages = {"com.deepak.management", "com.deepak.queue"})
 @EnableJpaRepositories(basePackages = {"com.deepak.management.repository", "com.deepak.queue"})
 public class ManagementApplication {
