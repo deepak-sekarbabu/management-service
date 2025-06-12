@@ -9,14 +9,16 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 public class CorsConfig {
 
-  @Bean
-  public CorsFilter corsFilter() {
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    CorsConfiguration config = new CorsConfiguration();
-    config.addAllowedOrigin("http://localhost:3030"); // Allow requests from localhost:3030
-    config.addAllowedMethod("*"); // You can configure specific HTTP methods
-    config.addAllowedHeader("*"); // You can configure specific headers
-    source.registerCorsConfiguration("/**", config);
-    return new CorsFilter(source);
-  }
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("http://localhost:3030", "https://management-ui-pdj4.onrender.com"); // Allow requests
+                                                                                                     // from
+                                                                                                     // localhost:3030
+        config.addAllowedMethod("*"); // You can configure specific HTTP methods
+        config.addAllowedHeader("*"); // You can configure specific headers
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
 }
