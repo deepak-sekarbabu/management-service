@@ -13,11 +13,11 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("http://localhost:3030", "https://management-ui-pdj4.onrender.com"); // Allow requests
-                                                                                                     // from
-                                                                                                     // localhost:3030
+        config.addAllowedOriginPattern("http://localhost:3030");
+        config.addAllowedOriginPattern("https://management-ui-pdj4.onrender.com");
         config.addAllowedMethod("*"); // You can configure specific HTTP methods
         config.addAllowedHeader("*"); // You can configure specific headers
+        config.setAllowCredentials(true);
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
