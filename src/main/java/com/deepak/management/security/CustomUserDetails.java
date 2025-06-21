@@ -3,14 +3,29 @@ package com.deepak.management.security;
 import com.deepak.management.model.auth.User;
 import java.util.Collection;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import java.util.Objects;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@RequiredArgsConstructor
+@Getter
 public class CustomUserDetails implements UserDetails {
   private final User user;
+  private final List<Integer> clinicIds;
+
+  public CustomUserDetails(User user) {
+    this.user = user;
+    this.clinicIds = user.getClinicIds() != null ? user.getClinicIds() : List.of();
+  }
+
+  public CustomUserDetails(UserDetails userDetails, List<Integer> clinicIds) {
+    if (!(userDetails instanceof CustomUserDetails)) {
+      throw new IllegalArgumentException("UserDetails must be an instance of CustomUserDetails");
+    }
+    this.user = ((CustomUserDetails) userDetails).getUser();
+    this.clinicIds = Objects.requireNonNullElse(clinicIds, List.of());
+  }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -48,8 +63,7 @@ public class CustomUserDetails implements UserDetails {
     return Boolean.TRUE.equals(user.getIsActive());
   }
 
-  // Get clinic IDs from the user
-  public List<Integer> getClinicIds() {
-    return user.getClinicIds() != null ? user.getClinicIds() : List.of();
+  public Long getId() {
+    return user.getId() != null ? user.getId().longValue() : null;
   }
 }

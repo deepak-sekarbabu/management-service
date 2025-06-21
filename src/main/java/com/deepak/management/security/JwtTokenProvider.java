@@ -1,13 +1,18 @@
 package com.deepak.management.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,66 +20,113 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenProvider {
-
   private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
   @Value(
       "${jwt.secret:mfQ3b0HVp6zrzyqP+1m+ZpF7Itd03p2r5ZOU5tPjVgmCL8nspBWyWqN4t4nx3DBQhct+GPtTznhMRl+GcUMWQg==}")
   private String jwtSecret;
 
-  @Value("${jwt.expiration-in-ms:3600000}")
+  @Value("${jwt.access-token.expiration:3600000}") // 1 hour by default
   private long jwtExpirationInMs;
+
+  @Value("${jwt.refresh-token.expiration:86400000}") // 24 hours by default
+  private long refreshTokenExpirationInMs;
 
   private Key getSigningKey() {
     byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
     return Keys.hmacShaKeyFor(keyBytes);
   }
 
-  public String generateToken(String username, String role, List<Integer> clinicIds) {
+  public String generateAccessToken(String username, String role, List<Integer> clinicIds) {
+    return buildToken(username, role, clinicIds, jwtExpirationInMs);
+  }
+
+  public String generateRefreshToken(String username) {
+    return buildToken(username, null, null, refreshTokenExpirationInMs);
+  }
+
+  private String buildToken(
+      String username, String role, List<Integer> clinicIds, long expiration) {
     Date now = new Date();
-    Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
-    return Jwts.builder()
-        .setSubject(username)
-        .setIssuedAt(now)
-        .setExpiration(expiryDate)
-        .claim("role", role)
-        .claim("clinicIds", clinicIds) // Add clinicIds to the token
-        .signWith(getSigningKey(), SignatureAlgorithm.HS512)
-        .compact();
-  }
+    Date expiryDate = new Date(now.getTime() + expiration);
 
-  public String getUsernameFromJWT(String token) {
-    Claims claims =
-        Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
+    JwtBuilder builder =
+        Jwts.builder()
+            .setSubject(username)
+            .setIssuedAt(now)
+            .setExpiration(expiryDate)
+            .signWith(getSigningKey());
 
-    return claims.getSubject();
-  }
-
-  public boolean validateToken(String authToken) {
-    try {
-      Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(authToken);
-      return true;
-    } catch (Exception ex) {
-      logger.error("JWT token validation failed: {}", ex.getMessage());
-      // Log the exception if necessary
+    if (role != null) {
+      builder.claim("role", role);
     }
-    return false;
+
+    if (clinicIds != null) {
+      builder.claim("clinicIds", clinicIds);
+    }
+
+    return builder.compact();
   }
 
-  public String getRoleFromJWT(String token) {
-    return getClaimsFromToken(token).get("role", String.class);
+  public String getUsernameFromToken(String token) {
+    return getClaimFromToken(token, Claims::getSubject);
   }
 
-  @SuppressWarnings("unchecked")
-  public List<Integer> getClinicIdsFromJWT(String token) {
-    return getClaimsFromToken(token).get("clinicIds", List.class);
+  public Date getExpirationDateFromToken(String token) {
+    return getClaimFromToken(token, Claims::getExpiration);
   }
 
-  private Claims getClaimsFromToken(String token) {
+  public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+    final Claims claims = getAllClaimsFromToken(token);
+    return claimsResolver.apply(claims);
+  }
+
+  private Claims getAllClaimsFromToken(String token) {
     return Jwts.parserBuilder()
         .setSigningKey(getSigningKey())
         .build()
         .parseClaimsJws(token)
         .getBody();
+  }
+
+  public boolean validateToken(String token) {
+    try {
+      Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
+      return true;
+    } catch (SignatureException ex) {
+      logger.error("Invalid JWT signature");
+    } catch (MalformedJwtException ex) {
+      logger.error("Invalid JWT token");
+    } catch (ExpiredJwtException ex) {
+      logger.error("Expired JWT token");
+    } catch (UnsupportedJwtException ex) {
+      logger.error("Unsupported JWT token");
+    } catch (IllegalArgumentException ex) {
+      logger.error("JWT claims string is empty");
+    }
+    return false;
+  }
+
+  public boolean isTokenExpired(String token) {
+    final Date expiration = getExpirationDateFromToken(token);
+    return expiration.before(new Date());
+  }
+
+  public String getRoleFromJWT(String token) {
+    return getClaimFromToken(token, claims -> claims.get("role", String.class));
+  }
+
+  @SuppressWarnings("unchecked")
+  public List<Integer> getClinicIdsFromJWT(String token) {
+    return getClaimFromToken(token, claims -> claims.get("clinicIds", List.class));
+  }
+
+  public String generateTokenFromUsername(String username) {
+    return Jwts.builder()
+        .setSubject(username)
+        .setIssuedAt(new Date())
+        .setExpiration(new Date((new Date()).getTime() + jwtExpirationInMs))
+        .signWith(getSigningKey())
+        .compact();
   }
 }
