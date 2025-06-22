@@ -70,16 +70,24 @@ mvn clean install
 
 ### Docker Deployment
 
-```sh
-docker build -t queue-management-system .
-docker-compose up -d
-```
+This project includes a multi-stage Dockerfile that creates an optimized container image with a minimal JRE for production deployment.
 
-- The app will be available at [http://localhost:8080](http://localhost:8080).
+#### Prerequisites
+
+- Docker 20.10.0 or later
+- Docker Compose (optional, for local development)
+
+#### Building the Docker Image
+
+To build the Docker image with a custom tag:
+
+```bash
+docker build -t queue-management-system:latest .
+```
 
 ### API Documentation
 
-- Swagger UI: [https://localhost:8443/swagger-ui/index.html](https://localhost:8443/swagger-ui/index.html)
+- Swagger UI: [https://localhost:8080/swagger-ui/index.html](https://localhost:8080/swagger-ui/index.html)
 - Endpoints cover:
   - Clinic: `/clinics`, `/clinics/{id}`
   - Doctor: `/doctors`, `/doctors/{id}`
