@@ -23,13 +23,13 @@ public class QueueManagementRepository {
         "SELECT "
             + "q.queue_management_id as id, "
             + "CONCAT('/assets/images/avatars/avatar_', FLOOR(RAND() * 24) + 1, '.jpg') AS avatarUrl,"
-            + "JSON_UNQUOTE(JSON_EXTRACT(p.personal_details, '$.name')) AS patientName, "
+            + "JSON_UNQUOTE(JSON_EXTRACT(p.personalDetails, '$.name')) AS patientName, "
             + "p.phone_number AS patientPhoneNumber, "
             + "d.doctor_name AS doctorName, "
             + "q.current_queue_no AS queueNo, "
             + "CASE WHEN q.patient_reached = 0 THEN 'false' ELSE 'true' END AS patientReached,"
-            + "s.slot_time AS time,"
-            + "s.shift_time AS shiftTime "
+            + "TIME_FORMAT(s.slot_time, '%H:%i:%s') AS time,"
+            + "TIME_FORMAT(s.shift_time, '%H:%i:%s') AS shiftTime "
             + "FROM queue_management q "
             + "JOIN appointments a ON q.appointment_id = a.appointment_id "
             + "JOIN patients p ON a.patient_id = p.id "
@@ -38,7 +38,6 @@ public class QueueManagementRepository {
             + "ORDER BY s.slot_time,s.shift_time ";
 
     Query query = entityManager.createNativeQuery(sql, QueueManagementDTO.class);
-
     return query.getResultList();
   }
 
@@ -47,13 +46,13 @@ public class QueueManagementRepository {
         "SELECT "
             + "q.queue_management_id as id, "
             + "CONCAT('/assets/images/avatars/avatar_', FLOOR(RAND() * 24) + 1, '.jpg') AS avatarUrl,"
-            + "JSON_UNQUOTE(JSON_EXTRACT(p.personal_details, '$.name')) AS patientName, "
+            + "JSON_UNQUOTE(JSON_EXTRACT(p.personalDetails, '$.name')) AS patientName, "
             + "p.phone_number AS patientPhoneNumber, "
             + "d.doctor_name AS doctorName, "
             + "q.current_queue_no AS queueNo, "
             + "CASE WHEN q.patient_reached = 0 THEN 'false' ELSE 'true' END AS patientReached,"
-            + "s.slot_time AS time,"
-            + "s.shift_time AS shiftTime "
+            + "TIME_FORMAT(s.slot_time, '%H:%i:%s') AS time,"
+            + "TIME_FORMAT(s.shift_time, '%H:%i:%s') AS shiftTime "
             + "FROM queue_management q "
             + "JOIN appointments a ON q.appointment_id = a.appointment_id "
             + "JOIN patients p ON a.patient_id = p.id "
@@ -70,6 +69,8 @@ public class QueueManagementRepository {
 
     return query.getResultList();
   }
+
+  // Rest of the file remains the same...
 
   @Transactional
   public void updatePatientReached(Integer id) {
