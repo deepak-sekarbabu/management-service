@@ -1,6 +1,7 @@
 package com.deepak.management.repository;
 
 import com.deepak.management.model.auth.RefreshToken;
+import java.time.Instant;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -20,4 +21,6 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
   @Modifying
   @Query("DELETE FROM RefreshToken rt WHERE rt.expiryDate < CURRENT_TIMESTAMP")
   void deleteExpiredTokens();
+
+  void deleteByExpiryDateBefore(Instant now);
 }

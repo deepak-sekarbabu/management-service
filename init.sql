@@ -164,3 +164,12 @@ VALUES
         1,
         NULL
     );
+
+INSERT INTO 
+    cron_job (description, schedule, enabled, last_run)
+VALUES (
+        'Purge Expired Refresh Tokens',
+        '0 0 * * * *', 
+        1,
+        NULL
+      );    
