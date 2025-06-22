@@ -593,5 +593,4 @@ public class QueueSlotCreationServiceImpl implements QueueSlotCreationService {
     }
     return filteredList;
   }
-  /** Ensures a slot with start time and duration will not exceed shift end time. */
 }

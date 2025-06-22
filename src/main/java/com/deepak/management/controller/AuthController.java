@@ -2,7 +2,6 @@ package com.deepak.management.controller;
 
 import com.deepak.management.exception.TokenRefreshException;
 import com.deepak.management.model.auth.*;
-import com.deepak.management.model.auth.RefreshToken;
 import com.deepak.management.repository.UserRepository;
 import com.deepak.management.security.CustomUserDetails;
 import com.deepak.management.security.JwtTokenProvider;
