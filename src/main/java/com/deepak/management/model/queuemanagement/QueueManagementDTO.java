@@ -1,12 +1,14 @@
 package com.deepak.management.model.queuemanagement;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class QueueManagementDTO {
   private Integer id;
   private String avatarUrl;
