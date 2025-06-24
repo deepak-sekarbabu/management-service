@@ -76,7 +76,6 @@ public class DoctorAbsenceController {
             description = "Invalid request body",
             content = @Content(schema = @Schema(implementation = ErrorDetails.class)))
       })
-
   public DoctorAbsenceInformation saveAbsence(
       @Valid @RequestBody DoctorAbsenceInformation doctorAbsenceInformation)
       throws ClinicNotFound, DoctorNotFound {
