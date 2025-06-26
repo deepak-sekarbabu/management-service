@@ -1,10 +1,17 @@
 package com.deepak.management.controller;
 
 import com.deepak.management.exception.TokenRefreshException;
-import com.deepak.management.model.auth.*;
+import com.deepak.management.model.auth.LoginRequest;
+import com.deepak.management.model.auth.LoginResponse;
+import com.deepak.management.model.auth.RefreshToken;
+import com.deepak.management.model.auth.TokenRefreshRequest;
+import com.deepak.management.model.auth.TokenRefreshResponse;
+import com.deepak.management.model.auth.TokenValidationRequest;
+import com.deepak.management.model.auth.TokenValidationResponse;
 import com.deepak.management.repository.UserRepository;
 import com.deepak.management.security.CustomUserDetails;
 import com.deepak.management.security.JwtTokenProvider;
+import com.deepak.management.service.BlacklistedAccessTokenService;
 import com.deepak.management.service.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,18 +19,25 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
@@ -35,6 +49,7 @@ public class AuthController {
   private final JwtTokenProvider tokenProvider;
   private final UserRepository userRepository;
   private final RefreshTokenService refreshTokenService;
+  private final BlacklistedAccessTokenService blacklistedAccessTokenService;
 
   @Operation(
       summary = "User Login",
@@ -147,13 +162,31 @@ public class AuthController {
     @ApiResponse(responseCode = "401", description = "Unauthorized")
   })
   @PostMapping("/logout")
-  public ResponseEntity<?> logoutUser() {
+  public ResponseEntity<?> logoutUser(HttpServletRequest request, HttpServletResponse response) {
+    // Extract tokens
+    String accessToken = tokenProvider.extractAccessToken(request);
+    String refreshToken = tokenProvider.extractRefreshTokenFromCookies(request);
+
+    // Blacklist access token if present and valid
+    if (accessToken != null && tokenProvider.validateToken(accessToken)) {
+      Date expiry = tokenProvider.getExpirationDateFromToken(accessToken);
+      blacklistedAccessTokenService.blacklistToken(accessToken, expiry.toInstant());
+    }
+
+    // Revoke refresh token if present
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
       Long userId = ((CustomUserDetails) authentication.getPrincipal()).getId();
       refreshTokenService.deleteByUserId(userId.intValue());
     }
-    return ResponseEntity.ok().build();
+
+    // Clear cookies
+    ResponseCookie clearAccessCookie = tokenProvider.generateClearAccessTokenCookie();
+    ResponseCookie clearRefreshCookie = tokenProvider.generateClearRefreshTokenCookie();
+    response.addHeader("Set-Cookie", clearAccessCookie.toString());
+    response.addHeader("Set-Cookie", clearRefreshCookie.toString());
+
+    return ResponseEntity.ok().body("Logged out successfully");
   }
 
   @Operation(

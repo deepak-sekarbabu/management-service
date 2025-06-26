@@ -30,6 +30,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtTokenProvider tokenProvider;
   private final CustomUserDetailsService customUserDetailsService;
+  private final com.deepak.management.service.BlacklistedAccessTokenService
+      blacklistedAccessTokenService;
 
   @Override
   protected void doFilterInternal(
@@ -40,6 +42,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     try {
       String jwt = getJwtFromRequest(request);
       if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+        // Check if token is blacklisted
+        if (blacklistedAccessTokenService.isTokenBlacklisted(jwt)) {
+          logger.warn("Attempt to use blacklisted JWT token");
+          response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Blacklisted JWT token");
+          return;
+        }
         String username = tokenProvider.getUsernameFromToken(jwt);
 
         // Only proceed if user is not already authenticated

@@ -9,6 +9,8 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
@@ -16,14 +18,14 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenProvider {
   private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
-  @Value(
-      "${jwt.secret}")
+  @Value("${jwt.secret}")
   private String jwtSecret;
 
   @Value("${jwt.access-token.expiration}") // 1 hour by default
@@ -31,6 +33,15 @@ public class JwtTokenProvider {
 
   @Value("${jwt.refresh-token.expiration}") // 24 hours by default
   private long refreshTokenExpirationInMs;
+
+  @Value("${jwt.cookie.domain:}")
+  private String cookieDomain;
+
+  @Value("${jwt.cookie.secure:false}")
+  private boolean cookieSecure;
+
+  private static final String ACCESS_TOKEN_COOKIE_NAME = "accessToken";
+  private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
   private Key getSigningKey() {
     byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
@@ -128,5 +139,85 @@ public class JwtTokenProvider {
         .setExpiration(new Date((new Date()).getTime() + jwtExpirationInMs))
         .signWith(getSigningKey())
         .compact();
+  }
+
+  public ResponseCookie generateAccessTokenCookie(String accessToken) {
+    return ResponseCookie.from(ACCESS_TOKEN_COOKIE_NAME, accessToken)
+        .domain(cookieDomain.isEmpty() ? null : cookieDomain)
+        .path("/")
+        .httpOnly(true)
+        .secure(cookieSecure)
+        .sameSite("Lax")
+        .maxAge(jwtExpirationInMs / 1000)
+        .build();
+  }
+
+  public ResponseCookie generateRefreshTokenCookie(String refreshToken) {
+    return ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, refreshToken)
+        .domain(cookieDomain.isEmpty() ? null : cookieDomain)
+        .path("/")
+        .httpOnly(true)
+        .secure(cookieSecure)
+        .sameSite("Lax")
+        .maxAge(refreshTokenExpirationInMs / 1000)
+        .build();
+  }
+
+  public ResponseCookie generateClearAccessTokenCookie() {
+    return ResponseCookie.from(ACCESS_TOKEN_COOKIE_NAME, "")
+        .domain(cookieDomain.isEmpty() ? null : cookieDomain)
+        .path("/")
+        .httpOnly(true)
+        .secure(cookieSecure)
+        .sameSite("Lax")
+        .maxAge(0)
+        .build();
+  }
+
+  public ResponseCookie generateClearRefreshTokenCookie() {
+    return ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, "")
+        .domain(cookieDomain.isEmpty() ? null : cookieDomain)
+        .path("/")
+        .httpOnly(true)
+        .secure(cookieSecure)
+        .sameSite("Lax")
+        .maxAge(0)
+        .build();
+  }
+
+  public String extractAccessToken(HttpServletRequest request) {
+    String headerToken = extractTokenFromHeader(request);
+    if (headerToken != null) {
+      return headerToken;
+    }
+    return extractAccessTokenFromCookies(request);
+  }
+
+  private String extractTokenFromHeader(HttpServletRequest request) {
+    String bearerToken = request.getHeader("Authorization");
+    if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+      return bearerToken.substring(7);
+    }
+    return null;
+  }
+
+  public String extractAccessTokenFromCookies(HttpServletRequest request) {
+    return extractCookieValue(request, ACCESS_TOKEN_COOKIE_NAME);
+  }
+
+  public String extractRefreshTokenFromCookies(HttpServletRequest request) {
+    return extractCookieValue(request, REFRESH_TOKEN_COOKIE_NAME);
+  }
+
+  private String extractCookieValue(HttpServletRequest request, String cookieName) {
+    Cookie[] cookies = request.getCookies();
+    if (cookies != null) {
+      for (Cookie cookie : cookies) {
+        if (cookieName.equals(cookie.getName())) {
+          return cookie.getValue();
+        }
+      }
+    }
+    return null;
   }
 }
