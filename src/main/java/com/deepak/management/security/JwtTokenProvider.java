@@ -23,13 +23,13 @@ public class JwtTokenProvider {
   private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
   @Value(
-      "${jwt.secret:mfQ3b0HVp6zrzyqP+1m+ZpF7Itd03p2r5ZOU5tPjVgmCL8nspBWyWqN4t4nx3DBQhct+GPtTznhMRl+GcUMWQg==}")
+      "${jwt.secret}")
   private String jwtSecret;
 
-  @Value("${jwt.access-token.expiration:3600000}") // 1 hour by default
+  @Value("${jwt.access-token.expiration}") // 1 hour by default
   private long jwtExpirationInMs;
 
-  @Value("${jwt.refresh-token.expiration:86400000}") // 24 hours by default
+  @Value("${jwt.refresh-token.expiration}") // 24 hours by default
   private long refreshTokenExpirationInMs;
 
   private Key getSigningKey() {
