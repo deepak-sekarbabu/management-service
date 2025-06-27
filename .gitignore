@@ -58,3 +58,4 @@ target/*
 .settings/org.eclipse.m2e.core.prefs
 .settings/org.springframework.ide.eclipse.prefs
 .env
+anysphere.cursor-retrieval/embeddable_files.txt
