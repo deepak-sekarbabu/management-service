@@ -3,10 +3,9 @@
   "java.format.settings.url": ".vscode/java-formatter.xml",
   "java.configuration.updateBuildConfiguration": "automatic",
   "maven.view": "flat",
-  "jdk.runConfig.vmOptions": "-Xms256m -Xmx1024m",
+  "jdk.runConfig.vmOptions": "-Xms256m -Xmx512m",
   "jdk.advanced.disable.nbjavac": false,
   "java.debug.settings.onBuildFailureProceed": true,
-  "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable",
   "maven.terminal.favorites": [
     {
       "command": "clean compile",
@@ -20,5 +19,7 @@
       "command": "spring-boot:run",
       "debug": false
     }
-  ]
+  ],
+  "spring.tools.properties.replace-converted-file": false,
+  "boot-java.highlight-copilot-codelens.on": true
 }
